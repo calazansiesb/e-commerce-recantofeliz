@@ -50,6 +50,9 @@
                 <button onclick="showSection('relatorios')" class="nav-btn bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">
                     <i class="fas fa-chart-bar mr-2"></i>Relatórios
                 </button>
+                <button onclick="showSection('carrossel')" class="nav-btn bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">
+                    <i class="fas fa-images mr-2"></i>Temas Carrossel
+                </button>
             </div>
         </div>
     </nav>
@@ -115,6 +118,12 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Layouts Temáticos</h2>
                     <div class="flex space-x-3">
+                        <button onclick="restoreProducts()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-box mr-2"></i>Restaurar Produtos
+                        </button>
+                        <button onclick="updateLayoutsFromDefaults()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-sync mr-2"></i>Atualizar Layouts
+                        </button>
                         <button onclick="checkAutoLayouts()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
                             <i class="fas fa-magic mr-2"></i>Verificar Automático
                         </button>
@@ -247,6 +256,129 @@
                 </div>
             </div>
         </div>
+
+        <!-- Seção: Temas de Carrossel -->
+        <div id="carrossel-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Temas de Carrossel</h2>
+                    <button onclick="addCarouselTheme()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
+                        <i class="fas fa-plus mr-2"></i>Novo Tema
+                    </button>
+                </div>
+
+                <!-- Lista de Temas Disponíveis -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="carousel-themes-grid">
+                    <!-- Temas serão carregados dinamicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Tema de Carrossel -->
+    <div id="carousel-theme-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold font-lora text-[#5D4037]" id="carousel-modal-title">Novo Tema de Carrossel</h3>
+                <button onclick="closeCarouselThemeModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="carousel-theme-form" class="space-y-6">
+                <input type="hidden" id="carousel-theme-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do Tema</label>
+                        <input type="text" id="theme-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                        <select id="theme-category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="ovos">Ovos Caipira</option>
+                            <option value="adubo">Adubo Orgânico</option>
+                            <option value="galinhas">Galinhas Caipira</option>
+                            <option value="parceiros">Produtos de Parceiros</option>
+                            <option value="completo">Mesa Completa</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Título do Slide</label>
+                    <input type="text" id="theme-title" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
+                    <textarea id="theme-description" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Imagem do Tema</label>
+                    <div class="space-y-4">
+                        <!-- Opção 1: Upload de Arquivo -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Upload de Imagem</label>
+                            <input type="file" id="theme-image-upload" accept="image/*" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Selecione uma imagem do seu computador</p>
+                        </div>
+                        
+                        <!-- Ou -->
+                        <div class="text-center text-gray-500 text-sm">
+                            <span class="bg-gray-100 px-3 py-1 rounded">OU</span>
+                        </div>
+                        
+                        <!-- Opção 2: URL da Imagem -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-600 mb-2">URL da Imagem</label>
+                            <input type="url" id="theme-image" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Cole o link de uma imagem (Unsplash, etc.)</p>
+                        </div>
+                        
+                        <!-- Preview da Imagem -->
+                        <div id="theme-image-preview" class="hidden">
+                            <label class="block text-sm font-medium text-gray-600 mb-2">Preview</label>
+                            <img id="theme-preview-img" src="" alt="Preview" class="w-full h-48 object-cover rounded-lg border">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Texto do Botão</label>
+                        <input type="text" id="theme-button-text" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Link do Botão</label>
+                        <input type="text" id="theme-button-link" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor do Botão</label>
+                    <input type="color" id="theme-button-color" class="w-full h-12 border border-gray-300 rounded-lg" value="#4CAF50">
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="theme-active" class="mr-2">
+                    <label for="theme-active" class="text-sm font-medium text-gray-700">Tema Ativo (aparecerá no carrossel)</label>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition">
+                        <i class="fas fa-save mr-2"></i>Salvar Tema
+                    </button>
+                    <button type="button" onclick="closeCarouselThemeModal()" class="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Modal para Adicionar/Editar Produto -->
@@ -269,14 +401,54 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
-                        <select id="product-category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                            <option value="">Selecione uma categoria</option>
-                            <option value="fertilizantes">Fertilizantes</option>
-                            <option value="ovos">Ovos</option>
-                            <option value="aves">Aves</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Produto</label>
+                        <select id="product-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required onchange="togglePartnerFields()">
+                            <option value="">Selecione o tipo</option>
+                            <option value="granja">Produto da Granja</option>
+                            <option value="parceiro">Produto de Parceiro</option>
                         </select>
                     </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                        <div class="flex gap-2">
+                            <select id="product-category" class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required onchange="toggleCustomCategory()">
+                                <option value="">Selecione uma categoria</option>
+                                <option value="fertilizantes">Fertilizantes</option>
+                                <option value="ovos">Ovos</option>
+                                <option value="aves">Aves</option>
+                                <option value="laticínios">Laticínios</option>
+                                <option value="doces">Doces</option>
+                                <option value="mel">Mel</option>
+                                <option value="custom">Nova Categoria</option>
+                            </select>
+                        </div>
+                        <input type="text" id="custom-category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-2 hidden" placeholder="Digite a nova categoria">
+                    </div>
+                    
+                    <div id="partner-fields" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do Parceiro</label>
+                        <input type="text" id="partner-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Apiário Flor do Cerrado">
+                    </div>
+                </div>
+                
+                <div id="partner-details" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Produtor</label>
+                        <input type="text" id="partner-producer" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Sr. João Silva">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Localização</label>
+                        <input type="text" id="partner-location" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Planaltina - DF">
+                    </div>
+                </div>
+                
+                <div id="partner-description-field" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Sobre o Parceiro</label>
+                    <textarea id="partner-description" rows="2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Família tradicional na apicultura há 3 gerações"></textarea>
                 </div>
                 
                 <div>
@@ -308,8 +480,9 @@
                         <button type="button" onclick="document.getElementById('product-images').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition">
                             <i class="fas fa-cloud-upload-alt mr-2"></i>Selecionar Imagens
                         </button>
-                        <p class="text-gray-500 mt-2">Suporte a múltiplas imagens (JPEG, PNG)</p>
-                        <div id="image-preview" class="mt-4 flex flex-wrap gap-2"></div>
+                        <p class="text-gray-500 mt-2">Selecione múltiplas imagens (JPEG, PNG)</p>
+                        <p class="text-gray-400 text-sm">Clique na imagem para definir como principal</p>
+                        <div id="image-preview" class="mt-4 grid grid-cols-4 gap-2"></div>
                     </div>
                 </div>
                 

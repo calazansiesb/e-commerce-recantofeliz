@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Layout - Granja Recanto Feliz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🔧 Debug do Sistema de Layout</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Status do DataManager -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">📊 Status do DataManager</h2>
+                <div id="datamanager-status"></div>
+            </div>
+            
+            <!-- Layout Atual -->
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-bold mb-4">🎨 Layout Atual</h2>
+                <div id="current-layout"></div>
+            </div>
+            
+            <!-- LocalStorage -->
+            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                <h2 class="text-xl font-bold mb-4">💾 Dados do LocalStorage</h2>
+                <div id="localstorage-data"></div>
+            </div>
+            
+            <!-- Testes de Layout -->
+            <div class="bg-white p-6 rounded-lg shadow md:col-span-2">
+                <h2 class="text-xl font-bold mb-4">🧪 Testes de Layout</h2>
+                <div class="space-y-4">
+                    <button onclick="testActivateMaes()" class="bg-pink-500 text-white px-4 py-2 rounded mr-4">
+                        Ativar Dia das Mães
+                    </button>
+                    <button onclick="testActivateDefault()" class="bg-gray-500 text-white px-4 py-2 rounded mr-4">
+                        Ativar Padrão
+                    </button>
+                    <button onclick="reloadPage()" class="bg-blue-500 text-white px-4 py-2 rounded">
+                        Recarregar Página
+                    </button>
+                </div>
+                <div id="test-results" class="mt-4"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Incluir o DataManager -->
+    <script src="js/data-manager.js"></script>
+    
+    <script>
+        // Aguardar o DataManager carregar
+        setTimeout(() => {
+            updateStatus();
+        }, 1000);
+        
+        function updateStatus() {
+            // Status do DataManager
+            const dataManagerStatus = document.getElementById('datamanager-status');
+            if (window.dataManager) {
+                dataManagerStatus.innerHTML = `
+                    <div class="text-green-600">✅ DataManager carregado</div>
+                    <div>Versão: ${typeof window.dataManager.version !== 'undefined' ? window.dataManager.version : 'N/A'}</div>
+                `;
+            } else {
+                dataManagerStatus.innerHTML = `<div class="text-red-600">❌ DataManager NÃO carregado</div>`;
+            }
+            
+            // Layout atual
+            const currentLayoutDiv = document.getElementById('current-layout');
+            if (window.dataManager) {
+                try {
+                    const currentLayout = window.dataManager.getCurrentLayout();
+                    currentLayoutDiv.innerHTML = `
+                        <div><strong>Nome:</strong> ${currentLayout.name || 'N/A'}</div>
+                        <div><strong>Tema:</strong> ${currentLayout.theme || 'N/A'}</div>
+                        <div><strong>Ativo:</strong> ${currentLayout.active ? 'Sim' : 'Não'}</div>
+                        <div><strong>Cores:</strong></div>
+                        <ul class="ml-4">
+                            <li>Primary: ${currentLayout.colors?.primary || 'N/A'}</li>
+                            <li>Secondary: ${currentLayout.colors?.secondary || 'N/A'}</li>
+                            <li>Accent: ${currentLayout.colors?.accent || 'N/A'}</li>
+                            <li>Background: ${currentLayout.colors?.background || 'N/A'}</li>
+                        </ul>
+                    `;
+                } catch (error) {
+                    currentLayoutDiv.innerHTML = `<div class="text-red-600">❌ Erro: ${error.message}</div>`;
+                }
+            } else {
+                currentLayoutDiv.innerHTML = `<div class="text-red-600">❌ DataManager não disponível</div>`;
+            }
+            
+            // LocalStorage
+            const localStorageDiv = document.getElementById('localstorage-data');
+            try {
+                const data = localStorage.getItem('granjaRecantoFeliz');
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    localStorageDiv.innerHTML = `
+                        <div><strong>currentLayoutKey:</strong> ${parsedData.currentLayoutKey || 'N/A'}</div>
+                        <div><strong>lastUpdate:</strong> ${parsedData.lastUpdate || 'N/A'}</div>
+                        <div><strong>Layouts disponíveis:</strong> ${Object.keys(parsedData.layouts || {}).join(', ')}</div>
+                        <details class="mt-2">
+                            <summary class="cursor-pointer text-blue-600">Ver dados completos</summary>
+                            <pre class="bg-gray-100 p-4 rounded mt-2 text-xs overflow-auto">${JSON.stringify(parsedData, null, 2)}</pre>
+                        </details>
+                    `;
+                } else {
+                    localStorageDiv.innerHTML = `<div class="text-red-600">❌ Nenhum dado no localStorage</div>`;
+                }
+            } catch (error) {
+                localStorageDiv.innerHTML = `<div class="text-red-600">❌ Erro ao ler localStorage: ${error.message}</div>`;
+            }
+        }
+        
+        function testActivateMaes() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<div class="text-blue-600">🔄 Ativando layout Dia das Mães...</div>';
+            
+            if (window.dataManager) {
+                try {
+                    const result = window.dataManager.activateLayout('diadasMaes');
+                    resultsDiv.innerHTML = `<div class="text-green-600">✅ Layout ativado: ${result}</div>`;
+                    
+                    // Aplicar o layout
+                    setTimeout(() => {
+                        const applied = window.dataManager.applyCurrentLayout();
+                        resultsDiv.innerHTML += `<div class="text-green-600">✅ Layout aplicado: ${applied.name}</div>`;
+                        updateStatus();
+                    }, 500);
+                } catch (error) {
+                    resultsDiv.innerHTML = `<div class="text-red-600">❌ Erro: ${error.message}</div>`;
+                }
+            } else {
+                resultsDiv.innerHTML = `<div class="text-red-600">❌ DataManager não disponível</div>`;
+            }
+        }
+        
+        function testActivateDefault() {
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.innerHTML = '<div class="text-blue-600">🔄 Ativando layout padrão...</div>';
+            
+            if (window.dataManager) {
+                try {
+                    const result = window.dataManager.activateDefaultLayout();
+                    resultsDiv.innerHTML = `<div class="text-green-600">✅ Layout padrão ativado: ${result}</div>`;
+                    
+                    // Aplicar o layout
+                    setTimeout(() => {
+                        const applied = window.dataManager.applyCurrentLayout();
+                        resultsDiv.innerHTML += `<div class="text-green-600">✅ Layout aplicado: ${applied.name}</div>`;
+                        updateStatus();
+                    }, 500);
+                } catch (error) {
+                    resultsDiv.innerHTML = `<div class="text-red-600">❌ Erro: ${error.message}</div>`;
+                }
+            } else {
+                resultsDiv.innerHTML = `<div class="text-red-600">❌ DataManager não disponível</div>`;
+            }
+        }
+        
+        function reloadPage() {
+            window.location.reload();
+        }
+        
+        // Auto-refresh do status a cada 5 segundos
+        setInterval(updateStatus, 5000);
+    </script>
+</body>
+</html>

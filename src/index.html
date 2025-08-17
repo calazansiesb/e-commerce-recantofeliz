@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -67,6 +67,107 @@
             --background-color: #F3E8FF;
         }
         
+        .theme-modernoRustico {
+            --primary-color: #5A7247;
+            --secondary-color: #8B5A2B;
+            --accent-color: #D4B896;
+            --background-color: #F5E6D3;
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        .theme-modernoRustico h1,
+        .theme-modernoRustico h2,
+        .theme-modernoRustico h3,
+        .theme-modernoRustico .font-lora {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .theme-modernoRustico .product-card {
+            background: linear-gradient(145deg, #f5e6d3, #e8d4b8);
+            border: 2px solid #8B5A2B;
+            box-shadow: 
+                inset 2px 2px 4px rgba(139, 90, 43, 0.1),
+                2px 2px 8px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .theme-modernoRustico .product-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8B5A2B, #5A7247);
+            border-radius: 10px;
+            z-index: -1;
+        }
+        
+        .theme-modernoRustico .btn-primary {
+            background: linear-gradient(145deg, #5A7247, #4a5f3a);
+            border: 1px solid #8B5A2B;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .theme-modernoRustico .btn-primary:hover {
+            background: linear-gradient(145deg, #4a5f3a, #5A7247);
+            transform: translateY(-1px);
+            box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25);
+        }
+        
+        .theme-modernoRustico .banner-text {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            font-family: 'Playfair Display', serif;
+        }
+        
+        /* Layouts de Brasília */
+        .theme-aniversarioBrasilia {
+            --primary-color: #1E40AF;
+            --secondary-color: #F59E0B;
+            --accent-color: #059669;
+            --background-color: #DBEAFE;
+        }
+        
+        .theme-diaDoCerrado {
+            --primary-color: #92400E;
+            --secondary-color: #059669;
+            --accent-color: #FBBF24;
+            --background-color: #FEF3C7;
+        }
+        
+        .theme-festaJuninaPlanalto {
+            --primary-color: #DC2626;
+            --secondary-color: #F59E0B;
+            --accent-color: #7C3AED;
+            --background-color: #FDF2F8;
+        }
+        
+        .theme-conscienciaNegraBsb {
+            --primary-color: #1F2937;
+            --secondary-color: #F59E0B;
+            --accent-color: #059669;
+            --background-color: #F9FAFB;
+        }
+        
+        /* Efeitos especiais para layouts de Brasília */
+        .theme-aniversarioBrasilia .hero-section {
+            background: linear-gradient(135deg, #1E40AF, #3B82F6, #F59E0B);
+        }
+        
+        .theme-diaDoCerrado .hero-section {
+            background: linear-gradient(135deg, #92400E, #059669, #FBBF24);
+        }
+        
+        .theme-festaJuninaPlanalto .hero-section {
+            background: linear-gradient(135deg, #DC2626, #F59E0B, #7C3AED);
+        }
+        
+        .theme-conscienciaNegraBsb .hero-section {
+            background: linear-gradient(135deg, #1F2937, #F59E0B, #059669);
+        }
+        
         .theme-custom {
             /* Cores serão aplicadas dinamicamente via JavaScript */
         }
@@ -75,6 +176,95 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
+        
+        /* Estilos temáticos */
+        .theme-diadasMaes {
+            background: linear-gradient(135deg, #FDF2F8, #FCE7F3) !important;
+        }
+        .theme-diadasMaes .bg-\[\#F5EFE6\] {
+            background: linear-gradient(145deg, #FDF2F8, #FCE7F3) !important;
+            border: 2px solid #F472B6 !important;
+            box-shadow: 0 8px 25px rgba(244, 114, 182, 0.3) !important;
+        }
+        .theme-diadasMaes .bg-\[\#8B4513\] {
+            background: linear-gradient(135deg, #BE185D, #F472B6) !important;
+            border-radius: 25px !important;
+        }
+        
+        .theme-natal {
+            background: linear-gradient(135deg, #FEF3C7, #FEF9C3) !important;
+        }
+        .theme-natal .bg-\[\#F5EFE6\] {
+            background: linear-gradient(145deg, #FEF3C7, #FEF9C3) !important;
+            border: 3px solid #FBBF24 !important;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.4) !important;
+        }
+        .theme-natal .bg-\[\#8B4513\] {
+            background: linear-gradient(135deg, #DC2626, #059669) !important;
+            border: 2px solid #FBBF24 !important;
+            border-radius: 30px !important;
+        }
+        
+        .theme-pascoa {
+            background: linear-gradient(135deg, #F3E8FF, #EDE9FE) !important;
+        }
+        .theme-pascoa .bg-\[\#F5EFE6\] {
+            background: linear-gradient(145deg, #F3E8FF, #EDE9FE) !important;
+            border: 2px solid #10B981 !important;
+            border-radius: 20px !important;
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3) !important;
+        }
+        .theme-pascoa .bg-\[\#8B4513\] {
+            background: linear-gradient(135deg, #7C3AED, #10B981) !important;
+            border-radius: 25px !important;
+        }
+        
+        /* Animações decorativas */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .theme-decoration {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Animações do Carrossel */
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce-in {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 1s ease-out 0.5s both;
+        }
+        .animate-slide-up {
+            animation: slide-up 1s ease-out 1s both;
+        }
+        .animate-bounce-in {
+            animation: bounce-in 1s ease-out 1.5s both;
+        }
+        
+        .carousel-slide {
+            transition: opacity 1s ease-in-out;
+        }
+        .carousel-slide.active {
+            opacity: 1 !important;
+        }
+        
+        .carousel-indicator.active {
+            background-color: white !important;
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body class="text-gray-800">
@@ -82,7 +272,8 @@
     <header id="header" class="bg-[#FDFBF5]/80 backdrop-blur-sm sticky top-0 z-50 shadow-md transition-all duration-300">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#inicio" class="text-2xl font-bold font-lora text-[#5D4037] flex items-center">
-                <i class="fas fa-egg mr-2"></i> Granja Recanto Feliz
+                <img src="imagens/LOGO 2023.jpg" alt="Logo Granja Recanto Feliz" class="h-12 w-auto mr-3 rounded-lg shadow-sm">
+                <span class="hidden sm:block">Granja Recanto Feliz</span>
             </a>
             <div class="hidden md:flex space-x-8">
                 <a href="#inicio" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Início</a>
@@ -92,6 +283,9 @@
                 <a href="admin.html" class="bg-[#5D4037] hover:bg-[#4A2C20] text-white px-4 py-2 rounded-lg transition duration-300">
                     <i class="fas fa-cog mr-2"></i>Admin
                 </a>
+                <button onclick="debugLayoutReload()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition duration-300 text-sm">
+                    <i class="fas fa-sync mr-1"></i>Debug Layout
+                </button>
             </div>
             <div class="flex items-center space-x-4">
                 <button id="cart-button" class="relative flex items-center bg-[#8B4513] hover:bg-[#5D4037] text-white px-4 py-2 rounded-lg transition duration-300">
@@ -114,19 +308,76 @@
     </header>
 
     <main>
-        <!-- Seção Hero com chamada mais forte para ação -->
-        <section id="inicio" class="hero-bg min-h-screen flex items-center justify-center text-white text-center pt-20 md:pt-28">
-            <div class="bg-black/40 p-8 rounded-lg max-w-4xl mx-4" id="main-banner">
-                <h1 class="text-4xl md:text-6xl font-bold font-lora mb-6 banner-text">Produtos frescos direto da granja</h1>
-                <p class="text-lg md:text-xl mb-8 leading-relaxed">Uma tradição familiar de carinho e respeito pela natureza, entregando o melhor da roça no Jardim Botânico e Lago Sul.</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#produtos" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 flex items-center justify-center">
-                        <i class="fas fa-shopping-basket mr-2"></i> Compre agora
-                    </a>
-                    <a href="#sobre" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 border border-white">
-                        Conheça nossa história
-                    </a>
+        <!-- Carrossel Hero Moderno -->
+        <section id="inicio" class="relative min-h-screen overflow-hidden">
+            <div id="hero-carousel" class="relative w-full h-screen">
+                <!-- Slide 1: Ovos Caipira -->
+                <div class="carousel-slide active absolute inset-0 bg-cover bg-center transition-all duration-1000" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/ovos-caipira.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6 animate-fade-in">🥚 Ovos Caipira Autênticos</h1>
+                            <p class="text-xl md:text-2xl mb-8 animate-slide-up">Galinhas criadas soltas, alimentação natural, sem hormônios. O sabor puro da natureza em cada ovo.</p>
+                            <a href="#produtos" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center animate-bounce-in">
+                                <i class="fas fa-shopping-basket mr-2"></i> Ver Ovos Caipira
+                            </a>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Slide 2: Galinhas Caipira -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/galinhas-caipira.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🐓 Galinhas Caipira Felizes</h1>
+                            <p class="text-xl md:text-2xl mb-8">Criadas com liberdade e carinho, nossas galinhas vivem soltas no pasto, resultando em carne mais saborosa e saudável.</p>
+                            <a href="#produtos" class="bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-drumstick-bite mr-2"></i> Ver Galinhas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3: Adubo Orgânico -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/adubo-organico.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🌱 Adubo Orgânico Natural</h1>
+                            <p class="text-xl md:text-2xl mb-8">Fertilizantes orgânicos produzidos na própria granja. Nutra sua terra com o que há de melhor na natureza.</p>
+                            <a href="#produtos" class="bg-[#228B22] hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-seedling mr-2"></i> Ver Fertilizantes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 4: Agricultura Familiar -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/agricultura-familiar.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🏡 Agricultura Familiar</h1>
+                            <p class="text-xl md:text-2xl mb-8">Tradição de gerações, sustentabilidade e amor pela terra. Apoie a agricultura familiar brasileira.</p>
+                            <a href="#sobre" class="bg-[#D2691E] hover:bg-orange-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-heart mr-2"></i> Nossa História
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controles do Carrossel -->
+            <button id="prev-slide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition duration-300 z-10">
+                <i class="fas fa-chevron-left text-xl"></i>
+            </button>
+            <button id="next-slide" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 text-white p-3 rounded-full transition duration-300 z-10">
+                <i class="fas fa-chevron-right text-xl"></i>
+            </button>
+            
+            <!-- Indicadores -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+                <button class="carousel-indicator active w-3 h-3 bg-white rounded-full transition duration-300" data-slide="0"></button>
+                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="1"></button>
+                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="2"></button>
+                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="3"></button>
             </div>
         </section>
 
@@ -151,6 +402,12 @@
                     </button>
                     <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="ovos">
                         <i class="fas fa-egg mr-2"></i> Ovos
+                    </button>
+                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="parceiros">
+                        <i class="fas fa-handshake mr-2"></i> Parceiros
+                    </button>
+                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="granja">
+                        <i class="fas fa-home mr-2"></i> Só da Granja
                     </button>
                 </div>
 
@@ -183,21 +440,21 @@
                 
                 <!-- Adicionando seção de benefícios -->
                 <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center cursor-pointer hover:bg-[#F0E6D6] transition duration-300" onclick="openSustainabilityModal()">
                         <div class="text-[#8B4513] text-3xl mb-4">
                             <i class="fas fa-leaf"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2 font-lora">Produção Sustentável</h3>
                         <p class="text-gray-600">Respeitamos o meio ambiente em todos os nossos processos de produção.</p>
                     </div>
-                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center cursor-pointer hover:bg-[#F0E6D6] transition duration-300" onclick="openEggsModal()">
                         <div class="text-[#8B4513] text-3xl mb-4">
                             <i class="fas fa-heart"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2 font-lora">Qualidade Garantida</h3>
                         <p class="text-gray-600">Produtos frescos e de alta qualidade, direto da nossa granja para sua mesa.</p>
                     </div>
-                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center cursor-pointer hover:bg-[#F0E6D6] transition duration-300" onclick="openDeliveryModal()">
                         <div class="text-[#8B4513] text-3xl mb-4">
                             <i class="fas fa-truck"></i>
                         </div>
@@ -216,32 +473,11 @@
                     <p class="text-gray-600 max-w-2xl mx-auto">Tem alguma dúvida, sugestão ou quer fazer um pedido especial? Estamos à disposição para conversar.</p>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    <div class="bg-white p-8 rounded-lg shadow-lg">
-                        <h3 class="text-2xl font-bold mb-6 font-lora text-[#5D4037]">Nos envie uma mensagem</h3>
-                        <form id="contact-form" class="space-y-4">
-                            <div>
-                                <label for="name" class="block text-gray-700 mb-2">Seu Nome</label>
-                                <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
-                            </div>
-                            <div>
-                                <label for="email" class="block text-gray-700 mb-2">Seu E-mail</label>
-                                <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
-                            </div>
-                            <div>
-                                <label for="message" class="block text-gray-700 mb-2">Sua Mensagem</label>
-                                <textarea id="message" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"></textarea>
-                            </div>
-                            <button type="submit" class="bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full">
-                                Enviar Mensagem
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <div>
+                <div class="flex justify-center">
+                    <div class="max-w-md w-full">
                         <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
-                            <h3 class="text-2xl font-bold mb-4 font-lora text-[#5D4037]">Informações de Contato</h3>
-                            <div class="space-y-4">
+                            <h3 class="text-2xl font-bold mb-6 font-lora text-[#5D4037] text-center">Informações de Contato</h3>
+                            <div class="space-y-6">
                                 <div class="flex items-start">
                                     <i class="fas fa-map-marker-alt text-[#8B4513] text-xl mt-1 mr-4"></i>
                                     <div>
@@ -266,11 +502,12 @@
                             </div>
                         </div>
                         
-                        <a href="https://wa.me/553899247376" target="_blank" class="block bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300 flex items-center justify-center">
-                            <i class="fab fa-whatsapp mr-2 text-xl"></i> Chamar no WhatsApp
+                        <a href="https://wa.me/553899247376" target="_blank" class="block bg-[#25D366] hover:bg-green-600 text-white font-bold py-4 px-6 rounded-lg text-center transition duration-300 flex items-center justify-center text-lg shadow-lg">
+                            <i class="fab fa-whatsapp mr-3 text-2xl"></i> 
+                            <span>Chamar no WhatsApp</span>
                         </a>
                         
-                        <p class="mt-4 text-center text-gray-500">
+                        <p class="mt-6 text-center text-gray-500 text-sm">
                             <i class="fas fa-truck mr-2"></i> Entregas em Brasília, DF - Jardim Botânico, Lago Sul e Asa Sul
                         </p>
                     </div>
@@ -355,7 +592,10 @@
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold font-lora mb-4">Granja Recanto Feliz</h3>
+                    <div class="flex items-center mb-4">
+                        <img src="imagens/LOGO 2023.jpg" alt="Logo Granja Recanto Feliz" class="h-16 w-auto mr-3 rounded-lg shadow-md">
+                        <h3 class="text-xl font-bold font-lora">Granja Recanto Feliz</h3>
+                    </div>
                     <p class="mb-4">Produtos frescos e de qualidade direto da nossa granja para sua mesa.</p>
                     <div class="flex space-x-4">
                         <a href="#" class="text-white hover:text-[#FDD835] transition duration-300">
@@ -414,6 +654,258 @@
         </div>
     </footer>
 
+    <!-- Modal de Bem-estar Animal -->
+    <div id="sustainability-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-3xl font-bold font-lora text-[#5D4037] flex items-center">
+                    <i class="fas fa-leaf text-green-600 mr-3"></i>
+                    Bem-estar Animal & Produção Sustentável
+                </h3>
+                <button onclick="closeSustainabilityModal()" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500 mb-6">
+                            <h4 class="text-2xl font-bold text-green-700 mb-4 font-lora flex items-center">
+                                <i class="fas fa-heart text-red-500 mr-2"></i>
+                                O que é Cage Free?
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed mb-4">
+                                <strong>Cage free</strong> é uma expressão em inglês que se refere à criação de galinhas soltas, sem gaiolas. A prioridade, aqui, é o bem-estar dos animais e a qualidade do produto entregue ao consumidor.
+                            </p>
+                            <p class="text-gray-700 leading-relaxed">
+                                Nesse sistema, as aves têm um tratamento diferenciado, o que as afasta do estresse, trazendo mais conforto e bem-estar. Isso corrobora para que as aves se mantenham ainda mais saudáveis.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                            <h4 class="text-xl font-bold text-blue-700 mb-3 font-lora flex items-center">
+                                <i class="fas fa-dove text-blue-500 mr-2"></i>
+                                Movimento Crescente
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed text-sm">
+                                Nos últimos anos, o movimento ganhou o apoio de inúmeras marcas que se comprometeram, até 2025, a consumir apenas alimentos vindos de produções que valorizem o bem-estar animal. Cada vez mais consumidores têm se juntado à ideia, mais conscientes quanto às suas escolhas de alimentação.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500 mb-6">
+                            <h4 class="text-2xl font-bold text-yellow-700 mb-4 font-lora flex items-center">
+                                <i class="fas fa-feather-alt text-yellow-600 mr-2"></i>
+                                Bem-estar para Galinhas Livres
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed mb-4">
+                                Com tanto espaço para se movimentar, as galinhas conseguem viver de modo mais natural. Ao mesmo tempo em que ficam protegidas do clima e de outras adversidades, elas podem manter seu comportamento habitual.
+                            </p>
+                            
+                            <div class="space-y-3">
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                    <span>Abrir suas asas e se espreguiçar</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                    <span>Ciscar o chão naturalmente</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                    <span>Pular e dar pequenos voos</span>
+                                </div>
+                                <div class="flex items-center text-gray-700">
+                                    <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                    <span>Menor exposição ao estresse</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-[#F5EFE6] p-6 rounded-lg border-l-4 border-[#8B4513]">
+                            <h4 class="text-xl font-bold text-[#8B4513] mb-3 font-lora flex items-center">
+                                <i class="fas fa-award text-[#8B4513] mr-2"></i>
+                                Nosso Compromisso
+                            </h4>
+                            <p class="text-gray-700 leading-relaxed text-sm italic">
+                                "Na Granja Recanto Feliz, acreditamos que animais felizes produzem alimentos mais saudáveis e saborosos. Por isso, garantimos que nossas aves vivam em liberdade, com todo o cuidado e carinho que merecem."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <div class="bg-gradient-to-r from-green-500 to-blue-500 text-white p-6 rounded-lg">
+                        <h4 class="text-2xl font-bold mb-2 font-lora">Qualidade que Você Pode Confiar</h4>
+                        <p class="text-lg">Produtos frescos, naturais e produzidos com respeito ao bem-estar animal</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal dos 5 Motivos para Comer Ovos -->
+    <div id="eggs-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-3xl font-bold font-lora text-[#5D4037] flex items-center">
+                    <i class="fas fa-egg text-yellow-500 mr-3"></i>
+                    5 Motivos para Comer Ovos Recanto Feliz
+                </h3>
+                <button onclick="closeEggsModal()" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow">
+                <p class="text-lg text-gray-700 mb-8 text-center font-semibold">
+                    5 motivos para você incluir ovos na sua rotina alimentar.
+                </p>
+                
+                <div class="space-y-6">
+                    <!-- Motivo 1 -->
+                    <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="text-xl font-bold text-blue-700 mb-3 font-lora flex items-center">
+                            <span class="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">1</span>
+                            Ovos Caipira Recanto Feliz são fontes de proteína
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Um ovo fornece, em média, seis gramas de proteína de alta qualidade - o que significa que ele tem todos os aminoácidos que você precisa obter, da mesma forma que a carne. A proteína também é considerada a mais "saciante" (satisfatória) de todos os nutrientes. E lembre-se que cerca de metade da proteína está na gema, não apenas na clara.
+                        </p>
+                    </div>
+                    
+                    <!-- Motivo 2 -->
+                    <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                        <h4 class="text-xl font-bold text-green-700 mb-3 font-lora flex items-center">
+                            <span class="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">2</span>
+                            Ovos Caipira Recanto Feliz restringem sua fome
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Incluir ovos em seu café da manhã atrasa a fome por mais tempo do que as refeições à base de grãos. Isso faz com que sua rotina de alimentação seja mais adequada, evitando comer algo sem necessidade antes do horário de almoço.
+                        </p>
+                    </div>
+                    
+                    <!-- Motivo 3 -->
+                    <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500">
+                        <h4 class="text-xl font-bold text-yellow-700 mb-3 font-lora flex items-center">
+                            <span class="bg-yellow-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">3</span>
+                            Ovos Caipira Recanto Feliz protegem seus olhos
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Os ovos são ricos em luteína, um pigmento amarelo que se concentra na retina do olho. A luteína ajuda a proteger os olhos da degeneração macular, a principal causa da perda de visão. Ele também protege contra danos causados por smartphones, tablets e computadores. A luteína do ovo é encontrada na gema.
+                        </p>
+                    </div>
+                    
+                    <!-- Motivo 4 -->
+                    <div class="bg-purple-50 p-6 rounded-lg border-l-4 border-purple-500">
+                        <h4 class="text-xl font-bold text-purple-700 mb-3 font-lora flex items-center">
+                            <span class="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">4</span>
+                            Ovos Caipira Recanto Feliz não são os vilões que entopem as artérias
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Durante décadas, os ovos foram considerados inimigos da saúde, sendo considerados culpados por aumento do colesterol e do risco de doenças cardíacas. Diversos estudos e testes comprovaram que os ovos não são nocivos à saúde se consumidos de maneira adequada e na quantidade correta.
+                        </p>
+                    </div>
+                    
+                    <!-- Motivo 5 -->
+                    <div class="bg-red-50 p-6 rounded-lg border-l-4 border-red-500">
+                        <h4 class="text-xl font-bold text-red-700 mb-3 font-lora flex items-center">
+                            <span class="bg-red-500 text-white rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm font-bold">5</span>
+                            Ovos Caipira Recanto Feliz ajudam a manter a massa muscular
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Começamos a perder massa muscular por volta dos 30 anos, em até 5% por década. A perda muscular pode fazer com que você se sinta fraco, reduza sua resistência e, eventualmente, aumente o risco de quedas debilitantes quando estiver mais velho. O exercício, particularmente o treinamento de força, ajudará a preservar parte deste músculo, mas obter proteína suficiente também é essencial. Os ovos contêm proteína de alta qualidade que repara os músculos após o exercício e ajuda a reconstruí-los.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-6 rounded-lg">
+                        <h4 class="text-2xl font-bold mb-2 font-lora">Ovos Caipira Recanto Feliz</h4>
+                        <p class="text-lg mb-2">Qualidade, sabor e nutrição em cada ovo</p>
+                        <p class="text-sm opacity-90">Fonte: webmd.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Entrega Rápida -->
+    <div id="delivery-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-3xl font-bold font-lora text-[#5D4037] flex items-center">
+                    <i class="fas fa-truck text-blue-500 mr-3"></i>
+                    Entrega Rápida
+                </h3>
+                <button onclick="closeDeliveryModal()" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow">
+                <div class="space-y-6">
+                    <div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
+                        <h4 class="text-2xl font-bold text-blue-700 mb-4 font-lora flex items-center">
+                            <i class="fas fa-clock text-blue-500 mr-3"></i>
+                            Prazo de Entrega
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed text-lg">
+                            Entregamos em <strong>até 24h</strong> após o pedido para a região do Jardim Botânico, Lago Sul e Asa Sul.
+                        </p>
+                    </div>
+                    
+                    <div class="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+                        <h4 class="text-2xl font-bold text-green-700 mb-4 font-lora flex items-center">
+                            <i class="fas fa-map-marker-alt text-green-500 mr-3"></i>
+                            Áreas de Entrega
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                <span class="font-semibold">Jardim Botânico</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                <span class="font-semibold">Lago Sul</span>
+                            </div>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                                <span class="font-semibold">Asa Sul</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-yellow-50 p-6 rounded-lg border-l-4 border-yellow-500">
+                        <h4 class="text-2xl font-bold text-yellow-700 mb-4 font-lora flex items-center">
+                            <i class="fas fa-motorcycle text-yellow-600 mr-3"></i>
+                            Serviço de Motoboy
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            Para garantir que seus produtos cheguem frescos e no prazo, utilizamos serviço de motoboy especializado.
+                        </p>
+                        <div class="bg-yellow-100 p-4 rounded-lg">
+                            <p class="text-yellow-800 font-semibold flex items-center">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Pode ser cobrada taxa de entrega para utilizar o serviço de motoboy
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg border-l-4 border-[#8B4513]">
+                        <h4 class="text-2xl font-bold text-[#8B4513] mb-4 font-lora flex items-center">
+                            <i class="fas fa-shield-alt text-[#8B4513] mr-3"></i>
+                            Garantia de Frescor
+                        </h4>
+                        <p class="text-gray-700 leading-relaxed">
+                            Nossos produtos são embalados com cuidado e entregues rapidamente para manter toda a qualidade e frescor que você espera da Granja Recanto Feliz.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center">
+                    <div class="bg-gradient-to-r from-blue-500 to-green-500 text-white p-6 rounded-lg">
+                        <h4 class="text-2xl font-bold mb-2 font-lora">Produtos Frescos na Sua Mesa</h4>
+                        <p class="text-lg">Rapidez, qualidade e conveniência em cada entrega</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Botão flutuante do WhatsApp -->
     <a href="https://wa.me/553899247376" target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-40 flex items-center justify-center w-16 h-16">
         <i class="fab fa-whatsapp text-2xl"></i>
@@ -468,6 +960,7 @@
     </div>
 
     <script src="js/data-manager.js"></script>
+    <script src="js/scripts.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Usar produtos do data manager em vez de array estático
@@ -534,6 +1027,57 @@
                 description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
                 price: 110.00,
                 image: "imagens/produtos/7/1.png"
+            },
+            {
+                id: 8,
+                name: "Mel Puro do Cerrado",
+                category: "parceiros",
+                slogan: "Mel artesanal direto das colmeias.",
+                description: "Mel puro e natural, coletado artesanalmente das flores do cerrado. Rico em propriedades medicinais e sabor único.",
+                price: 35.00,
+                image: "imagens/produtos/8/1.png",
+                stock: 20,
+                active: true,
+                partner: {
+                    name: "Apiário Flor do Cerrado",
+                    producer: "Sr. João Silva",
+                    location: "Planaltina - DF",
+                    description: "Família tradicional na apicultura há 3 gerações"
+                }
+            },
+            {
+                id: 9,
+                name: "Queijo Minas Artesanal",
+                category: "parceiros",
+                slogan: "Queijo curado tradicionalmente.",
+                description: "Queijo minas artesanal, curado por 60 dias, produzido com leite fresco de vacas criadas a pasto.",
+                price: 45.00,
+                image: "imagens/produtos/8/1.png",
+                stock: 15,
+                active: true,
+                partner: {
+                    name: "Queijaria Vale Verde",
+                    producer: "Família Santos",
+                    location: "Sobradinho - DF",
+                    description: "Tradição familiar na produção de queijos artesanais"
+                }
+            },
+            {
+                id: 10,
+                name: "Doce de Leite Caseiro",
+                category: "parceiros",
+                slogan: "Doce de leite da vovó.",
+                description: "Doce de leite cremoso, feito no tacho de cobre seguindo receita tradicional da família.",
+                price: 18.00,
+                image: "imagens/produtos/8/1.png",
+                stock: 30,
+                active: true,
+                partner: {
+                    name: "Doces da Vovó Maria",
+                    producer: "Maria Conceição",
+                    location: "Jardim Botânico - DF",
+                    description: "Receitas tradicionais passadas de geração em geração"
+                }
             }
         ];
 
@@ -597,7 +1141,15 @@
 
         function renderProducts(filter) {
             productGrid.innerHTML = '';
-            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            let filtered;
+            
+            if (filter === 'all') {
+                filtered = products;
+            } else if (filter === 'granja') {
+                filtered = products.filter(p => p.category !== 'parceiros');
+            } else {
+                filtered = products.filter(p => p.category === filter);
+            }
             
             if (filtered.length === 0) {
                 productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Nenhum produto encontrado.</p>';
@@ -605,10 +1157,24 @@
             }
 
             filtered.forEach(product => {
+                const partnerBadge = product.partner ? `
+                    <div class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
+                        <i class="fas fa-handshake mr-1"></i> Parceiro
+                    </div>
+                ` : '';
+                
+                const partnerInfo = product.partner ? `
+                    <div class="text-sm text-blue-600 mb-2">
+                        <i class="fas fa-user mr-1"></i> ${product.partner.producer}
+                    </div>
+                ` : '';
+                
                 productGrid.innerHTML += `
-                    <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
-                        <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                    <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl relative">
+                        ${partnerBadge}
+                        <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
                         <h3 class="text-xl font-bold mb-2 font-lora">${product.name}</h3>
+                        ${partnerInfo}
                         <p class="text-gray-600 mb-4 flex-grow">${product.slogan}</p>
                         <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
                         <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">Ver Detalhes</button>
@@ -621,8 +1187,8 @@
             const product = products.find(p => p.id === productId);
             if (!product) return;
 
-            // Descobrir automaticamente todas as imagens do produto
-            const gallery = await discoverProductImages(productId);
+            // Usar galeria do produto ou descobrir automaticamente
+            const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : await discoverProductImages(productId);
 
             const modalContent = productModal.querySelector('#modal-content-grid');
             
@@ -654,6 +1220,18 @@
                 </div>
                 <div class="p-6 flex flex-col">
                     <h3 class="text-3xl font-bold mb-4 font-lora text-[#5D4037]">${product.name}</h3>
+                    ${product.partner ? `
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-700 mb-2 flex items-center">
+                                <i class="fas fa-handshake mr-2"></i> Produzido por Parceiro
+                            </h4>
+                            <div class="text-sm text-blue-600">
+                                <p><strong>Produtor:</strong> ${product.partner.producer}</p>
+                                <p><strong>Local:</strong> ${product.partner.location}</p>
+                                <p><strong>Sobre:</strong> ${product.partner.description}</p>
+                            </div>
+                        </div>
+                    ` : ''}
                     <p class="text-gray-600 mb-6 leading-relaxed flex-grow">${product.description}</p>
                     <span class="text-2xl font-bold text-[#5D4037] mb-6 block">R$ ${product.price.toFixed(2)}</span>
                     <button id="add-to-cart-modal" class="w-full bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
@@ -761,7 +1339,10 @@
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'layoutChanged') {
                 console.log('🎨 Layout alterado! Aplicando novo layout...');
-                applyLayout(event.data.layout);
+                // Usar função do DataManager
+                if (window.dataManager) {
+                    window.dataManager.applyCurrentLayout();
+                }
             }
         });
 
@@ -771,12 +1352,12 @@
         function initializeLayout() {
             try {
                 if (window.dataManager) {
-                    const currentLayout = window.dataManager.getCurrentLayout();
-                    applyLayout(currentLayout);
-                    console.log('🎨 Layout aplicado:', currentLayout.name);
+                    // Usar a função do DataManager ao invés da local
+                    const appliedLayout = window.dataManager.applyCurrentLayout();
+                    console.log('🎨 Layout aplicado via DataManager:', appliedLayout.name);
                 }
             } catch (error) {
-                console.log('⚠️ Usando layout padrão');
+                console.log('⚠️ Erro ao aplicar layout:', error);
             }
         }
 
@@ -833,8 +1414,8 @@
         function checkAutoLayouts() {
             try {
                 if (window.dataManager) {
-                    const currentLayout = window.dataManager.getCurrentLayout();
-                    applyLayout(currentLayout);
+                    // Usar função do DataManager
+                    window.dataManager.applyCurrentLayout();
                 }
             } catch (error) {
                 console.log('⚠️ Erro ao verificar layouts automáticos');
@@ -846,10 +1427,471 @@
 
         // Inicializar layout na primeira carga
         initializeLayout();
+        
+        // Verificar se há carrossel temático para aplicar
+        if (window.dataManager) {
+            const currentLayout = window.dataManager.getCurrentLayout();
+            if (currentLayout && currentLayout.carouselThemes) {
+                setTimeout(() => {
+                    applyLayoutCarousel(currentLayout.carouselThemes);
+                }, 200);
+            }
+        }
 
         // Initial render of all products
         renderProducts('all');
+        
+        // Aplicar layout temático atual
+        if (window.dataManager) {
+            window.dataManager.applyCurrentLayout();
+        }
+        
+        // Inicializar carrossel após um pequeno delay
+        setTimeout(() => {
+            initCarousel();
+        }, 100);
+        
+        // Sistema de detecção de mudanças de layout
+        function reloadLayoutFromChanges() {
+            console.log('💫 Layout alterado detectado! Reaplicando...');
+            if (window.dataManager) {
+                // Recarregar dataManager
+                window.dataManager = new DataManager();
+                const newLayout = window.dataManager.applyCurrentLayout();
+                
+                // Aplicar carrossel temático se existir
+                if (newLayout && newLayout.carouselThemes) {
+                    applyLayoutCarousel(newLayout.carouselThemes);
+                } else {
+                    // Usar carrossel padrão
+                    applyDefaultCarousel();
+                }
+                
+                showNotification('Layout atualizado! 🎨', 'success');
+            } else {
+                // Se não conseguir reaplicar, recarregar página
+                setTimeout(() => window.location.reload(), 1000);
+            }
+        }
+        
+        // Aplicar carrossel temático do layout
+        function applyLayoutCarousel(layoutThemes) {
+            const heroCarousel = document.getElementById('hero-carousel');
+            if (!heroCarousel || !layoutThemes.length) return;
+            
+            console.log('🎠 Aplicando carrossel temático:', layoutThemes.length, 'slides');
+            
+            // Parar carrossel atual
+            clearInterval(carouselInterval);
+            
+            // Gerar slides dos temas do layout
+            heroCarousel.innerHTML = layoutThemes.map((theme, index) => `
+                <div class="carousel-slide ${index === 0 ? 'active' : ''} absolute inset-0 bg-cover bg-center transition-all duration-1000 ${index === 0 ? '' : 'opacity-0'}" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('${theme.image}')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">${theme.title}</h1>
+                            <p class="text-xl md:text-2xl mb-8">${theme.description}</p>
+                            <a href="${theme.buttonLink}" class="text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center" style="background-color: ${theme.buttonColor};">
+                                <i class="fas fa-shopping-basket mr-2"></i> ${theme.buttonText}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Atualizar indicadores
+            updateCarouselIndicators(layoutThemes.length);
+            
+            // Reinicializar carrossel
+            currentSlide = 0;
+            setTimeout(() => {
+                initCarousel();
+            }, 100);
+        }
+        
+        // Aplicar carrossel padrão
+        function applyDefaultCarousel() {
+            const heroCarousel = document.getElementById('hero-carousel');
+            if (!heroCarousel) return;
+            
+            console.log('🎠 Aplicando carrossel padrão');
+            
+            // Parar carrossel atual
+            clearInterval(carouselInterval);
+            
+            // Restaurar slides padrão
+            heroCarousel.innerHTML = `
+                <!-- Slide 1: Ovos Caipira -->
+                <div class="carousel-slide active absolute inset-0 bg-cover bg-center transition-all duration-1000" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/ovos-caipira.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6 animate-fade-in">🥚 Ovos Caipira Autênticos</h1>
+                            <p class="text-xl md:text-2xl mb-8 animate-slide-up">Galinhas criadas soltas, alimentação natural, sem hormônios. O sabor puro da natureza em cada ovo.</p>
+                            <a href="#produtos" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center animate-bounce-in">
+                                <i class="fas fa-shopping-basket mr-2"></i> Ver Ovos Caipira
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 2: Galinhas Caipira -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/galinhas-caipira.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🐓 Galinhas Caipira Felizes</h1>
+                            <p class="text-xl md:text-2xl mb-8">Criadas com liberdade e carinho, nossas galinhas vivem soltas no pasto, resultando em carne mais saborosa e saudável.</p>
+                            <a href="#produtos" class="bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-drumstick-bite mr-2"></i> Ver Galinhas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3: Adubo Orgânico -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/adubo-organico.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🌱 Adubo Orgânico Natural</h1>
+                            <p class="text-xl md:text-2xl mb-8">Fertilizantes orgânicos produzidos na própria granja. Nutra sua terra com o que há de melhor na natureza.</p>
+                            <a href="#produtos" class="bg-[#228B22] hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-seedling mr-2"></i> Ver Fertilizantes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 4: Agricultura Familiar -->
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/agricultura-familiar.png')">
+                    <div class="flex items-center justify-center h-full text-white text-center px-6">
+                        <div class="max-w-4xl">
+                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🏡 Agricultura Familiar</h1>
+                            <p class="text-xl md:text-2xl mb-8">Tradição de gerações, sustentabilidade e amor pela terra. Apoie a agricultura familiar brasileira.</p>
+                            <a href="#sobre" class="bg-[#D2691E] hover:bg-orange-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
+                                <i class="fas fa-heart mr-2"></i> Nossa História
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Atualizar indicadores para 4 slides padrão
+            updateCarouselIndicators(4);
+            
+            // Reinicializar carrossel
+            currentSlide = 0;
+            setTimeout(() => {
+                initCarousel();
+            }, 100);
+        }
+        
+        // Atualizar indicadores do carrossel
+        function updateCarouselIndicators(count) {
+            const indicatorsContainer = document.querySelector('.absolute.bottom-8');
+            if (indicatorsContainer) {
+                indicatorsContainer.innerHTML = Array.from({length: count}, (_, index) => `
+                    <button class="carousel-indicator ${index === 0 ? 'active' : ''} w-3 h-3 ${index === 0 ? 'bg-white' : 'bg-white/50'} rounded-full transition duration-300" data-slide="${index}"></button>
+                `).join('');
+            }
+        }
+        
+        // 1. Listener para mensagens do admin
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'layoutChanged') {
+                console.log('📨 Layout alterado via message:', event.data.layout);
+                reloadLayoutFromChanges();
+            }
+        });
+        
+        // 2. Listener para BroadcastChannel
+        if ('BroadcastChannel' in window) {
+            const channel = new BroadcastChannel('layout-changes');
+            channel.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'layoutChanged') {
+                    console.log('📡 Layout alterado via BroadcastChannel:', event.data.layout);
+                    reloadLayoutFromChanges();
+                }
+            });
+        }
+        
+        // 3. Detectar mudanças no localStorage (múltiplas formas)
+        let lastLayoutNotification = localStorage.getItem('layoutChangeNotification');
+        let lastDataCheck = localStorage.getItem('granjaRecantoFelizData');
+        
+        // Verificação mais frequente e robusta
+        setInterval(() => {
+            // Verificar notificação específica
+            const currentNotification = localStorage.getItem('layoutChangeNotification');
+            if (currentNotification !== lastLayoutNotification) {
+                console.log('💾 Layout alterado via localStorage notification');
+                lastLayoutNotification = currentNotification;
+                reloadLayoutFromChanges();
+                return; // Evitar dupla execução
+            }
+            
+            // Verificar mudanças diretas nos dados
+            const currentData = localStorage.getItem('granjaRecantoFelizData');
+            if (currentData !== lastDataCheck) {
+                console.log('💾 Dados alterados no localStorage, verificando layout...');
+                lastDataCheck = currentData;
+                
+                // Verificar se mudou o layout especificamente
+                try {
+                    const parsedData = JSON.parse(currentData || '{}');
+                    if (parsedData.currentLayout || parsedData.layouts) {
+                        console.log('🎯 Layout detectado nos dados alterados');
+                        reloadLayoutFromChanges();
+                    }
+                } catch (e) {
+                    console.log('Erro ao verificar dados:', e);
+                }
+            }
+        }, 500); // Verificar a cada 0.5 segundos para ser mais responsivo
+        
+        // Função para mostrar notificações (se não existir)
+        function showNotification(message, type = 'info') {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+            
+            // Criar elemento de notificação visual
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg text-white ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                'bg-blue-500'
+            }`;
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check' : type === 'error' ? 'times' : 'info'} mr-2"></i>
+                    ${message}
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
     });
+    
+    // Funções para o modal de sustentabilidade
+    function openSustainabilityModal() {
+        const modal = document.getElementById('sustainability-modal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+    
+    function closeSustainabilityModal() {
+        const modal = document.getElementById('sustainability-modal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+    
+    // Fechar modal ao clicar fora dele
+    document.getElementById('sustainability-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSustainabilityModal();
+        }
+    });
+    
+    // Funções para o modal dos ovos
+    function openEggsModal() {
+        const modal = document.getElementById('eggs-modal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+    
+    function closeEggsModal() {
+        const modal = document.getElementById('eggs-modal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+    
+    // Fechar modal dos ovos ao clicar fora dele
+    document.getElementById('eggs-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeEggsModal();
+        }
+    });
+    
+    // Funções para o modal de entrega
+    function openDeliveryModal() {
+        const modal = document.getElementById('delivery-modal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+    
+    function closeDeliveryModal() {
+        const modal = document.getElementById('delivery-modal');
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+    
+    // Fechar modal de entrega ao clicar fora dele
+    document.getElementById('delivery-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeDeliveryModal();
+        }
+    });
+    
+    // Sistema de Carrossel Moderno
+    let currentSlide = 0;
+    let carouselInterval;
+    
+    function initCarousel() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        const prevBtn = document.getElementById('prev-slide');
+        const nextBtn = document.getElementById('next-slide');
+        
+        if (!slides.length) {
+            console.log('❌ Nenhum slide encontrado');
+            return;
+        }
+        
+        console.log(`🎠 Inicializando carrossel com ${slides.length} slides`);
+        
+        // Garantir que o primeiro slide está ativo
+        updateCarousel();
+        
+        // Auto-play do carrossel (5 segundos)
+        carouselInterval = setInterval(() => {
+            nextSlide();
+        }, 5000);
+        
+        // Controles manuais
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearInterval(carouselInterval);
+                nextSlide();
+                restartAutoPlay();
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearInterval(carouselInterval);
+                prevSlide();
+                restartAutoPlay();
+            });
+        }
+        
+        // Indicadores
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', (e) => {
+                e.preventDefault();
+                clearInterval(carouselInterval);
+                goToSlide(index);
+                restartAutoPlay();
+            });
+        });
+        
+        // Pausar no hover
+        const carousel = document.getElementById('hero-carousel');
+        if (carousel) {
+            carousel.addEventListener('mouseenter', () => {
+                clearInterval(carouselInterval);
+            });
+            
+            carousel.addEventListener('mouseleave', () => {
+                restartAutoPlay();
+            });
+        }
+        
+        console.log('✅ Carrossel inicializado com sucesso');
+    }
+    
+    function nextSlide() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        currentSlide = (currentSlide + 1) % slides.length;
+        console.log(`➡️ Próximo slide: ${currentSlide}`);
+        updateCarousel();
+    }
+    
+    function prevSlide() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        currentSlide = currentSlide === 0 ? slides.length - 1 : currentSlide - 1;
+        console.log(`⬅️ Slide anterior: ${currentSlide}`);
+        updateCarousel();
+    }
+    
+    function goToSlide(index) {
+        currentSlide = index;
+        console.log(`🎯 Indo para slide: ${currentSlide}`);
+        updateCarousel();
+    }
+    
+    function updateCarousel() {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.carousel-indicator');
+        
+        console.log(`🔄 Atualizando carrossel - slide ativo: ${currentSlide}`);
+        
+        slides.forEach((slide, index) => {
+            if (index === currentSlide) {
+                slide.classList.add('active');
+                slide.style.opacity = '1';
+                slide.style.zIndex = '2';
+            } else {
+                slide.classList.remove('active');
+                slide.style.opacity = '0';
+                slide.style.zIndex = '1';
+            }
+        });
+        
+        indicators.forEach((indicator, index) => {
+            if (index === currentSlide) {
+                indicator.classList.add('active');
+                indicator.style.backgroundColor = 'white';
+                indicator.style.transform = 'scale(1.2)';
+            } else {
+                indicator.classList.remove('active');
+                indicator.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                indicator.style.transform = 'scale(1)';
+            }
+        });
+    }
+    
+    function restartAutoPlay() {
+        clearInterval(carouselInterval);
+        carouselInterval = setInterval(() => {
+            nextSlide();
+        }, 5000);
+    }
+    
+    // Função de debug para forçar reaplicação do layout
+    function debugLayoutReload() {
+        console.log('🔧 DEBUG: Forçando reaplicação do layout...');
+        
+        if (window.dataManager) {
+            // Mostrar informações do layout atual
+            const currentLayout = window.dataManager.getCurrentLayout();
+            console.log('Layout atual:', currentLayout);
+            
+            // Recriar dataManager
+            window.dataManager = new DataManager();
+            
+            // Reaplicar layout
+            const newLayout = window.dataManager.applyCurrentLayout();
+            console.log('Layout reaplicado:', newLayout);
+            
+            // Mostrar notificação visual
+            showNotification(`Layout debug: ${newLayout.name} aplicado!`, 'success');
+            
+            // Forçar atualização visual
+            setTimeout(() => {
+                document.body.style.transition = 'all 0.5s ease';
+                document.body.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    document.body.style.transform = 'scale(1)';
+                }, 100);
+            }, 100);
+        } else {
+            console.error('❌ DataManager não encontrado');
+            showNotification('Erro: DataManager não carregado', 'error');
+        }
+    }
     </script>
 </body>
 </html>
