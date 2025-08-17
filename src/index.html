@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granja Recanto Feliz - E-commerce</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2D5016;
+            --secondary-color: #8B4513;
+            --accent-color: #228B22;
+            --background-color: #F0F8E8;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-color, #FDFBF5);
+        }
+        
+        h1, h2, h3, .font-lora {
+            font-family: 'Lora', serif;
+        }
+        
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .nav-link.active {
+            font-weight: 700;
+            color: var(--secondary-color, #8B4513);
+            border-bottom: 2px solid var(--secondary-color, #8B4513);
+        }
+        
+        /* Classes temáticas dinâmicas */
+        .theme-diaDosPais {
+            --primary-color: #1E3A8A;
+            --secondary-color: #7C2D12;
+            --accent-color: #0EA5E9;
+            --background-color: #EFF6FF;
+        }
+        
+        .theme-diadasMaes {
+            --primary-color: #BE185D;
+            --secondary-color: #A21CAF;
+            --accent-color: #F472B6;
+            --background-color: #FDF2F8;
+        }
+        
+        .theme-natal {
+            --primary-color: #DC2626;
+            --secondary-color: #059669;
+            --accent-color: #FBBF24;
+            --background-color: #FEF3C7;
+        }
+        
+        .theme-pascoa {
+            --primary-color: #7C3AED;
+            --secondary-color: #F59E0B;
+            --accent-color: #10B981;
+            --background-color: #F3E8FF;
+        }
+        
+        .theme-custom {
+            /* Cores serão aplicadas dinamicamente via JavaScript */
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header melhorado com mais destaque para o carrinho -->
+    <header id="header" class="bg-[#FDFBF5]/80 backdrop-blur-sm sticky top-0 z-50 shadow-md transition-all duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#inicio" class="text-2xl font-bold font-lora text-[#5D4037] flex items-center">
+                <i class="fas fa-egg mr-2"></i> Granja Recanto Feliz
+            </a>
+            <div class="hidden md:flex space-x-8">
+                <a href="#inicio" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Início</a>
+                <a href="#produtos" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Produtos</a>
+                <a href="#sobre" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Sobre Nós</a>
+                <a href="#contato" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Contato</a>
+                <a href="admin.html" class="bg-[#5D4037] hover:bg-[#4A2C20] text-white px-4 py-2 rounded-lg transition duration-300">
+                    <i class="fas fa-cog mr-2"></i>Admin
+                </a>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="cart-button" class="relative flex items-center bg-[#8B4513] hover:bg-[#5D4037] text-white px-4 py-2 rounded-lg transition duration-300">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    <span id="cart-count" class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                </button>
+                <button id="mobile-menu-button" class="md:hidden text-2xl">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+        <!-- Menu mobile melhorado -->
+        <div id="mobile-menu" class="hidden md:hidden bg-[#FDFBF5] py-4 shadow-lg">
+            <a href="#inicio" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-home mr-2"></i>Início</a>
+            <a href="#produtos" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-shopping-basket mr-2"></i>Produtos</a>
+            <a href="#sobre" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-info-circle mr-2"></i>Sobre Nós</a>
+            <a href="#contato" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-envelope mr-2"></i>Contato</a>
+            <a href="#" id="admin-link-mobile" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-lock mr-2"></i>Administração</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Seção Hero com chamada mais forte para ação -->
+        <section id="inicio" class="hero-bg min-h-screen flex items-center justify-center text-white text-center pt-20 md:pt-28">
+            <div class="bg-black/40 p-8 rounded-lg max-w-4xl mx-4" id="main-banner">
+                <h1 class="text-4xl md:text-6xl font-bold font-lora mb-6 banner-text">Produtos frescos direto da granja</h1>
+                <p class="text-lg md:text-xl mb-8 leading-relaxed">Uma tradição familiar de carinho e respeito pela natureza, entregando o melhor da roça no Jardim Botânico e Lago Sul.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <a href="#produtos" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-shopping-basket mr-2"></i> Compre agora
+                    </a>
+                    <a href="#sobre" class="bg-white/20 hover:bg-white/30 text-white font-bold py-3 px-8 rounded-full text-lg transition duration-300 border border-white">
+                        Conheça nossa história
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Produtos melhorada -->
+        <section id="produtos" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4 font-lora text-[#5D4037]">Nossos Produtos</h2>
+                    <p class="text-center max-w-3xl mx-auto text-gray-600">Cada item é fruto de um trabalho cuidadoso e sustentável. Conheça a linha de produtos da Granja Recanto Feliz, pensada para levar mais saúde e sabor para a sua mesa.</p>
+                </div>
+                
+                <!-- Filtros melhorados -->
+                <div id="product-filters" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
+                    <button class="filter-btn active bg-[#8B4513] text-white py-2 px-4 rounded-full flex items-center" data-filter="all">
+                        <i class="fas fa-border-all mr-2"></i> Todos
+                    </button>
+                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="fertilizantes">
+                        <i class="fas fa-seedling mr-2"></i> Fertilizantes
+                    </button>
+                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="aves">
+                        <i class="fas fa-drumstick-bite mr-2"></i> Aves
+                    </button>
+                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="ovos">
+                        <i class="fas fa-egg mr-2"></i> Ovos
+                    </button>
+                </div>
+
+                <!-- Grade de produtos melhorada -->
+                <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Produtos serão renderizados aqui via JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Sobre Nós melhorada -->
+        <section id="sobre" class="py-20 bg-white">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row items-center gap-12">
+                    <div class="md:w-1/2">
+                        <div class="relative rounded-lg overflow-hidden shadow-xl">
+                            <img src="imagens/produtos/8/1.png" alt="Família da Granja" class="w-full h-auto">
+                            <div class="absolute inset-0 bg-[#8B4513]/20"></div>
+                        </div>
+                    </div>
+                    <div class="md:w-1/2">
+                        <h2 class="text-4xl font-bold mb-6 font-lora text-[#5D4037]">Nossa História, Nossos Valores</h2>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Na Granja Recanto Feliz, a terra é nossa casa, e a natureza, nossa maior aliada. Há gerações, cultivamos com paixão e dedicação, seguindo os passos dos nossos antepassados para trazer até você alimentos frescos e de verdade.</p>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Mais que uma granja, somos uma família que acredita no poder da agricultura sustentável e no sabor autêntico de uma produção 100% natural e feita com carinho. Respeitamos o ciclo da vida, garantindo o bem-estar dos nossos animais e a saúde do solo que nos alimenta.</p>
+                        <div class="bg-[#F5EFE6] p-4 rounded-lg border-l-4 border-[#8B4513]">
+                            <p class="text-gray-700 italic">"É a certeza de que você está levando para casa não apenas um produto, mas um pedaço do nosso Recanto Feliz."</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Adicionando seção de benefícios -->
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                        <div class="text-[#8B4513] text-3xl mb-4">
+                            <i class="fas fa-leaf"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 font-lora">Produção Sustentável</h3>
+                        <p class="text-gray-600">Respeitamos o meio ambiente em todos os nossos processos de produção.</p>
+                    </div>
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                        <div class="text-[#8B4513] text-3xl mb-4">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 font-lora">Qualidade Garantida</h3>
+                        <p class="text-gray-600">Produtos frescos e de alta qualidade, direto da nossa granja para sua mesa.</p>
+                    </div>
+                    <div class="bg-[#F5EFE6] p-6 rounded-lg text-center">
+                        <div class="text-[#8B4513] text-3xl mb-4">
+                            <i class="fas fa-truck"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 font-lora">Entrega Rápida</h3>
+                        <p class="text-gray-600">Entregamos em até 24h após o pedido para a região do Jardim Botânico e Lago Sul.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção de Contato melhorada -->
+        <section id="contato" class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold mb-4 font-lora text-[#5D4037]">Fale Conosco</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Tem alguma dúvida, sugestão ou quer fazer um pedido especial? Estamos à disposição para conversar.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="bg-white p-8 rounded-lg shadow-lg">
+                        <h3 class="text-2xl font-bold mb-6 font-lora text-[#5D4037]">Nos envie uma mensagem</h3>
+                        <form id="contact-form" class="space-y-4">
+                            <div>
+                                <label for="name" class="block text-gray-700 mb-2">Seu Nome</label>
+                                <input type="text" id="name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-gray-700 mb-2">Seu E-mail</label>
+                                <input type="email" id="email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
+                            </div>
+                            <div>
+                                <label for="message" class="block text-gray-700 mb-2">Sua Mensagem</label>
+                                <textarea id="message" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B4513]"></textarea>
+                            </div>
+                            <button type="submit" class="bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition duration-300 w-full">
+                                Enviar Mensagem
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div>
+                        <div class="bg-white p-8 rounded-lg shadow-lg mb-6">
+                            <h3 class="text-2xl font-bold mb-4 font-lora text-[#5D4037]">Informações de Contato</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start">
+                                    <i class="fas fa-map-marker-alt text-[#8B4513] text-xl mt-1 mr-4"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Endereço</h4>
+                                        <p class="text-gray-600">Granja Recanto Feliz, Jardim Botânico, Brasília - DF</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-phone-alt text-[#8B4513] text-xl mt-1 mr-4"></i>
+                                    <div>
+                                        <h4 class="font-semibold">Telefone</h4>
+                                        <p class="text-gray-600">(38) 99924-7376</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start">
+                                    <i class="fas fa-envelope text-[#8B4513] text-xl mt-1 mr-4"></i>
+                                    <div>
+                                        <h4 class="font-semibold">E-mail</h4>
+                                        <p class="text-gray-600">comercial@granjarecantofeliz.com</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="https://wa.me/553899247376" target="_blank" class="block bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg text-center transition duration-300 flex items-center justify-center">
+                            <i class="fab fa-whatsapp mr-2 text-xl"></i> Chamar no WhatsApp
+                        </a>
+                        
+                        <p class="mt-4 text-center text-gray-500">
+                            <i class="fas fa-truck mr-2"></i> Entregas em Brasília, DF - Jardim Botânico, Lago Sul e Asa Sul
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Painel de Administração -->
+        <section id="admin-panel" class="py-20 hidden bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-4xl font-bold text-center mb-4 font-lora text-[#5D4037]">Painel de Administração</h2>
+                <p class="text-center max-w-3xl mx-auto mb-8 text-red-600 font-semibold">Atenção: As alterações aqui são temporárias e não são salvas após recarregar a página!</p>
+
+                <div id="admin-product-form" class="bg-gray-50 p-8 rounded-lg shadow-lg mb-12 border border-gray-200">
+                    <h3 class="text-2xl font-bold font-lora mb-6 text-[#5D4037]">Adicionar/Editar Produto</h3>
+                    <input type="hidden" id="edit-product-id">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="product-name" class="block text-gray-700 text-sm font-bold mb-2">Nome do Produto:</label>
+                            <input type="text" id="product-name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513]" placeholder="Ex: Galinha Caipira">
+                        </div>
+                        <div>
+                            <label for="product-slogan" class="block text-gray-700 text-sm font-bold mb-2">Slogan:</label>
+                            <input type="text" id="product-slogan" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513]" placeholder="Ex: Sabor autêntico da roça.">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="product-description" class="block text-gray-700 text-sm font-bold mb-2">Descrição:</label>
+                        <textarea id="product-description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513] h-32" placeholder="Descreva o produto aqui..."></textarea>
+                        <button id="generate-description-btn" class="mt-2 bg-[#FDD835] hover:bg-[#FFCA28] text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-300 text-sm flex items-center">
+                            <i class="fas fa-magic mr-2"></i> Gerar Descrição com IA
+                        </button>
+                        <div id="ai-loading" class="mt-2 text-sm text-gray-500 hidden">
+                            <i class="fas fa-spinner fa-spin mr-2"></i> Gerando...
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label for="product-category" class="block text-gray-700 text-sm font-bold mb-2">Categoria:</label>
+                            <select id="product-category" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513]">
+                                <option value="fertilizantes">Fertilizantes</option>
+                                <option value="aves">Aves</option>
+                                <option value="ovos">Ovos</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="product-price" class="block text-gray-700 text-sm font-bold mb-2">Preço Base (R$):</label>
+                            <input type="number" id="product-price" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513]" placeholder="Ex: 50.00">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-6">
+                        <label for="product-image-upload" class="block text-gray-700 text-sm font-bold mb-2">Imagem do Produto:</label>
+                        <input type="file" id="product-image-upload" accept="image/*" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:ring-2 focus:ring-[#8B4513]">
+                        <div id="image-preview-container" class="mt-4 hidden">
+                            <img id="product-image-preview" src="" alt="Pré-visualização da Imagem" class="w-48 h-48 object-cover rounded-lg border border-gray-300">
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <button id="save-product-btn" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
+                            <i class="fas fa-save mr-2"></i> Salvar Produto
+                        </button>
+                        <button id="clear-form-btn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-6 rounded-lg focus:outline-none focus:shadow-outline transition duration-300 flex items-center">
+                            <i class="fas fa-broom mr-2"></i> Limpar Formulário
+                        </button>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-bold font-lora mb-6 text-[#5D4037]">Produtos Atuais</h3>
+                <div id="admin-product-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Produtos serão listados aqui -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#5D4037] text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold font-lora mb-4">Granja Recanto Feliz</h3>
+                    <p class="mb-4">Produtos frescos e de qualidade direto da nossa granja para sua mesa.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-white hover:text-[#FDD835] transition duration-300">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="text-white hover:text-[#FDD835] transition duration-300">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="text-white hover:text-[#FDD835] transition duration-300">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold font-lora mb-4">Links Rápidos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#inicio" class="hover:text-[#FDD835] transition duration-300">Início</a></li>
+                        <li><a href="#produtos" class="hover:text-[#FDD835] transition duration-300">Produtos</a></li>
+                        <li><a href="#sobre" class="hover:text-[#FDD835] transition duration-300">Sobre Nós</a></li>
+                        <li><a href="#contato" class="hover:text-[#FDD835] transition duration-300">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold font-lora mb-4">Produtos</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#produtos" class="hover:text-[#FDD835] transition duration-300">Fertilizantes</a></li>
+                        <li><a href="#produtos" class="hover:text-[#FDD835] transition duration-300">Aves</a></li>
+                        <li><a href="#produtos" class="hover:text-[#FDD835] transition duration-300">Ovos</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold font-lora mb-4">Contato</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-2 text-[#FDD835]"></i>
+                            <span>Granja Recanto Feliz, Jardim Botânico, Brasília - DF</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone-alt mr-2 text-[#FDD835]"></i>
+                            <span>(38) 99924-7376</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-2 text-[#FDD835]"></i>
+                            <span>comercial@granjarecantofeliz.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-[#8B4513] mt-8 pt-8 text-center">
+                <p>&copy; 2023 Granja Recanto Feliz. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Botão flutuante do WhatsApp -->
+    <a href="https://wa.me/553899247376" target="_blank" class="fixed bottom-6 right-6 bg-[#25D366] text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition duration-300 z-40 flex items-center justify-center w-16 h-16">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
+
+    <!-- Modal de Detalhes do Produto -->
+    <div id="product-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 id="modal-product-title" class="text-2xl font-bold font-lora text-[#5D4037]">Detalhes do Produto</h3>
+                <button id="close-modal-btn" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="modal-content-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 overflow-y-auto">
+                <!-- Conteúdo do modal (galeria e detalhes) será injetado aqui pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal do Carrinho -->
+    <div id="cart-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b flex justify-between items-center">
+                <h3 class="text-2xl font-bold font-lora text-[#5D4037]">Seu Carrinho</h3>
+                <button id="close-cart-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="cart-items" class="p-6 overflow-y-auto flex-grow">
+                <p class="text-gray-500">Seu carrinho está vazio.</p>
+            </div>
+            <div class="p-6 border-t bg-gray-50">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg font-semibold">Subtotal:</span>
+                    <span id="cart-subtotal" class="text-lg">R$ 0,00</span>
+                </div>
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-lg font-semibold">Entrega:</span>
+                    <span id="delivery-fee" class="text-lg">A calcular</span>
+                </div>
+                <div class="flex justify-between items-center mb-6 border-t pt-4">
+                    <span class="text-xl font-bold">Total:</span>
+                    <span id="cart-total" class="text-xl font-bold text-[#5D4037]">R$ 0,00</span>
+                </div>
+                <div id="checkout-section">
+                     <h4 class="text-lg font-semibold mb-2">Verificar Entrega</h4>
+                     <input type="text" id="address-input" placeholder="Digite seu bairro ou CEP" class="w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
+                     <button id="checkout-btn" class="w-full bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-credit-card mr-2"></i> Finalizar Pedido
+                     </button>
+                     <p id="delivery-message" class="text-center mt-2 text-sm"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Usar produtos do data manager em vez de array estático
+        const products = window.dataManager ? window.dataManager.getActiveProducts() : [
+            {
+                id: 1,
+                name: "Substrato BioFértil 3 Anos",
+                category: "fertilizantes",
+                slogan: "Mais do que Adubo: um substrato vivo e completo.",
+                description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
+                price: 40.00,
+                image: "imagens/produtos/1/1.png"
+            },
+            {
+                id: 2,
+                name: "FertiGota",
+                category: "fertilizantes",
+                slogan: "Adubo de galinha líquido e potente.",
+                description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.",
+                price: 25.00,
+                image: "imagens/produtos/2/1.png"
+            },
+            {
+                id: 3,
+                name: "Ovos Caipira 10",
+                category: "ovos",
+                slogan: "10 ovos frescos da granja.",
+                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.",
+                price: 18.00,
+                image: "imagens/produtos/3/1.jpeg"
+            },
+            {
+                id: 4,
+                name: "Ovos Caipira 20",
+                category: "ovos",
+                slogan: "20 ovos frescos da granja.",
+                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.",
+                price: 30.00,
+                image: "imagens/produtos/4/1.jpeg"
+            },
+            {
+                id: 5,
+                name: "Ovos Caipira 30",
+                category: "ovos",
+                slogan: "30 ovos frescos da granja.",
+                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.",
+                price: 45.00,
+                image: "imagens/produtos/5/1.png"
+            },
+            {
+                id: 6,
+                name: "Galinha Caipira Picada",
+                category: "aves",
+                slogan: "Galinha caipira cortada, pronta para cozinhar.",
+                description: "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.",
+                price: 60.00,
+                image: "imagens/produtos/6/1.png"
+            },
+            {
+                id: 7,
+                name: "Galinha Caipira Inteira",
+                category: "aves",
+                slogan: "Galinha caipira inteira, fresca e saborosa.",
+                description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
+                price: 110.00,
+                image: "imagens/produtos/7/1.png"
+            }
+        ];
+
+        // Função para descobrir automaticamente todas as imagens de um produto
+        async function discoverProductImages(productId) {
+            const gallery = [];
+            const extensions = ['png', 'jpeg', 'jpg']; // PNG primeiro pois é mais comum
+            
+            console.log(`🔍 Procurando imagens para produto ${productId}...`);
+            
+            for (let i = 1; i <= 10; i++) { // Testa até 10 imagens
+                let foundImage = false;
+                
+                for (const ext of extensions) {
+                    const imagePath = `imagens/produtos/${productId}/${i}.${ext}`;
+                    
+                    try {
+                        // Tenta carregar a imagem para verificar se existe
+                        await new Promise((resolve, reject) => {
+                            const img = new Image();
+                            img.onload = () => {
+                                gallery.push(imagePath);
+                                foundImage = true;
+                                console.log(`✅ Encontrou: ${imagePath}`);
+                                resolve();
+                            };
+                            img.onerror = () => {
+                                console.log(`❌ Não encontrou: ${imagePath}`);
+                                reject();
+                            };
+                            img.src = imagePath;
+                        });
+                        break; // Se encontrou, para de testar outras extensões para este número
+                    } catch (error) {
+                        // Imagem não existe, continua testando
+                        continue;
+                    }
+                }
+                
+                if (!foundImage) {
+                    console.log(`🔍 Parou de procurar no número ${i} - nenhuma imagem encontrada`);
+                    break; // Se não encontrou nenhuma imagem com este número, para
+                }
+            }
+            
+            console.log(`📋 Total de imagens encontradas para produto ${productId}:`, gallery.length);
+            console.log(`📂 Imagens: `, gallery);
+            
+            return gallery.length > 0 ? gallery : [products.find(p => p.id === productId)?.image];
+        }
+
+        const productGrid = document.getElementById('product-grid');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        
+        const productModal = document.getElementById('product-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        const cartButton = document.getElementById('cart-button');
+        const cartModal = document.getElementById('cart-modal');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+
+        function renderProducts(filter) {
+            productGrid.innerHTML = '';
+            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            
+            if (filtered.length === 0) {
+                productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Nenhum produto encontrado.</p>';
+                return;
+            }
+
+            filtered.forEach(product => {
+                productGrid.innerHTML += `
+                    <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                        <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                        <h3 class="text-xl font-bold mb-2 font-lora">${product.name}</h3>
+                        <p class="text-gray-600 mb-4 flex-grow">${product.slogan}</p>
+                        <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
+                        <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">Ver Detalhes</button>
+                    </div>
+                `;
+            });
+        }
+
+        async function openProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            // Descobrir automaticamente todas as imagens do produto
+            const gallery = await discoverProductImages(productId);
+
+            const modalContent = productModal.querySelector('#modal-content-grid');
+            
+            // Criar carrossel de imagens
+            modalContent.innerHTML = `
+                <div class="p-6 relative">
+                    <div id="carousel-container" class="relative overflow-hidden rounded-lg">
+                        <div id="carousel-track" class="flex transition-transform duration-300 ease-in-out">
+                            ${gallery.map((imgSrc, index) => `
+                                <div class="w-full flex-shrink-0">
+                                    <img src="${imgSrc}" alt="${product.name} - ${index + 1}" class="w-full h-80 object-cover">
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${gallery.length > 1 ? `
+                            <button id="prev-btn" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button id="next-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                                ${gallery.map((_, index) => `
+                                    <div class="carousel-dot w-2 h-2 rounded-full bg-white/50 cursor-pointer hover:bg-white transition" data-index="${index}"></div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+                <div class="p-6 flex flex-col">
+                    <h3 class="text-3xl font-bold mb-4 font-lora text-[#5D4037]">${product.name}</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed flex-grow">${product.description}</p>
+                    <span class="text-2xl font-bold text-[#5D4037] mb-6 block">R$ ${product.price.toFixed(2)}</span>
+                    <button id="add-to-cart-modal" class="w-full bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-cart-plus mr-2"></i> Adicionar ao Carrinho
+                    </button>
+                </div>
+            `;
+            
+            // Implementar lógica do carrossel
+            let currentIndex = 0;
+            const track = modalContent.querySelector('#carousel-track');
+            const dots = modalContent.querySelectorAll('.carousel-dot');
+            const prevBtn = modalContent.querySelector('#prev-btn');
+            const nextBtn = modalContent.querySelector('#next-btn');
+            
+            function updateCarousel() {
+                track.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('bg-white', index === currentIndex);
+                    dot.classList.toggle('bg-white/50', index !== currentIndex);
+                });
+            }
+            
+            if (prevBtn) {
+                prevBtn.addEventListener('click', () => {
+                    currentIndex = currentIndex === 0 ? gallery.length - 1 : currentIndex - 1;
+                    updateCarousel();
+                });
+            }
+            
+            if (nextBtn) {
+                nextBtn.addEventListener('click', () => {
+                    currentIndex = currentIndex === gallery.length - 1 ? 0 : currentIndex + 1;
+                    updateCarousel();
+                });
+            }
+            
+            dots.forEach((dot, index) => {
+                dot.addEventListener('click', () => {
+                    currentIndex = index;
+                    updateCarousel();
+                });
+            });
+            
+            updateCarousel();
+            productModal.classList.remove('hidden');
+            productModal.style.display = 'flex';
+        }
+
+        // --- Event Listeners ---
+
+        // Filter buttons
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-[#8B4513]', 'text-white');
+                    b.classList.add('bg-white', 'text-[#8B4513]');
+                });
+                this.classList.add('active', 'bg-[#8B4513]', 'text-white');
+                this.classList.remove('bg-white', 'text-[#8B4513]');
+                renderProducts(this.getAttribute('data-filter'));
+            });
+        });
+
+        // "Ver Detalhes" buttons (event delegation on productGrid)
+        productGrid.addEventListener('click', function(e) {
+            if (e.target && e.target.classList.contains('detail-btn')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                openProductModal(id);
+            }
+        });
+        
+        // Gallery thumbnails in modal (event delegation on productModal)
+        productModal.addEventListener('click', function(e) {
+            if (e.target && e.target.parentElement && e.target.parentElement.id === 'modal-gallery') {
+                const mainImage = productModal.querySelector('#modal-main-image img');
+                if(mainImage) mainImage.src = e.target.src;
+            }
+        });
+
+        // Close product modal
+        closeModalBtn.addEventListener('click', () => {
+            productModal.classList.add('hidden');
+            productModal.style.display = 'none';
+        });
+
+        // Open/Close Cart Modal
+        cartButton.addEventListener('click', () => {
+            cartModal.classList.remove('hidden');
+            cartModal.style.display = 'flex';
+        });
+        closeCartBtn.addEventListener('click', () => {
+            cartModal.classList.add('hidden');
+            cartModal.style.display = 'none';
+        });
+
+        // Escutar mudanças nos produtos vindas da administração
+        window.addEventListener('productsUpdated', function(event) {
+            console.log('🔄 Produtos atualizados! Recarregando...');
+            // Recarregar produtos e renderizar novamente
+            window.location.reload(); // Forma simples de sincronizar
+        });
+
+        // Escutar mudanças de layout vindas da administração
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'layoutChanged') {
+                console.log('🎨 Layout alterado! Aplicando novo layout...');
+                applyLayout(event.data.layout);
+            }
+        });
+
+        // =============== SISTEMA DE LAYOUTS DINÂMICOS ===============
+
+        // Aplicar layout automaticamente na inicialização
+        function initializeLayout() {
+            try {
+                if (window.dataManager) {
+                    const currentLayout = window.dataManager.getCurrentLayout();
+                    applyLayout(currentLayout);
+                    console.log('🎨 Layout aplicado:', currentLayout.name);
+                }
+            } catch (error) {
+                console.log('⚠️ Usando layout padrão');
+            }
+        }
+
+        // Aplicar layout específico
+        function applyLayout(layout) {
+            if (!layout) return;
+
+            try {
+                // Aplicar cores CSS customizadas
+                if (layout.colors) {
+                    const root = document.documentElement;
+                    root.style.setProperty('--primary-color', layout.colors.primary);
+                    root.style.setProperty('--secondary-color', layout.colors.secondary);
+                    root.style.setProperty('--accent-color', layout.colors.accent);
+                    root.style.setProperty('--background-color', layout.colors.background);
+                }
+
+                // Atualizar texto do banner
+                const bannerText = document.querySelector('.banner-text');
+                if (bannerText && layout.bannerText) {
+                    bannerText.textContent = layout.bannerText;
+                }
+
+                // Adicionar classe temática ao body
+                document.body.className = document.body.className.replace(/theme-\w+/g, '');
+                if (layout.theme && layout.theme !== 'default') {
+                    document.body.classList.add(`theme-${layout.theme}`);
+                }
+
+                // Atualizar cores em elementos específicos que usam cores hardcoded
+                updateDynamicColors(layout.colors);
+
+                console.log('✅ Layout aplicado com sucesso:', layout.name);
+            } catch (error) {
+                console.error('❌ Erro ao aplicar layout:', error);
+            }
+        }
+
+        // Atualizar cores em elementos específicos
+        function updateDynamicColors(colors) {
+            if (!colors) return;
+
+            // Atualizar botões e elementos com cores específicas
+            const primaryElements = document.querySelectorAll('.bg-\\[\\#2D5016\\]');
+            const secondaryElements = document.querySelectorAll('.bg-\\[\\#8B4513\\]');
+            const accentElements = document.querySelectorAll('.bg-\\[\\#228B22\\]');
+
+            // Nota: Para uma implementação completa, seria necessário
+            // substituir todas as cores hardcoded por variáveis CSS
+            // Este é um exemplo básico de como fazer a atualização
+        }
+
+        // Verificar layouts automáticos periodicamente
+        function checkAutoLayouts() {
+            try {
+                if (window.dataManager) {
+                    const currentLayout = window.dataManager.getCurrentLayout();
+                    applyLayout(currentLayout);
+                }
+            } catch (error) {
+                console.log('⚠️ Erro ao verificar layouts automáticos');
+            }
+        }
+
+        // Verificar layouts automáticos a cada hora
+        setInterval(checkAutoLayouts, 3600000); // 1 hora em millisegundos
+
+        // Inicializar layout na primeira carga
+        initializeLayout();
+
+        // Initial render of all products
+        renderProducts('all');
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - Recanto Feliz</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+  <header>
+    <h1>Finalizar Compra</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="produtos.html">Produtos</a>
+      <a href="carrinho.html">Carrinho</a>
+      <a href="contato.html">Contato</a>
+    </nav>
+  </header>
+  <main>
+    <form id="form-checkout">
+      <label>Nome:<input type="text" name="nome" required></label><br>
+      <label>Endereço:<input type="text" name="endereco" required></label><br>
+      <label>Opção de entrega:
+        <select name="entrega">
+          <option value="jardim-botanico">Jardim Botânico</option>
+          <option value="lago-sul">Lago Sul</option>
+          <option value="parceiro">Retirar em parceiro</option>
+        </select>
+      </label><br>
+      <button type="submit">Finalizar</button>
+    </form>
+  </main>
+  <footer>
+    <p>&copy; 2025 Granja Recanto Feliz</p>
+  </footer>
+  <script src="js/scripts.js"></script>
+</body>
+</html>
