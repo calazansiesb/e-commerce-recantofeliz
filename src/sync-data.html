@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sincronizar Dados do Arquivo JSON</title>
+</head>
+<body>
+    <h1>Sincronizar Dados do Arquivo JSON</h1>
+    <button onclick="syncFromJSON()">Sincronizar dados do produtos.json</button>
+    <div id="status"></div>
+
+    <script src="js/data-manager.js"></script>
+    <script>
+        async function syncFromJSON() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<p>🔄 Sincronizando dados...</p>';
+
+            try {
+                // 1. Limpar localStorage
+                localStorage.removeItem('granjaRecantoFelizData');
+                localStorage.removeItem('granjaRecantoFelizHistory');
+                
+                // 2. Forçar carregamento do arquivo JSON
+                const response = await fetch('data/produtos.json', { 
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+                const jsonData = await response.json();
+                
+                if (!jsonData.products || !Array.isArray(jsonData.products)) {
+                    throw new Error('Formato inválido do arquivo JSON');
+                }
+                
+                // 3. Salvar diretamente no localStorage
+                const syncData = {
+                    products: jsonData.products,
+                    lastUpdate: new Date().toISOString(),
+                    syncedFromServer: true,
+                    forceSync: true
+                };
+                
+                localStorage.setItem('granjaRecantoFelizData', JSON.stringify(syncData));
+                
+                // 4. Verificar se os dados foram salvos corretamente
+                const dataManager = new DataManager();
+                const products = await dataManager.getProducts();
+                
+                let html = `
+                    <h3>✅ Sincronização concluída com sucesso!</h3>
+                    <p>Produtos carregados: ${products.length}</p>
+                    <h4>Preços atualizados:</h4>
+                    <ul>
+                `;
+                
+                products.forEach(p => {
+                    html += `<li>${p.name}: R$ ${p.price}</li>`;
+                });
+                
+                html += `
+                    </ul>
+                    <p><strong>Os dados agora estão sincronizados com o arquivo produtos.json!</strong></p>
+                    <p><a href="index.html" target="_blank">🔗 Abrir página principal para verificar</a></p>
+                `;
+                
+                statusDiv.innerHTML = html;
+                
+            } catch (error) {
+                statusDiv.innerHTML = `
+                    <h3>❌ Erro na sincronização:</h3>
+                    <p>${error.message}</p>
+                `;
+                console.error('Erro na sincronização:', error);
+            }
+        }
+    </script>
+</body>
+</html>

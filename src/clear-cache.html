@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Cache e Recarregar Dados</title>
+</head>
+<body>
+    <h1>Limpar Cache e Recarregar Dados</h1>
+    <button onclick="clearCacheAndReload()">Limpar Cache e Recarregar</button>
+    <div id="status"></div>
+
+    <script>
+        function clearCacheAndReload() {
+            const statusDiv = document.getElementById('status');
+            
+            // Limpar localStorage
+            localStorage.removeItem('granjaRecantoFelizData');
+            localStorage.removeItem('granjaRecantoFelizHistory');
+            
+            // Limpar sessionStorage também
+            sessionStorage.clear();
+            
+            statusDiv.innerHTML = `
+                <h3>✅ Cache limpo com sucesso!</h3>
+                <p>localStorage removido: granjaRecantoFelizData, granjaRecantoFelizHistory</p>
+                <p>sessionStorage limpo</p>
+                <p><strong>Agora vá para a página principal e recarregue-a (F5)</strong></p>
+                <p><a href="index.html" target="_blank">🔗 Abrir página principal</a></p>
+            `;
+        }
+    </script>
+</body>
+</html>

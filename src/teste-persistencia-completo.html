@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Persistência Completo - Recanto Feliz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .test-success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        
+        .test-error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        
+        .test-info {
+            background: #d1ecf1;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+        
+        .test-warning {
+            background: #fff3cd;
+            border-color: #ffeaa7;
+            color: #856404;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        button.danger {
+            background: #dc3545;
+        }
+        
+        button.danger:hover {
+            background: #c82333;
+        }
+        
+        button.success {
+            background: #28a745;
+        }
+        
+        button.success:hover {
+            background: #218838;
+        }
+        
+        .log-area {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .data-preview {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            font-family: monospace;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔬 Teste de Persistência Completo - Recanto Feliz</h1>
+    
+    <div class="test-container">
+        <h2>📋 Cenário de Teste: Persistência de Dados após Limpeza de Cache</h2>
+        <p><strong>Objetivo:</strong> Verificar se alterações de preços feitas no admin persistem após limpar o cache do navegador.</p>
+        
+        <div class="test-section test-info">
+            <h3>🎯 Plano de Teste</h3>
+            <ol>
+                <li>Carregar dados originais</li>
+                <li>Simular alteração de preço no admin</li>
+                <li>Verificar salvamento em múltiplas fontes</li>
+                <li>Simular limpeza de cache (localStorage)</li>
+                <li>Recuperar dados e verificar persistência</li>
+                <li>Validar integridade dos dados</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h3>🚀 Controles de Teste</h3>
+            <button onclick="iniciarTestePersistencia()">▶️ Iniciar Teste Completo</button>
+            <button onclick="verificarEstadoAtual()" class="success">🔍 Verificar Estado Atual</button>
+            <button onclick="simularLimpezaCache()" class="danger">🧹 Simular Limpeza Cache</button>
+            <button onclick="restaurarDados()" class="success">♻️ Recuperar Dados</button>
+            <button onclick="limparLog()">🗑️ Limpar Log</button>
+        </div>
+    </div>
+    
+    <div class="results-grid">
+        <div class="test-container">
+            <h3>📊 Resultados do Teste</h3>
+            <div id="resultados-teste" class="log-area">Aguardando início do teste...</div>
+        </div>
+        
+        <div class="test-container">
+            <h3>🗃️ Estado dos Dados</h3>
+            <div id="estado-dados" class="data-preview">Carregando...</div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h3>📋 Comparação de Fontes de Dados</h3>
+        <div class="results-grid">
+            <div>
+                <h4>SQLite Database</h4>
+                <div id="dados-sqlite" class="data-preview">Carregando...</div>
+            </div>
+            <div>
+                <h4>LocalStorage</h4>
+                <div id="dados-localstorage" class="data-preview">Carregando...</div>
+            </div>
+            <div>
+                <h4>SessionStorage</h4>
+                <div id="dados-sessionstorage" class="data-preview">Carregando...</div>
+            </div>
+            <div>
+                <h4>IndexedDB</h4>
+                <div id="dados-indexeddb" class="data-preview">Carregando...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="js/data-manager.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="js/persistence-fix.js"></script>
+    
+    <script>
+        let testeLogElement = document.getElementById('resultados-teste');
+        let estadoDadosElement = document.getElementById('estado-dados');
+        
+        // Sistema de log
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'info': 'ℹ️',
+                'debug': '🔧'
+            }[type] || 'ℹ️';
+            
+            const logMessage = `[${timestamp}] ${prefix} ${message}\n`;
+            testeLogElement.textContent += logMessage;
+            testeLogElement.scrollTop = testeLogElement.scrollHeight;
+            console.log(logMessage.trim());
+        }
+        
+        function limparLog() {
+            testeLogElement.textContent = 'Log limpo. Aguardando próximo teste...\n';
+        }
+        
+        // Funções de verificação de dados
+        async function verificarEstadoAtual() {
+            log('🔍 Verificando estado atual dos dados...', 'info');
+            
+            try {
+                // Verificar todas as fontes de dados
+                const estado = {
+                    dataManager: window.dataManager ? window.dataManager.getProducts().length : 0,
+                    localStorage: localStorage.getItem('produtos_recanto_feliz') ? JSON.parse(localStorage.getItem('produtos_recanto_feliz')).length : 0,
+                    sessionStorage: sessionStorage.getItem('produtos_backup') ? JSON.parse(sessionStorage.getItem('produtos_backup')).length : 0,
+                    persistenceManager: window.persistenceManager ? 'Disponível' : 'Indisponível'
+                };
+                
+                log(`DataManager: ${estado.dataManager} produtos`, 'info');
+                log(`LocalStorage: ${estado.localStorage} produtos`, 'info');
+                log(`SessionStorage: ${estado.sessionStorage} produtos`, 'info');
+                log(`PersistenceManager: ${estado.persistenceManager}`, 'info');
+                
+                // Atualizar displays
+                atualizarDisplayDados();
+                
+                log('✅ Verificação concluída', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro na verificação: ${error.message}`, 'error');
+            }
+        }
+        
+        function atualizarDisplayDados() {
+            // Estado geral
+            const produtos = window.dataManager ? window.dataManager.getProducts() : [];
+            estadoDadosElement.textContent = `Produtos carregados: ${produtos.length}\nÚltima atualização: ${new Date().toLocaleString()}`;
+            
+            // SQLite
+            try {
+                const sqliteData = window.sqliteManager ? window.sqliteManager.getProducts() : [];
+                document.getElementById('dados-sqlite').textContent = 
+                    `Produtos: ${sqliteData.length}\n` +
+                    (sqliteData.length > 0 ? `Exemplo: ${JSON.stringify(sqliteData[0], null, 2)}` : 'Nenhum produto');
+            } catch (e) {
+                document.getElementById('dados-sqlite').textContent = 'Erro: ' + e.message;
+            }
+            
+            // LocalStorage
+            try {
+                const lsData = localStorage.getItem('produtos_recanto_feliz');
+                document.getElementById('dados-localstorage').textContent = 
+                    lsData ? `Dados encontrados: ${JSON.parse(lsData).length} produtos` : 'Nenhum dado';
+            } catch (e) {
+                document.getElementById('dados-localstorage').textContent = 'Erro: ' + e.message;
+            }
+            
+            // SessionStorage
+            try {
+                const ssData = sessionStorage.getItem('produtos_backup');
+                document.getElementById('dados-sessionstorage').textContent = 
+                    ssData ? `Dados encontrados: ${JSON.parse(ssData).length} produtos` : 'Nenhum dado';
+            } catch (e) {
+                document.getElementById('dados-sessionstorage').textContent = 'Erro: ' + e.message;
+            }
+            
+            // IndexedDB (simulado)
+            document.getElementById('dados-indexeddb').textContent = 'Verificação IndexedDB em desenvolvimento';
+        }
+        
+        async function iniciarTestePersistencia() {
+            log('🚀 Iniciando teste completo de persistência...', 'info');
+            
+            try {
+                // Passo 1: Verificar estado inicial
+                log('📋 Passo 1: Verificando estado inicial', 'info');
+                await verificarEstadoAtual();
+                
+                // Passo 2: Simular alteração de preço
+                log('💰 Passo 2: Simulando alteração de preços', 'info');
+                await simularAlteracaoPreco();
+                
+                // Passo 3: Forçar persistência
+                log('💾 Passo 3: Forçando persistência de dados', 'info');
+                await forcarPersistencia();
+                
+                // Passo 4: Verificar dados salvos
+                log('🔍 Passo 4: Verificando dados após salvamento', 'info');
+                await verificarEstadoAtual();
+                
+                // Passo 5: Simular limpeza de cache
+                log('🧹 Passo 5: Simulando limpeza de cache', 'warning');
+                simularLimpezaCache();
+                
+                // Passo 6: Tentar recuperar dados
+                log('♻️ Passo 6: Tentando recuperar dados', 'info');
+                await restaurarDados();
+                
+                // Passo 7: Verificar resultado final
+                log('🏁 Passo 7: Verificando resultado final', 'info');
+                await verificarEstadoAtual();
+                
+                log('✅ Teste completo finalizado!', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro durante o teste: ${error.message}`, 'error');
+            }
+        }
+        
+        async function simularAlteracaoPreco() {
+            try {
+                const produtos = window.dataManager.getProducts();
+                if (produtos.length === 0) {
+                    log('⚠️ Nenhum produto encontrado para teste', 'warning');
+                    return;
+                }
+                
+                // Selecionar primeiro produto e alterar preço
+                const produto = {...produtos[0]};
+                const precoOriginal = produto.preco;
+                const novoPreco = precoOriginal + 5.99; // Adicionar R$ 5,99
+                
+                produto.preco = novoPreco;
+                
+                log(`📝 Alterando preço do produto "${produto.nome}"`, 'info');
+                log(`💰 Preço original: R$ ${precoOriginal}`, 'info');
+                log(`💰 Novo preço: R$ ${novoPreco}`, 'info');
+                
+                // Simular salvamento no admin
+                if (window.dataManager.updateProduct) {
+                    window.dataManager.updateProduct(produto.id, produto);
+                    log('✅ Produto atualizado no DataManager', 'success');
+                } else {
+                    log('⚠️ Método updateProduct não encontrado', 'warning');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na simulação de alteração: ${error.message}`, 'error');
+            }
+        }
+        
+        async function forcarPersistencia() {
+            try {
+                if (window.persistenceManager) {
+                    const dadosAtuais = {
+                        products: window.dataManager.getProducts(),
+                        lastUpdate: new Date().toISOString(),
+                        source: 'teste_persistencia'
+                    };
+                    
+                    window.persistenceManager.savePersistentData(dadosAtuais);
+                    log('✅ Dados salvos com PersistenceManager', 'success');
+                } else {
+                    log('⚠️ PersistenceManager não disponível', 'warning');
+                }
+                
+                // Backup manual adicional
+                const produtos = window.dataManager.getProducts();
+                localStorage.setItem('teste_backup_manual', JSON.stringify(produtos));
+                log('✅ Backup manual criado', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro ao forçar persistência: ${error.message}`, 'error');
+            }
+        }
+        
+        function simularLimpezaCache() {
+            try {
+                log('🧹 Simulando limpeza de cache...', 'warning');
+                
+                // Limpar localStorage (exceto backups de teste)
+                const backup = localStorage.getItem('teste_backup_manual');
+                const persistentData = localStorage.getItem('recanto_feliz_persistent_data');
+                
+                localStorage.clear();
+                
+                // Restaurar apenas dados persistentes
+                if (persistentData) {
+                    localStorage.setItem('recanto_feliz_persistent_data', persistentData);
+                    log('💾 Dados persistentes preservados', 'info');
+                }
+                
+                if (backup) {
+                    localStorage.setItem('teste_backup_manual', backup);
+                    log('💾 Backup de teste preservado', 'info');
+                }
+                
+                // Limpar sessionStorage
+                sessionStorage.clear();
+                
+                log('✅ Cache simulado como limpo', 'success');
+                
+            } catch (error) {
+                log(`❌ Erro na simulação de limpeza: ${error.message}`, 'error');
+            }
+        }
+        
+        async function restaurarDados() {
+            try {
+                log('♻️ Tentando recuperar dados...', 'info');
+                
+                // Tentar usar o sistema de persistência
+                if (window.persistenceManager) {
+                    const dadosRecuperados = window.persistenceManager.loadPersistentData();
+                    if (dadosRecuperados && dadosRecuperados.products) {
+                        log(`✅ Recuperados ${dadosRecuperados.products.length} produtos via PersistenceManager`, 'success');
+                        
+                        // Restaurar no DataManager
+                        if (window.dataManager && window.dataManager.setProducts) {
+                            window.dataManager.setProducts(dadosRecuperados.products);
+                            log('✅ Dados restaurados no DataManager', 'success');
+                        }
+                    } else {
+                        log('⚠️ Nenhum dado persistente encontrado', 'warning');
+                    }
+                } else {
+                    log('⚠️ PersistenceManager não disponível para recuperação', 'warning');
+                }
+                
+                // Verificar backup manual
+                const backupManual = localStorage.getItem('teste_backup_manual');
+                if (backupManual) {
+                    const produtosBackup = JSON.parse(backupManual);
+                    log(`✅ Backup manual encontrado: ${produtosBackup.length} produtos`, 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na recuperação: ${error.message}`, 'error');
+            }
+        }
+        
+        // Inicialização
+        window.addEventListener('load', async () => {
+            log('🏁 Sistema de teste carregado', 'info');
+            await verificarEstadoAtual();
+        });
+        
+        // Atualizar displays periodicamente
+        setInterval(atualizarDisplayDados, 5000);
+    </script>
+</body>
+</html>

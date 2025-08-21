@@ -1,12 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta                <button onclick="showSection('database')" class="nav-btn bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">
-                    <i class="fas fa-database mr-2"></i>Banco de Dados
-                </button>
-                <button onclick="showSection('relatorios')" class="nav-btn bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
-                    <i class="fas fa-chart-bar mr-2"></i>Relatórios
-                </button>arset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Granja Recanto Feliz</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -29,12 +24,6 @@
                 <h1 class="text-2xl font-bold font-lora">Administração - Granja Recanto Feliz</h1>
             </div>
             <div class="flex items-center space-x-4">
-                <button onclick="diagnosticDatabase()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition" title="Diagnóstico do Sistema">
-                    <i class="fas fa-stethoscope mr-2"></i>Diagnóstico
-                </button>
-                <button onclick="testPersistencia(); testDataManager();" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition" title="Teste Debug">
-                    <i class="fas fa-bug mr-2"></i>Debug
-                </button>
                 <a href="index.html" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
                     <i class="fas fa-home mr-2"></i>Voltar ao Site
                 </a>
@@ -61,9 +50,6 @@
                 <button onclick="showSection('layouts')" class="nav-btn bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">
                     <i class="fas fa-palette mr-2"></i>Layouts
                 </button>
-                <button onclick="showSection('relatorios')" class="nav-btn bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">
-                    <i class="fas fa-chart-bar mr-2"></i>Relatórios
-                </button>
                 <button onclick="showSection('carrossel')" class="nav-btn bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">
                     <i class="fas fa-images mr-2"></i>Temas Carrossel
                 </button>
@@ -83,19 +69,9 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Gestão de Produtos</h2>
                     <div class="flex space-x-3">
-                        <button onclick="window.open('gestao-pedidos.html', '_blank')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-shopping-cart mr-2"></i>Gestão de Pedidos
-                        </button>
                         <button onclick="salvarProdutosDefinitivo()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-bold">
                             <i class="fas fa-save mr-2"></i>SALVAR DEFINITIVO
                         </button>
-                        <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-download mr-2"></i>Backup Sistema
-                        </button>
-                        <button onclick="document.getElementById('import-file').click()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-upload mr-2"></i>Restaurar Backup
-                        </button>
-                        <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
                         <button onclick="openProductModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
                             <i class="fas fa-plus mr-2"></i>Novo Produto
                         </button>
@@ -933,5 +909,201 @@ Recanto Feliz`;
     <script src="js/data-manager.js"></script>
     <script src="js/admin.js"></script>
     <script src="js/fix-admin-produtos.js"></script>
+    <script>
+        // Função simples para testar botões
+        function showSection(sectionName) {
+            console.log('Mostrando seção:', sectionName);
+            
+            // Ocultar todas as seções
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Mostrar seção alvo
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                console.log('Seção exibida:', sectionName);
+                
+                // Carregar conteúdo específico
+                if (sectionName === 'layouts') {
+                    loadLayoutsGrid();
+                    updateCurrentLayoutStatus();
+                }
+                
+                if (sectionName === 'carrossel') {
+                    loadCarouselThemes();
+                }
+                
+                if (sectionName === 'estoque') {
+                    loadEstoqueGrid();
+                }
+                
+                if (sectionName === 'mensagens') {
+                    carregarMensagemSalva();
+                }
+            } else {
+                console.error('Seção não encontrada:', sectionName + '-section');
+            }
+        }
+        
+        // Tornar função global
+        window.showSection = showSection;
+        
+        // Funções de layouts e temas reativadas
+        function loadLayoutsGrid() {
+            const layoutsGrid = document.getElementById('layouts-grid');
+            if (!layoutsGrid || !window.dataManager) return;
+            
+            const layouts = window.dataManager.getLayouts();
+            const currentLayout = window.dataManager.getCurrentLayout();
+            
+            layoutsGrid.innerHTML = Object.entries(layouts).map(([key, layout]) => {
+                const isActive = currentLayout && currentLayout.theme === layout.theme;
+                return `
+                    <div class="border rounded-lg p-4 ${isActive ? 'border-green-500 bg-green-50' : 'border-gray-200'}">
+                        <div class="flex justify-between items-start mb-3">
+                            <h4 class="font-bold text-lg">${layout.name}</h4>
+                            ${isActive ? '<span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">ATIVO</span>' : ''}
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">${layout.bannerText}</p>
+                        <div class="flex space-x-2">
+                            ${!isActive ? `<button onclick="activateLayout('${key}')" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">Ativar</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateCurrentLayoutStatus() {
+            const statusInfo = document.getElementById('current-layout-info');
+            if (!statusInfo || !window.dataManager) return;
+            
+            const currentLayout = window.dataManager.getCurrentLayout();
+            statusInfo.innerHTML = `
+                <div><strong>Layout Ativo:</strong> ${currentLayout.name}</div>
+                <div><strong>Tema:</strong> ${currentLayout.theme}</div>
+            `;
+        }
+        
+        function activateLayout(layoutKey) {
+            if (window.dataManager.activateLayout(layoutKey)) {
+                alert(`Layout "${layoutKey}" ativado com sucesso!`);
+                loadLayoutsGrid();
+                updateCurrentLayoutStatus();
+            } else {
+                alert('Erro ao ativar layout!');
+            }
+        }
+        
+        function loadCarouselThemes() {
+            const grid = document.getElementById('carousel-themes-grid');
+            if (!grid || !window.dataManager) return;
+            
+            const themes = window.dataManager.getCarouselThemes();
+            
+            grid.innerHTML = themes.map(theme => `
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="relative h-48">
+                        <img src="${theme.image}" alt="${theme.name}" class="w-full h-full object-cover">
+                        <div class="absolute top-2 right-2">
+                            <span class="px-2 py-1 text-xs rounded-full ${theme.active ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'}">
+                                ${theme.active ? 'Ativo' : 'Inativo'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold text-lg mb-2">${theme.name}</h3>
+                        <p class="text-sm text-gray-600 mb-2">${theme.category}</p>
+                        <p class="text-sm text-gray-700 mb-4">${theme.description.substring(0, 100)}...</p>
+                        <div class="flex space-x-2">
+                            <button onclick="editCarouselTheme(${theme.id})" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded text-sm">
+                                Editar
+                            </button>
+                            <button onclick="toggleCarouselTheme(${theme.id})" class="${theme.active ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white py-2 px-3 rounded text-sm">
+                                ${theme.active ? 'Desativar' : 'Ativar'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addCarouselTheme() {
+            document.getElementById('carousel-modal-title').textContent = 'Novo Tema de Carrossel';
+            document.getElementById('carousel-theme-form').reset();
+            document.getElementById('carousel-theme-id').value = '';
+            document.getElementById('carousel-theme-modal').classList.remove('hidden');
+        }
+        
+        function editCarouselTheme(themeId) {
+            const themes = window.dataManager.getCarouselThemes();
+            const theme = themes.find(t => t.id === themeId);
+            if (!theme) return;
+            
+            document.getElementById('carousel-modal-title').textContent = 'Editar Tema de Carrossel';
+            document.getElementById('carousel-theme-id').value = theme.id;
+            document.getElementById('theme-name').value = theme.name;
+            document.getElementById('theme-category').value = theme.category;
+            document.getElementById('theme-title').value = theme.title;
+            document.getElementById('theme-description').value = theme.description;
+            document.getElementById('theme-image').value = theme.image;
+            document.getElementById('theme-button-text').value = theme.buttonText;
+            document.getElementById('theme-button-link').value = theme.buttonLink;
+            document.getElementById('theme-button-color').value = theme.buttonColor;
+            document.getElementById('theme-active').checked = theme.active;
+            
+            document.getElementById('carousel-theme-modal').classList.remove('hidden');
+        }
+        
+        function toggleCarouselTheme(themeId) {
+            const themes = window.dataManager.getCarouselThemes();
+            const theme = themes.find(t => t.id === themeId);
+            if (!theme) return;
+            
+            window.dataManager.updateCarouselTheme(themeId, { active: !theme.active });
+            loadCarouselThemes();
+            alert(`Tema ${theme.active ? 'desativado' : 'ativado'} com sucesso!`);
+        }
+        
+        function closeCarouselThemeModal() {
+            document.getElementById('carousel-theme-modal').classList.add('hidden');
+        }
+        
+        function loadEstoqueGrid() {
+            const estoqueGrid = document.getElementById('estoque-grid');
+            if (!estoqueGrid || !window.dataManager) return;
+            
+            window.dataManager.getActiveProducts().then(products => {
+                estoqueGrid.innerHTML = products.map(product => {
+                    const stockLevel = product.stock === 0 ? 'Sem estoque' : 
+                                      product.stock <= 10 ? 'Estoque baixo' : 'Normal';
+                    const stockColor = product.stock === 0 ? 'bg-red-500' : 
+                                      product.stock <= 10 ? 'bg-yellow-500' : 'bg-green-500';
+                    
+                    return `
+                        <div class="bg-white rounded-lg shadow-md p-6 border-l-4 ${stockColor}">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-lg">${product.name}</h3>
+                                <span class="text-2xl font-bold ${stockColor.replace('bg-', 'text-')}">${product.stock}</span>
+                            </div>
+                            <p class="text-gray-600 mb-4">${stockLevel}</p>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+        
+        // Tornar funções globais
+        window.loadLayoutsGrid = loadLayoutsGrid;
+        window.updateCurrentLayoutStatus = updateCurrentLayoutStatus;
+        window.activateLayout = activateLayout;
+        window.loadCarouselThemes = loadCarouselThemes;
+        window.addCarouselTheme = addCarouselTheme;
+        window.editCarouselTheme = editCarouselTheme;
+        window.toggleCarouselTheme = toggleCarouselTheme;
+        window.closeCarouselThemeModal = closeCarouselThemeModal;
+        window.loadEstoqueGrid = loadEstoqueGrid;
+    </script>
 </body>
 </html>

@@ -32,9 +32,206 @@
             background-position: center;
         }
         
-        .nav-link.active {
-            font-weight: 700;
-            color: var(--secondary-color, #8B4513);
+        /* Dropdown menu styles - Moderno como grandes sites */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transform-origin: top center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scale: 0.95;
+            padding: 8px 0;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .dropdown-content a {
+            color: #374151;
+            padding: 14px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 2px 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+            background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+            color: var(--primary-color, #2D5016);
+            transform: translateX(4px);
+        }
+        
+        .dropdown-content a:active {
+            background: linear-gradient(135deg, var(--accent-color, #228B22), #16A34A);
+            color: white;
+            transform: translateX(4px) scale(0.98);
+        }
+        
+        .dropdown-content a i {
+            width: 18px;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+        
+        .dropdown-content a:hover i {
+            opacity: 1;
+        }
+        
+        /* Mostrar dropdown no hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Mostrar dropdown quando tem classe 'open' */
+        .dropdown.open .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Seta indicadora melhorada */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .nav-button {
+            background: linear-gradient(135deg, var(--primary-color, #2D5016), var(--secondary-color, #8B4513));
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            position: relative;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .nav-button.active {
+            background: linear-gradient(135deg, var(--accent-color, #228B22), var(--primary-color, #2D5016));
+        }
+        
+        /* Indicador visual para botões com dropdown */
+        .dropdown-toggle::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid var(--secondary-color, #8B4513);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dropdown.open .dropdown-toggle::after,
+        .dropdown:hover .dropdown-toggle::after {
+            opacity: 1;
+        }
+        
+        /* Animações modernas */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
+        }
+        
+        /* Melhorias responsivas para dropdown */
+        @media (max-width: 768px) {
+            .dropdown-content {
+                min-width: 200px;
+                left: 0;
+                right: 0;
+                transform: none;
+                margin: 0 auto;
+            }
+            
+            .dropdown-content::before {
+                left: 50%;
+            }
+        }
+        
+        /* Estados de loading */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color, #2D5016);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Fixed navigation bar */
+        .fixed-nav {
+            position: sticky;
+            top: 80px;
+            z-index: 40;
+            background: rgba(253, 251, 245, 0.95);
+            backdrop-filter: blur(10px);
             border-bottom: 2px solid var(--secondary-color, #8B4513);
         }
         
@@ -166,10 +363,6 @@
         
         .theme-conscienciaNegraBsb .hero-section {
             background: linear-gradient(135deg, #1F2937, #F59E0B, #059669);
-        }
-        
-        .theme-custom {
-            /* Cores serão aplicadas dinamicamente via JavaScript */
         }
         
         .product-card:hover {
@@ -304,6 +497,56 @@
         </div>
     </header>
 
+    <!-- Barra de Navegação Fixa com Categorias Principais -->
+    <nav class="fixed-nav py-4">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center space-x-8">
+                <!-- Botão Todos -->
+                <button class="nav-button" onclick="selectCategoryModern('all')" id="nav-all">
+                    <i class="fas fa-border-all mr-2"></i>
+                    Todos
+                </button>
+                
+                <!-- Botão Produtos da Granja com Dropdown -->
+                <div class="dropdown" id="dropdown-granja">
+                    <button class="nav-button dropdown-toggle" onclick="toggleDropdown('dropdown-granja')" id="nav-granja">
+                        <i class="fas fa-home mr-2"></i>
+                        Produtos da Granja
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-granja-content">
+                        <a href="#" onclick="event.preventDefault(); selectCategory('fertilizantes', 'Fertilizantes')">
+                            <i class="fas fa-seedling mr-2"></i>Fertilizantes
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('aves', 'Aves')">
+                            <i class="fas fa-drumstick-bite mr-2"></i>Aves
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('ovos', 'Ovos')">
+                            <i class="fas fa-egg mr-2"></i>Ovos
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('granja', 'Todos da Granja')">
+                            <i class="fas fa-list mr-2"></i>Todos da Granja
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Botão Parceiros com Dropdown -->
+                <div class="dropdown" id="dropdown-parceiros">
+                    <button class="nav-button dropdown-toggle" onclick="toggleDropdown('dropdown-parceiros')" id="nav-parceiros">
+                        <i class="fas fa-handshake mr-2"></i>
+                        Parceiros
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-parceiros-content">
+                        <a href="#" onclick="event.preventDefault(); selectCategory('parceiros', 'Todos os Parceiros')">
+                            <i class="fas fa-store mr-2"></i>Todos os Parceiros
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
     <main>
         <!-- Carrossel Hero Moderno -->
         <section id="inicio" class="relative min-h-screen overflow-hidden">
@@ -378,48 +621,17 @@
             </div>
         </section>
 
-        <!-- Seção de Produtos melhorada -->
-        <section id="produtos" class="py-20 bg-gray-50">
+        <!-- Seção de Produtos com nova estrutura -->
+        <section id="produtos" class="py-20 bg-gradient-to-br from-[#F0F8E8] to-white">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold mb-4 font-lora text-[#5D4037]">Nossos Produtos</h2>
                     <p class="text-center max-w-3xl mx-auto text-gray-600">Cada item é fruto de um trabalho cuidadoso e sustentável. Conheça a linha de produtos da Granja Recanto Feliz, pensada para levar mais saúde e sabor para a sua mesa.</p>
-                </div>
-                
-                <!-- Filtros com Boxes de Categorias -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <!-- Box Todos -->
-                    <div class="bg-white border-2 border-[#8B4513] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onclick="filterProducts('all')">
-                        <i class="fas fa-border-all text-3xl text-[#8B4513] mb-3"></i>
-                        <h3 class="text-xl font-bold text-[#8B4513] mb-2">Todos os Produtos</h3>
-                        <p class="text-gray-600 text-sm">Ver todos os produtos disponíveis</p>
-                    </div>
                     
-                    <!-- Box Produtos da Granja -->
-                    <div class="bg-white border-2 border-[#228B22] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onmouseenter="showSubcategories()" onmouseleave="hideSubcategories()" onclick="toggleSubcategories()">
-                        <i class="fas fa-home text-3xl text-[#228B22] mb-3"></i>
-                        <h3 class="text-xl font-bold text-[#228B22] mb-2">Produtos da Granja</h3>
-                        <p class="text-gray-600 text-sm mb-4">Fertilizantes, Aves e Ovos</p>
-                        
-                        <!-- Subcategorias (ocultas por padrão) -->
-                        <div id="granja-subcategories" class="hidden space-y-2 mt-4">
-                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('fertilizantes')">
-                                <i class="fas fa-seedling mr-2"></i> Fertilizantes
-                            </button>
-                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('aves')">
-                                <i class="fas fa-drumstick-bite mr-2"></i> Aves
-                            </button>
-                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('ovos')">
-                                <i class="fas fa-egg mr-2"></i> Ovos
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Box Parceiros -->
-                    <div class="bg-white border-2 border-[#8B4513] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onclick="filterProducts('parceiros')">
-                        <i class="fas fa-handshake text-3xl text-[#8B4513] mb-3"></i>
-                        <h3 class="text-xl font-bold text-[#8B4513] mb-2">Parceiros</h3>
-                        <p class="text-gray-600 text-sm">Produtos de nossos parceiros</p>
+                    <!-- Indicador de Filtro Ativo -->
+                    <div id="filter-indicator" class="mt-6 p-3 bg-white rounded-lg shadow-sm border-l-4 border-[#8B4513] inline-block">
+                        <span class="text-[#5D4037] font-semibold">Exibindo: </span>
+                        <span id="filter-text" class="text-[#8B4513] font-bold">Todos os Produtos</span>
                     </div>
                 </div>
 
@@ -2016,39 +2228,81 @@
     // Tornar função global
     window.openCartModal = openCartModal;
     
-    // Funções para controlar subcategorias
-    function showSubcategories() {
-        document.getElementById('granja-subcategories').classList.remove('hidden');
-    }
-    
-    function hideSubcategories() {
-        document.getElementById('granja-subcategories').classList.add('hidden');
-    }
-    
-    function toggleSubcategories() {
-        const subcategories = document.getElementById('granja-subcategories');
-        subcategories.classList.toggle('hidden');
-    }
-    
-    // Função para filtrar produtos
+    // Definir funções antes dos event listeners
     function filterProducts(category) {
+        console.log('🔍 FilterProducts chamado com categoria:', category);
+        
+        // Verificar se produtos já foram carregados
+        if (!window.produtosCarregados) {
+            console.warn('⚠️ Produtos ainda não carregados. Aguardando...');
+            // Aguardar o evento de produtos carregados
+            const handleProdutosCarregados = () => {
+                console.log('✅ Produtos carregados, executando filtro...');
+                window.removeEventListener('produtosCarregados', handleProdutosCarregados);
+                filterProducts(category);
+            };
+            window.addEventListener('produtosCarregados', handleProdutosCarregados);
+            return;
+        }
+        
+        // Usar produtos global ou window.produtos como fallback
+        const currentProducts = produtos || window.produtos || [];
+        
+        console.log('📦 Produtos disponíveis:', currentProducts.length);
+        console.log('📊 Primeiro produto:', currentProducts[0]);
+        
         const productGrid = document.getElementById('product-grid');
+        const filterText = document.getElementById('filter-text');
         let filtered;
+        let filterLabel;
+        
+        // Verificar se produtos está carregado
+        if (!currentProducts || currentProducts.length === 0) {
+            console.warn('⚠️ Produtos não carregados ainda. Tentando recarregar...');
+            setTimeout(() => filterProducts(category), 500);
+            return;
+        }
+        
+        // Atualizar botões ativos
+        updateActiveNavButton(category);
         
         if (category === 'all') {
-            filtered = produtos;
+            filtered = currentProducts;
+            filterLabel = 'Todos os Produtos';
         } else if (category === 'granja') {
-            filtered = produtos.filter(p => 
+            filtered = currentProducts.filter(p => 
                 p.category === 'fertilizantes' || 
                 p.category === 'aves' || 
                 p.category === 'ovos'
             );
+            filterLabel = 'Produtos da Granja';
         } else if (category === 'parceiros') {
-            filtered = produtos.filter(p => p.category === 'parceiros');
+            filtered = currentProducts.filter(p => p.category === 'parceiros');
+            filterLabel = 'Parceiros';
+        } else if (category === 'fertilizantes') {
+            filtered = currentProducts.filter(p => p.category === 'fertilizantes');
+            filterLabel = 'Fertilizantes';
+        } else if (category === 'aves') {
+            filtered = currentProducts.filter(p => p.category === 'aves');
+            filterLabel = 'Aves';
+        } else if (category === 'ovos') {
+            filtered = currentProducts.filter(p => p.category === 'ovos');
+            filterLabel = 'Ovos';
         } else {
-            filtered = produtos.filter(p => p.category === category);
+            filtered = currentProducts.filter(p => p.category === category);
+            filterLabel = category.charAt(0).toUpperCase() + category.slice(1);
         }
         
+        console.log('✅ Produtos filtrados:', filtered.length);
+        console.log('🏷️ Filtro aplicado:', filterLabel);
+        console.log('📋 Lista filtrada:', filtered.map(p => `${p.name} (${p.category})`));
+        
+        // Atualizar indicador de filtro
+        if (filterText) {
+            filterText.textContent = filterLabel;
+        }
+        
+        // Renderizar produtos
         productGrid.innerHTML = filtered.map(p => `
             <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
                 <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
@@ -2058,13 +2312,394 @@
                 <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
             </div>
         `).join('');
+        
+        // Scroll suave para a seção de produtos
+        document.getElementById('produtos').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Tornar funções globais
+    window.filterProducts = filterProducts;
+    window.updateActiveNavButton = updateActiveNavButton;
+    
+    // Inicialização - definir filtro padrão e sistema moderno
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar sistema de dropdown moderno
+        setTimeout(() => {
+            initModernDropdowns();
+            updateActiveCategory('all');
+        }, 100);
+        
+        // Aguardar produtos serem carregados
+        window.addEventListener('produtosCarregados', function(event) {
+            console.log('✅ Produtos carregados no index.html:', event.detail.count);
+            console.log('📦 Produtos recebidos:', event.detail.produtos.slice(0, 2));
+            
+            // Agora que os produtos estão carregados, pode filtrar com segurança
+            window.produtosCarregados = true;
+            
+            // Renderizar todos os produtos imediatamente com sistema moderno
+            console.log('🔄 Renderizando todos os produtos com sistema moderno...');
+            setTimeout(() => {
+                applyFilterModern('all');
+            }, 200);
+        });
+        
+        // Teste de debug para verificar se os produtos estão carregados
+        setTimeout(() => {
+            console.log('🧪 TESTE: Verificando produtos após 2s...');
+            console.log('produtos variable:', typeof produtos, produtos?.length);
+            console.log('window.produtos:', typeof window.produtos, window.produtos?.length);
+            console.log('dataManager:', typeof window.dataManager);
+            
+            if (window.dataManager) {
+                window.dataManager.getActiveProducts().then(products => {
+                    console.log('🧪 TESTE: Produtos do DataManager:', products.length);
+                    if (products.length > 0) {
+                        console.log('🧪 TESTE: Primeiro produto:', products[0]);
+                        console.log('🧪 TESTE: Categorias disponíveis:', [...new Set(products.map(p => p.category))]);
+                        
+                        // Testar filtro de fertilizantes
+                        const fertilizantes = products.filter(p => p.category === 'fertilizantes');
+                        console.log('🧪 TESTE: Fertilizantes encontrados:', fertilizantes.length, fertilizantes.map(p => p.name));
+                    }
+                });
+            }
+        }, 2000);
+    });
+    
+    // Função para atualizar botão ativo na navegação (definida abaixo)
+    
+    // Função para atualizar botão ativo na navegação
+    function updateActiveNavButton(category) {
+        // Remover classe active de todos os botões
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Adicionar classe active ao botão correspondente
+        if (category === 'all') {
+            document.getElementById('nav-all').classList.add('active');
+        } else if (category === 'granja' || category === 'fertilizantes' || category === 'aves' || category === 'ovos') {
+            document.getElementById('nav-granja').classList.add('active');
+        } else if (category === 'parceiros') {
+            document.getElementById('nav-parceiros').classList.add('active');
+        }
     }
     
-    // Tornar funções globais
-    window.showSubcategories = showSubcategories;
-    window.hideSubcategories = hideSubcategories;
-    window.toggleSubcategories = toggleSubcategories;
-    window.filterProducts = filterProducts;
+    // Sistema de Dropdown Moderno - Padrão de Grandes Sites
+    let activeDropdown = null;
+    let hoverTimeout = null;
+    
+    function initModernDropdowns() {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('.dropdown-toggle');
+            const content = dropdown.querySelector('.dropdown-content');
+            
+            // Eventos de mouse para hover suave
+            dropdown.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimeout);
+                openDropdown(dropdown);
+            });
+            
+            dropdown.addEventListener('mouseleave', () => {
+                hoverTimeout = setTimeout(() => {
+                    closeDropdown(dropdown);
+                }, 150); // Delay pequeno para navegação suave
+            });
+            
+            // Evento de clique no botão
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown(dropdown);
+            });
+            
+            // Eventos nos links das subcategorias
+            const links = content.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Extrair categoria do onclick
+                    const onclickAttr = link.getAttribute('onclick');
+                    const match = onclickAttr.match(/selectCategory\('([^']+)'/);
+                    if (match) {
+                        const category = match[1];
+                        console.log('🎯 Categoria clicada:', category);
+                        
+                        // Feedback visual imediato
+                        link.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            link.style.transform = '';
+                        }, 150);
+                        
+                        // Fechar dropdown e filtrar
+                        closeAllDropdowns();
+                        selectCategoryModern(category);
+                    }
+                });
+            });
+        });
+        
+        // Fechar dropdowns ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+        
+        console.log('✅ Sistema de dropdown moderno inicializado');
+    }
+    
+    function openDropdown(dropdown) {
+        closeAllDropdowns();
+        dropdown.classList.add('open');
+        const content = dropdown.querySelector('.dropdown-content');
+        content.classList.add('show');
+        activeDropdown = dropdown;
+    }
+    
+    function closeDropdown(dropdown) {
+        dropdown.classList.remove('open');
+        const content = dropdown.querySelector('.dropdown-content');
+        content.classList.remove('show');
+        if (activeDropdown === dropdown) {
+            activeDropdown = null;
+        }
+    }
+    
+    function closeAllDropdowns() {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            closeDropdown(dropdown);
+        });
+    }
+    
+    function toggleDropdown(dropdown) {
+        if (dropdown.classList.contains('open')) {
+            closeDropdown(dropdown);
+        } else {
+            openDropdown(dropdown);
+        }
+    }
+    
+    function selectCategoryModern(category) {
+        console.log('🔥 FILTRO MODERNO - Categoria:', category);
+        
+        // Mostrar loading visual
+        const productGrid = document.getElementById('product-grid');
+        if (productGrid) {
+            productGrid.innerHTML = `
+                <div class="col-span-full flex justify-center items-center py-20">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5D4037] mx-auto mb-4"></div>
+                        <p class="text-gray-600">Carregando produtos...</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Usar timeout para simular loading (UX melhor)
+        setTimeout(() => {
+            applyFilterModern(category);
+        }, 300);
+    }
+    
+    function applyFilterModern(category) {
+        const produtos = window.produtos || [];
+        console.log('📦 Produtos disponíveis para filtro:', produtos.length);
+        
+        if (produtos.length === 0) {
+            console.warn('⚠️ Nenhum produto disponível');
+            showErrorMessage('Produtos não carregados. Tente novamente.');
+            return;
+        }
+        
+        let filtered = [];
+        let categoryLabel = '';
+        
+        switch(category) {
+            case 'all':
+                filtered = produtos;
+                categoryLabel = 'Todos os Produtos';
+                break;
+            case 'fertilizantes':
+                filtered = produtos.filter(p => p.category === 'fertilizantes');
+                categoryLabel = 'Fertilizantes';
+                break;
+            case 'aves':
+                filtered = produtos.filter(p => p.category === 'aves');
+                categoryLabel = 'Aves';
+                break;
+            case 'ovos':
+                filtered = produtos.filter(p => p.category === 'ovos');
+                categoryLabel = 'Ovos';
+                break;
+            case 'granja':
+                filtered = produtos.filter(p => ['fertilizantes', 'aves', 'ovos'].includes(p.category));
+                categoryLabel = 'Produtos da Granja';
+                break;
+            case 'parceiros':
+                filtered = produtos.filter(p => p.category === 'parceiros');
+                categoryLabel = 'Parceiros';
+                break;
+            default:
+                filtered = produtos.filter(p => p.category === category);
+                categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+        
+        console.log(`✅ Filtro aplicado: ${categoryLabel} (${filtered.length} produtos)`);
+        
+        // Renderizar produtos com animação
+        renderProductsModern(filtered, categoryLabel);
+        
+        // Atualizar indicador de categoria ativa
+        updateActiveCategory(category);
+        
+        // Scroll suave para produtos
+        document.getElementById('produtos')?.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+    
+    function renderProductsModern(products, categoryLabel) {
+        const productGrid = document.getElementById('product-grid');
+        const filterText = document.getElementById('filter-text');
+        
+        if (!productGrid) return;
+        
+        // Atualizar indicador de filtro
+        if (filterText) {
+            filterText.textContent = categoryLabel;
+        }
+        
+        if (products.length === 0) {
+            productGrid.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl text-gray-300 mb-4">🔍</div>
+                    <h3 class="text-xl font-bold text-gray-600 mb-2">Nenhum produto encontrado</h3>
+                    <p class="text-gray-500">Tente uma categoria diferente</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Renderizar produtos com fade-in
+        productGrid.innerHTML = products.map((product, index) => `
+            <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl opacity-0 animate-fade-in" style="animation-delay: ${index * 100}ms">
+                <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
+                <h3 class="text-xl font-bold mb-2 font-lora text-[#5D4037]">${product.name}</h3>
+                <p class="text-gray-600 mb-4 flex-grow text-sm">${product.slogan}</p>
+                <span class="text-2xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
+                <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition w-full transform hover:scale-105" data-id="${product.id}">
+                    <i class="fas fa-eye mr-2"></i>Ver Detalhes
+                </button>
+            </div>
+        `).join('');
+        
+        // Triggerar animações
+        setTimeout(() => {
+            productGrid.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('opacity-0');
+                card.classList.add('opacity-100');
+            });
+        }, 50);
+    }
+    
+    function showErrorMessage(message) {
+        const productGrid = document.getElementById('product-grid');
+        if (productGrid) {
+            productGrid.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl text-red-300 mb-4">⚠️</div>
+                    <h3 class="text-xl font-bold text-red-600 mb-2">Erro</h3>
+                    <p class="text-red-500">${message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    function updateActiveCategory(category) {
+        // Remover classe active de todos os botões
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Adicionar classe active ao botão correspondente
+        if (category === 'all') {
+            document.getElementById('nav-all')?.classList.add('active');
+        } else if (['granja', 'fertilizantes', 'aves', 'ovos'].includes(category)) {
+            document.getElementById('nav-granja')?.classList.add('active');
+        } else if (category === 'parceiros') {
+            document.getElementById('nav-parceiros')?.classList.add('active');
+        }
+    }
+    
+    function selectCategory(category, label) {
+        console.log('📂 Categoria selecionada:', category, label);
+        
+        // Fechar todos os dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => {
+            d.classList.remove('open');
+        });
+        
+        // Filtrar produtos - usar window.filterProducts para garantir
+        console.log('🔍 Chamando filtro para categoria:', category);
+        if (window.filterProducts && typeof window.filterProducts === 'function') {
+            console.log('✅ Função filterProducts encontrada');
+            window.filterProducts(category);
+        } else {
+            console.error('❌ Função filterProducts não encontrada ou não é função');
+            console.log('🔍 window.filterProducts:', typeof window.filterProducts);
+            
+            // Fallback: filtro manual
+            const produtos = window.produtos || [];
+            console.log('🔄 Fallback: produtos disponíveis:', produtos.length);
+            
+            if (produtos.length > 0) {
+                let filtered = produtos;
+                if (category === 'fertilizantes') {
+                    filtered = produtos.filter(p => p.category === 'fertilizantes');
+                } else if (category === 'aves') {
+                    filtered = produtos.filter(p => p.category === 'aves');
+                } else if (category === 'ovos') {
+                    filtered = produtos.filter(p => p.category === 'ovos');
+                } else if (category === 'granja') {
+                    filtered = produtos.filter(p => p.category !== 'parceiros');
+                }
+                
+                const productGrid = document.getElementById('product-grid');
+                if (productGrid) {
+                    productGrid.innerHTML = filtered.map(p => `
+                        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                            <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                            <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
+                            <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
+                            <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
+                            <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
+                        </div>
+                    `).join('');
+                    
+                    console.log('✅ Produtos filtrados (fallback):', filtered.length);
+                }
+            }
+        }
+        
+        // Scroll para produtos
+        document.getElementById('produtos').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Fechar dropdowns ao clicar fora
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown').forEach(d => {
+                d.classList.remove('open');
+            });
+        }
+    });
+
     
     // Função de debug para forçar reaplicação do layout
     function debugLayoutReload() {

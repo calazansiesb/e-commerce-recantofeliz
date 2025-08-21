@@ -143,20 +143,21 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 // Navegação entre seções
 async function showSection(sectionName) {
-    console.log('🔍 DEBUG: showSection chamado com:', sectionName);
+    console.log('🔍 Mostrando seção:', sectionName);
     
+    // Ocultar todas as seções
     document.querySelectorAll('.section').forEach(section => {
         section.classList.add('hidden');
     });
     
+    // Mostrar seção alvo
     const targetSection = document.getElementById(sectionName + '-section');
-    console.log('🔍 DEBUG: targetSection encontrado:', !!targetSection);
-    
     if (targetSection) {
         targetSection.classList.remove('hidden');
-        console.log('🔍 DEBUG: Seção', sectionName, 'deve estar visível agora');
+        console.log('✅ Seção', sectionName, 'exibida');
     } else {
-        console.error('❌ ERRO: Seção não encontrada:', sectionName + '-section');
+        console.error('❌ Seção não encontrada:', sectionName + '-section');
+        return;
     }
     
     document.querySelectorAll('.nav-btn').forEach(btn => {

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Produtos - Granja Recanto Feliz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold text-center mb-6 text-green-700">
+                <i class="fas fa-stethoscope mr-2"></i>
+                Diagnóstico de Produtos
+            </h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <button onclick="diagnosticarSistema()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg">
+                    <i class="fas fa-search mr-2"></i>
+                    Executar Diagnóstico
+                </button>
+                
+                <button onclick="corrigirProblemas()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg">
+                    <i class="fas fa-wrench mr-2"></i>
+                    Corrigir Problemas
+                </button>
+            </div>
+            
+            <div id="resultado-diagnostico" class="bg-gray-50 p-4 rounded-lg min-h-32">
+                <p class="text-gray-500 text-center">Clique em "Executar Diagnóstico" para verificar o sistema</p>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-2xl font-bold mb-4 text-gray-700">
+                <i class="fas fa-list mr-2"></i>
+                Produtos Encontrados
+            </h2>
+            <div id="lista-produtos" class="space-y-2">
+                <p class="text-gray-500">Execute o diagnóstico primeiro</p>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center">
+            <a href="index.html" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Voltar ao Site
+            </a>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script>
+        function diagnosticarSistema() {
+            const resultado = document.getElementById('resultado-diagnostico');
+            const listaProdutos = document.getElementById('lista-produtos');
+            
+            resultado.innerHTML = '<p class="text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i>Executando diagnóstico...</p>';
+            
+            setTimeout(() => {
+                let diagnostico = [];
+                let produtos = [];
+                
+                // 1. Verificar DataManager
+                if (window.dataManager) {
+                    diagnostico.push('<div class="text-green-600"><i class="fas fa-check mr-2"></i>DataManager: OK</div>');
+                    
+                    try {
+                        produtos = window.dataManager.getProducts();
+                        diagnostico.push(`<div class="text-green-600"><i class="fas fa-check mr-2"></i>Produtos carregados: ${produtos.length}</div>`);
+                    } catch (error) {
+                        diagnostico.push(`<div class="text-red-600"><i class="fas fa-times mr-2"></i>Erro ao carregar produtos: ${error.message}</div>`);
+                    }
+                } else {
+                    diagnostico.push('<div class="text-red-600"><i class="fas fa-times mr-2"></i>DataManager: NÃO ENCONTRADO</div>');
+                }
+                
+                // 2. Verificar localStorage
+                const localData = localStorage.getItem('granjaRecantoFelizData');
+                if (localData) {
+                    try {
+                        const parsed = JSON.parse(localData);
+                        diagnostico.push(`<div class="text-green-600"><i class="fas fa-check mr-2"></i>localStorage: ${parsed.products?.length || 0} produtos</div>`);
+                    } catch (error) {
+                        diagnostico.push('<div class="text-red-600"><i class="fas fa-times mr-2"></i>localStorage: DADOS CORROMPIDOS</div>');
+                    }
+                } else {
+                    diagnostico.push('<div class="text-yellow-600"><i class="fas fa-exclamation mr-2"></i>localStorage: VAZIO</div>');
+                }
+                
+                // 3. Verificar SQLite
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    try {
+                        const sqliteProdutos = window.sqliteManager.getProducts();
+                        diagnostico.push(`<div class="text-green-600"><i class="fas fa-check mr-2"></i>SQLite: ${sqliteProdutos.length} produtos</div>`);
+                    } catch (error) {
+                        diagnostico.push(`<div class="text-red-600"><i class="fas fa-times mr-2"></i>SQLite: ERRO - ${error.message}</div>`);
+                    }
+                } else {
+                    diagnostico.push('<div class="text-yellow-600"><i class="fas fa-exclamation mr-2"></i>SQLite: NÃO INICIALIZADO</div>');
+                }
+                
+                // 4. Verificar arquivo JSON
+                fetch('data/produtos.json')
+                    .then(response => response.json())
+                    .then(data => {
+                        diagnostico.push(`<div class="text-green-600"><i class="fas fa-check mr-2"></i>Arquivo JSON: ${data.products?.length || 0} produtos</div>`);
+                        resultado.innerHTML = diagnostico.join('');
+                    })
+                    .catch(error => {
+                        diagnostico.push(`<div class="text-red-600"><i class="fas fa-times mr-2"></i>Arquivo JSON: ERRO - ${error.message}</div>`);
+                        resultado.innerHTML = diagnostico.join('');
+                    });
+                
+                // Mostrar produtos encontrados
+                if (produtos.length > 0) {
+                    listaProdutos.innerHTML = produtos.map(p => 
+                        `<div class="bg-gray-100 p-3 rounded border-l-4 border-green-500">
+                            <strong>${p.name}</strong> - R$ ${p.price?.toFixed(2) || '0.00'} 
+                            <span class="text-sm text-gray-600">(${p.category})</span>
+                        </div>`
+                    ).join('');
+                } else {
+                    listaProdutos.innerHTML = '<div class="text-red-600 p-3 bg-red-50 rounded"><i class="fas fa-exclamation-triangle mr-2"></i>Nenhum produto encontrado!</div>';
+                }
+            }, 1000);
+        }
+        
+        function corrigirProblemas() {
+            const resultado = document.getElementById('resultado-diagnostico');
+            resultado.innerHTML = '<p class="text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i>Corrigindo problemas...</p>';
+            
+            setTimeout(() => {
+                let correcoes = [];
+                
+                // 1. Recriar DataManager se necessário
+                if (!window.dataManager) {
+                    window.dataManager = new DataManager();
+                    correcoes.push('<div class="text-green-600"><i class="fas fa-check mr-2"></i>DataManager recriado</div>');
+                }
+                
+                // 2. Carregar dados do JSON se localStorage estiver vazio
+                const localData = localStorage.getItem('granjaRecantoFelizData');
+                if (!localData) {
+                    fetch('data/produtos.json')
+                        .then(response => response.json())
+                        .then(data => {
+                            const dadosCompletos = {
+                                products: data.products,
+                                lastUpdate: new Date().toISOString(),
+                                initialized: true,
+                                source: 'json-fallback'
+                            };
+                            localStorage.setItem('granjaRecantoFelizData', JSON.stringify(dadosCompletos));
+                            correcoes.push('<div class="text-green-600"><i class="fas fa-check mr-2"></i>Dados carregados do JSON para localStorage</div>');
+                            
+                            // Recriar DataManager com novos dados
+                            window.dataManager = new DataManager();
+                            correcoes.push('<div class="text-green-600"><i class="fas fa-check mr-2"></i>DataManager reinicializado com dados</div>');
+                            
+                            resultado.innerHTML = correcoes.join('') + 
+                                '<div class="mt-4 p-3 bg-green-100 border border-green-400 rounded">' +
+                                '<strong class="text-green-700">✅ Correção concluída!</strong><br>' +
+                                '<small>Recarregue a página principal para ver os produtos.</small>' +
+                                '</div>';
+                        })
+                        .catch(error => {
+                            correcoes.push(`<div class="text-red-600"><i class="fas fa-times mr-2"></i>Erro ao carregar JSON: ${error.message}</div>`);
+                            resultado.innerHTML = correcoes.join('');
+                        });
+                } else {
+                    // Forçar reinicialização do DataManager
+                    window.dataManager = new DataManager();
+                    correcoes.push('<div class="text-green-600"><i class="fas fa-check mr-2"></i>DataManager reinicializado</div>');
+                    
+                    resultado.innerHTML = correcoes.join('') + 
+                        '<div class="mt-4 p-3 bg-blue-100 border border-blue-400 rounded">' +
+                        '<strong class="text-blue-700">ℹ️ Sistema já funcionando</strong><br>' +
+                        '<small>Os dados estão presentes. Tente recarregar a página principal.</small>' +
+                        '</div>';
+                }
+            }, 1000);
+        }
+        
+        // Auto-executar diagnóstico ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(diagnosticarSistema, 500);
+        });
+    </script>
+</body>
+</html>
