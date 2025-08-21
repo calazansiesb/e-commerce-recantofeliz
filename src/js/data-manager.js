@@ -4,6 +4,7 @@
 class DataManager {
     constructor() {
         this.storageKey = 'granjaRecantoFelizData';
+        this.historyKey = 'granjaRecantoFelizHistory';
         this.defaultProducts = [
             {
                 id: 1,
@@ -11,7 +12,7 @@ class DataManager {
                 category: "fertilizantes",
                 slogan: "Mais do que Adubo: um substrato vivo e completo.",
                 description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
-                price: 40.00,
+                price: 15,
                 image: "imagens/produtos/1/1.png",
                 stock: 25,
                 active: true
@@ -22,7 +23,7 @@ class DataManager {
                 category: "fertilizantes",
                 slogan: "Adubo de galinha líquido e potente.",
                 description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.",
-                price: 25.00,
+                price: 5,
                 image: "imagens/produtos/2/1.png",
                 stock: 40,
                 active: true
@@ -33,7 +34,7 @@ class DataManager {
                 category: "ovos",
                 slogan: "10 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.",
-                price: 18.00,
+                price: 15,
                 image: "imagens/produtos/3/1.jpeg",
                 stock: 120,
                 active: true
@@ -44,7 +45,7 @@ class DataManager {
                 category: "ovos",
                 slogan: "20 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.",
-                price: 30.00,
+                price: 25,
                 image: "imagens/produtos/4/1.jpeg",
                 stock: 80,
                 active: true
@@ -55,7 +56,7 @@ class DataManager {
                 category: "ovos",
                 slogan: "30 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.",
-                price: 45.00,
+                price: 34,
                 image: "imagens/produtos/5/1.png",
                 stock: 50,
                 active: true
@@ -66,7 +67,7 @@ class DataManager {
                 category: "aves",
                 slogan: "Galinha caipira cortada, pronta para cozinhar.",
                 description: "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.",
-                price: 60.00,
+                price: 45,
                 image: "imagens/produtos/6/1.png",
                 stock: 15,
                 active: true
@@ -77,7 +78,7 @@ class DataManager {
                 category: "aves",
                 slogan: "Galinha caipira inteira, fresca e saborosa.",
                 description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
-                price: 110.00,
+                price: 40,
                 image: "imagens/produtos/7/1.png",
                 stock: 8,
                 active: true
@@ -230,35 +231,483 @@ class DataManager {
 
     init() {
         try {
+            console.log('🚀 Inicializando DataManager...');
             const savedData = localStorage.getItem(this.storageKey);
+            
+            // Primeiro verificar se há dados no SQLite
+            let sqliteProducts = [];
+            if (typeof window !== 'undefined' && window.sqliteManager && window.sqliteManager.db) {
+                try {
+                    sqliteProducts = window.sqliteManager.getProducts();
+                    console.log(`🗄️ SQLite: ${sqliteProducts.length} produtos encontrados`);
+                } catch (sqliteError) {
+                    console.warn('⚠️ Erro ao acessar SQLite:', sqliteError);
+                }
+            }
+            
             if (!savedData) {
+                console.log('🔄 localStorage vazio, inicializando...');
+                
+                // Se há dados no SQLite, usar eles; senão usar padrão
+                const productsToUse = sqliteProducts.length > 0 ? sqliteProducts : this.defaultProducts;
+                
                 const initialData = {
-                    products: this.defaultProducts,
+                    products: productsToUse,
                     layouts: this.defaultLayouts,
                     carouselThemes: this.defaultCarouselThemes,
-                    lastUpdate: new Date().toISOString()
+                    lastUpdate: new Date().toISOString(),
+                    syncedFromSQLite: sqliteProducts.length > 0,
+                    initialized: true
                 };
                 localStorage.setItem(this.storageKey, JSON.stringify(initialData));
+                console.log(`✅ Inicializado com ${productsToUse.length} produtos`);
+            } else {
+                console.log('✅ Dados existentes encontrados no localStorage');
+                const parsedData = JSON.parse(savedData);
+                console.log(`📊 ${parsedData.products?.length || 0} produtos no localStorage`);
+                
+                // Verificar se os dados estão válidos
+                if (!parsedData.products || !Array.isArray(parsedData.products) || parsedData.products.length === 0) {
+                    console.log('⚠️ Dados inválidos no localStorage, restaurando padrão...');
+                    const restoredData = {
+                        products: this.defaultProducts,
+                        layouts: this.defaultLayouts,
+                        carouselThemes: this.defaultCarouselThemes,
+                        lastUpdate: new Date().toISOString(),
+                        restored: true,
+                        initialized: true
+                    };
+                    localStorage.setItem(this.storageKey, JSON.stringify(restoredData));
+                    console.log(`✅ Dados restaurados com ${this.defaultProducts.length} produtos padrão`);
+                } else {
+                    // Verificar se o localStorage tem menos produtos que o SQLite
+                    if (sqliteProducts.length > 0 && parsedData.products.length < sqliteProducts.length) {
+                        console.log('🔄 localStorage desatualizado, sincronizando com SQLite...');
+                        
+                        parsedData.products = sqliteProducts;
+                        parsedData.lastUpdate = new Date().toISOString();
+                        parsedData.syncedFromSQLite = true;
+                        
+                        localStorage.setItem(this.storageKey, JSON.stringify(parsedData));
+                        console.log(`✅ Sincronizado: ${sqliteProducts.length} produtos do SQLite para localStorage`);
+                    }
+                    
+                    // Marcar como inicializado
+                    if (!parsedData.initialized) {
+                        parsedData.initialized = true;
+                        localStorage.setItem(this.storageKey, JSON.stringify(parsedData));
+                    }
+                    
+                    // Debug: Mostrar primeiros produtos
+                    if (parsedData.products && parsedData.products.length > 0) {
+                        console.log('🔍 Primeiro produto:', parsedData.products[0].name, 'R$', parsedData.products[0].price);
+                        console.log('🔍 Total de produtos ativos:', parsedData.products.filter(p => p.active !== false).length);
+                        console.log('🔍 Último update:', parsedData.lastUpdate);
+                    }
+                }
             }
+            
+            console.log('✅ DataManager inicializado com sucesso');
         } catch (error) {
-            console.error('Erro ao inicializar DataManager:', error);
+            console.error('❌ Erro ao inicializar DataManager:', error);
+            // Fallback: garantir que há produtos padrão
+            this.forceInitializeWithDefaults();
+        }
+    }
+    
+    // Método de emergência para inicializar com produtos padrão
+    forceInitializeWithDefaults() {
+        console.log('🆘 Inicialização de emergência com produtos padrão...');
+        try {
+            const emergencyData = {
+                products: this.defaultProducts,
+                layouts: this.defaultLayouts,
+                carouselThemes: this.defaultCarouselThemes,
+                lastUpdate: new Date().toISOString(),
+                emergency: true,
+                initialized: true
+            };
+            localStorage.setItem(this.storageKey, JSON.stringify(emergencyData));
+            console.log(`🆘 Inicialização de emergência concluída com ${this.defaultProducts.length} produtos`);
+        } catch (error) {
+            console.error('❌ Falha na inicialização de emergência:', error);
         }
     }
 
-    // Obter todos os produtos
-    getProducts() {
+    // CORREÇÃO CRÍTICA: Método principal para obter produtos
+    async getProducts() {
         try {
+            console.log('📊 Obtendo produtos - fonte única de verdade...');
+            
+            // 1. SEMPRE tentar localStorage primeiro (fonte principal)
             const data = localStorage.getItem(this.storageKey);
-            return data ? JSON.parse(data).products : this.defaultProducts;
+            if (data) {
+                try {
+                    const parsedData = JSON.parse(data);
+                    if (parsedData.products && Array.isArray(parsedData.products) && parsedData.products.length > 0) {
+                        console.log(`✅ localStorage: ${parsedData.products.length} produtos encontrados`);
+                        console.log('🔍 Primeiro produto:', parsedData.products[0].name, 'R$', parsedData.products[0].price);
+                        // Normalizar categorias antes de retornar (garante compatibilidade com filtros)
+                        try {
+                            const normalized = await this.normalizeProductCategories(parsedData.products);
+                            parsedData.products = normalized;
+                            try { localStorage.setItem(this.storageKey, JSON.stringify(parsedData)); } catch (e) { /* ignore */ }
+                            return normalized;
+                        } catch (normErr) {
+                            console.warn('⚠️ Falha ao normalizar categorias:', normErr);
+                            return parsedData.products;
+                        }
+                    }
+                } catch (parseError) {
+                    console.error('❌ Erro ao analisar localStorage:', parseError);
+                }
+            }
+            
+            console.log('⚠️ localStorage vazio ou inválido, verificando servidor (data/produtos.json) e SQLite...');
+
+            // 1.5 Tentar buscar do servidor (arquivo JSON) — útil quando o admin está configurado para usar produtos.json
+            try {
+                const resp = await fetch('data/produtos.json', { cache: 'no-store' });
+                if (resp.ok) {
+                    const serverData = await resp.json();
+                    if (serverData.products && Array.isArray(serverData.products) && serverData.products.length > 0) {
+                        console.log(`✅ Produtos carregados do servidor: ${serverData.products.length}`);
+                        // Normalizar categorias antes de salvar/retornar
+                        try {
+                            const normalized = await this.normalizeProductCategories(serverData.products);
+                            const syncData = {
+                                products: normalized,
+                                lastUpdate: new Date().toISOString(),
+                                syncedFromServer: true
+                            };
+                            try { localStorage.setItem(this.storageKey, JSON.stringify(syncData)); } catch (e) { /* ignore storage errors */ }
+                            return normalized;
+                        } catch (normErr) {
+                            console.warn('⚠️ Falha ao normalizar categorias (servidor):', normErr);
+                            const syncData = {
+                                products: serverData.products,
+                                lastUpdate: new Date().toISOString(),
+                                syncedFromServer: true
+                            };
+                            try { localStorage.setItem(this.storageKey, JSON.stringify(syncData)); } catch (e) { /* ignore */ }
+                            return serverData.products;
+                        }
+                    }
+                }
+            } catch (serverError) {
+                console.warn('⚠️ Erro ao buscar produtos do servidor:', serverError);
+            }
+
+            console.log('⚠️ localStorage/servidor inválido ou vazio, verificando SQLite...');
+            
+            // 2. Tentar SQLite como fallback
+            if (window.sqliteManager && window.sqliteManager.db) {
+                try {
+                    const sqliteProducts = window.sqliteManager.getProducts();
+                    if (sqliteProducts && sqliteProducts.length > 0) {
+                        console.log(`✅ SQLite: ${sqliteProducts.length} produtos encontrados`);
+                        
+                        // Sincronizar SQLite -> localStorage
+                        try {
+                            const normalized = await this.normalizeProductCategories(sqliteProducts);
+                            const syncData = {
+                                products: normalized,
+                                lastUpdate: new Date().toISOString(),
+                                syncedFromSQLite: true
+                            };
+                            localStorage.setItem(this.storageKey, JSON.stringify(syncData));
+                            console.log('🔄 Dados sincronizados do SQLite para localStorage');
+                            return normalized;
+                        } catch (normErr) {
+                            console.warn('⚠️ Falha ao normalizar categorias (SQLite):', normErr);
+                            const syncData = {
+                                products: sqliteProducts,
+                                lastUpdate: new Date().toISOString(),
+                                syncedFromSQLite: true
+                            };
+                            localStorage.setItem(this.storageKey, JSON.stringify(syncData));
+                            return sqliteProducts;
+                        }
+                    }
+                } catch (sqliteError) {
+                    console.error('❌ Erro ao acessar SQLite:', sqliteError);
+                }
+            }
+            
+            console.log('⚠️ Nenhuma fonte de dados válida, inicializando com padrão...');
+            
+            // 3. Último recurso: dados padrão (mas salvar no localStorage)
+            const defaultData = {
+                products: this.defaultProducts,
+                lastUpdate: new Date().toISOString(),
+                initialized: true,
+                source: 'default'
+            };
+            try {
+                const normalized = await this.normalizeProductCategories(this.defaultProducts);
+                defaultData.products = normalized;
+                localStorage.setItem(this.storageKey, JSON.stringify(defaultData));
+                console.log(`✅ Dados padrão inicializados: ${normalized.length} produtos (normalizados)`);
+                return normalized;
+            } catch (normErr) {
+                console.warn('⚠️ Falha ao normalizar categorias (padrão):', normErr);
+                localStorage.setItem(this.storageKey, JSON.stringify(defaultData));
+                console.log(`✅ Dados padrão inicializados: ${this.defaultProducts.length} produtos`);
+                return this.defaultProducts;
+            }
+            
         } catch (error) {
-            console.error('Erro ao obter produtos:', error);
+            console.error('❌ Erro crítico ao obter produtos:', error);
             return this.defaultProducts;
         }
     }
 
+    // Retorna grupos de categorias do arquivo `src/data/categories.json` ou fallback padrão
+    async getCategories() {
+        const defaultCategories = [
+            { name: 'Todos', slug: 'todos', categories: [] },
+            { name: 'Parceiros', slug: 'parceiros', categories: ['Mel', 'Laticinios', 'Outros'] },
+            { name: 'Produtos da Granja', slug: 'produtos-da-granja', categories: ['Fertilizantes', 'Aves', 'Ovos'] }
+        ];
+
+        // tentar ler do servidor
+        try {
+            const resp = await fetch('data/categories.json', { cache: 'no-store' });
+            if (resp.ok) {
+                const json = await resp.json();
+                if (json && Array.isArray(json.groups)) return json.groups;
+            }
+        } catch (err) {
+            console.warn('Aviso: nao foi possivel carregar data/categories.json', err);
+        }
+
+        // fallback
+        return defaultCategories;
+    }
+
+    // Helper: slugify a category name (remove accents, spaces, lowercase)
+    slugify(text) {
+        if (!text && text !== '') return '';
+        return text.toString().normalize('NFD')
+            .replace(/\p{Diacritic}/gu, '')
+            .replace(/[^a-zA-Z0-9\s-]/g, '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    // Normalizar categories em uma lista de produtos
+    async normalizeProductCategories(products) {
+        if (!Array.isArray(products)) return products;
+
+        // Obter mapeamento de categorias conhecidas do arquivo categories.json
+        let groups = [];
+        try {
+            groups = await this.getCategories();
+        } catch (err) {
+            groups = [];
+        }
+
+        // Construir mapa de nomes possíveis -> slug
+        const map = new Map();
+        groups.forEach(group => {
+            if (Array.isArray(group.categories)) {
+                group.categories.forEach(catName => {
+                    const key = this.slugify(catName);
+                    // Map explicit category name to itself slug
+                    map.set(key, key);
+                    // Also map original capitalization
+                    map.set(catName.toString().toLowerCase(), key);
+                });
+                // Also map group slug
+                if (group.slug) map.set(group.slug, group.slug);
+            }
+        });
+
+        // Add known fallbacks (parceiros group)
+        if (!map.has('parceiros')) map.set('parceiros', 'parceiros');
+        if (!map.has('fertilizantes')) map.set('fertilizantes', 'fertilizantes');
+        if (!map.has('aves')) map.set('aves', 'aves');
+        if (!map.has('ovos')) map.set('ovos', 'ovos');
+
+        // Normalize each product.category
+        return products.map(p => {
+            const prod = { ...p };
+            const raw = (prod.category || '').toString();
+            const slug = this.slugify(raw);
+
+            // If the slug matches a known map entry, use it
+            if (map.has(slug)) {
+                prod.category = map.get(slug);
+            } else if (map.has(raw.toLowerCase())) {
+                prod.category = map.get(raw.toLowerCase());
+            } else {
+                // Heuristic: map Portuguese words to expected slugs
+                if (slug.includes('ovo')) prod.category = 'ovos';
+                else if (slug.includes('galinha') || slug.includes('ave') || slug.includes('aves')) prod.category = 'aves';
+                else if (slug.includes('fert') || slug.includes('adubo') || slug.includes('substrato')) prod.category = 'fertilizantes';
+                else prod.category = slug || 'outros';
+            }
+
+            return prod;
+        });
+    }
+
+    // Método para debug e verificação de integridade dos dados
+    debugDataIntegrity() {
+        const data = this.getData();
+        console.log('🔍 DEBUG - Integridade dos dados:');
+        console.log('- Total de produtos:', data.products?.length || 0);
+        console.log('- Último update:', data.lastUpdate);
+        console.log('- Produtos ativos:', data.products?.filter(p => p.active !== false).length || 0);
+        
+        if (data.products && data.products.length > 0) {
+            const firstProduct = data.products[0];
+            console.log('- Primeiro produto:', firstProduct.name, 'R$', firstProduct.price);
+            
+            const lastProduct = data.products[data.products.length - 1];
+            console.log('- Último produto:', lastProduct.name, 'R$', lastProduct.price);
+        }
+        
+        return data;
+    }
+    
+    // Força refresh dos dados para resolver inconsistências
+    forceRefresh() {
+        console.log('🔄 Forçando refresh dos dados...');
+        const data = this.getData();
+        data.lastUpdate = new Date().toISOString();
+        this.saveData(data);
+        
+        // Disparar evento de atualização
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('dataManagerRefreshed', {
+                detail: { timestamp: data.lastUpdate, source: 'forceRefresh' }
+            }));
+        }
+        
+        return data;
+    }
+
+    // Restaurar produtos padrão se necessário
+    restoreDefaultProducts() {
+        console.log('🔄 Restaurando produtos padrão...');
+        
+        try {
+            const currentData = this.getData();
+            
+            // Se há poucos produtos, restaurar os padrão
+            if (!currentData.products || currentData.products.length < 5) {
+                console.log('⚠️ Poucos produtos encontrados, restaurando padrão...');
+                
+                const restoredData = {
+                    ...currentData,
+                    products: this.defaultProducts,
+                    lastUpdate: new Date().toISOString(),
+                    restored: true,
+                    restoredAt: new Date().toISOString()
+                };
+                
+                localStorage.setItem(this.storageKey, JSON.stringify(restoredData));
+                console.log(`✅ ${this.defaultProducts.length} produtos padrão restaurados`);
+                
+                return restoredData;
+            } else {
+                console.log('✅ Quantidade adequada de produtos, não é necessário restaurar');
+                return currentData;
+            }
+        } catch (error) {
+            console.error('❌ Erro ao restaurar produtos padrão:', error);
+            return null;
+        }
+    }
+
+    // Sincronizar dados do SQLite para localStorage
+    syncFromSQLite() {
+        console.log('🔄 Sincronizando dados do SQLite...');
+        
+        try {
+            if (typeof window !== 'undefined' && window.sqliteManager && window.sqliteManager.db) {
+                const sqliteProducts = window.sqliteManager.getProducts();
+                console.log(`📊 SQLite: ${sqliteProducts.length} produtos encontrados`);
+                
+                if (sqliteProducts.length > 0) {
+                    const currentData = this.getData();
+                    currentData.products = sqliteProducts;
+                    currentData.lastUpdate = new Date().toISOString();
+                    currentData.syncedFromSQLite = true;
+                    currentData.syncTimestamp = new Date().toISOString();
+                    
+                    localStorage.setItem(this.storageKey, JSON.stringify(currentData));
+                    console.log(`✅ ${sqliteProducts.length} produtos sincronizados do SQLite`);
+                    
+                    // Disparar evento de atualização
+                    window.dispatchEvent(new CustomEvent('productsUpdated', { 
+                        detail: { source: 'sqliteSync', products: sqliteProducts }
+                    }));
+                    
+                    return currentData;
+                } else {
+                    console.log('⚠️ SQLite está vazio, não há dados para sincronizar');
+                    return null;
+                }
+            } else {
+                console.log('⚠️ SQLiteManager não disponível');
+                return null;
+            }
+        } catch (error) {
+            console.error('❌ Erro ao sincronizar do SQLite:', error);
+            return null;
+        }
+    }
+
+    // MÉTODO REMOVIDO - Substituído pela versão corrigida acima
+    
+    // Método auxiliar para obter dados completos
+    getData() {
+        try {
+            const data = localStorage.getItem(this.storageKey);
+            if (data) {
+                return JSON.parse(data);
+            } else {
+                // Retornar estrutura padrão
+                return {
+                    products: this.defaultProducts,
+                    layouts: this.defaultLayouts,
+                    carouselThemes: this.defaultCarouselThemes,
+                    lastUpdate: new Date().toISOString(),
+                    initialized: false
+                };
+            }
+        } catch (error) {
+            console.error('❌ Erro ao obter dados:', error);
+            return {
+                products: this.defaultProducts,
+                layouts: this.defaultLayouts,
+                carouselThemes: this.defaultCarouselThemes,
+                lastUpdate: new Date().toISOString(),
+                error: true
+            };
+        }
+    }
+    
+    // Método auxiliar para salvar dados
+    saveData(data) {
+        try {
+            data.lastUpdate = new Date().toISOString();
+            localStorage.setItem(this.storageKey, JSON.stringify(data));
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao salvar dados:', error);
+            return false;
+        }
+    }
+
     // Obter produtos ativos
-    getActiveProducts() {
-        return this.getProducts().filter(product => product.active !== false);
+    async getActiveProducts() {
+        const products = await this.getProducts();
+        return products.filter(product => product.active !== false);
     }
 
     // Obter layouts
@@ -415,7 +864,7 @@ class DataManager {
         }
     }
 
-    // Adicionar produto
+    // Adicionar produto com histórico
     addProduct(productData) {
         try {
             const products = this.getProducts();
@@ -426,8 +875,12 @@ class DataManager {
                 ...productData,
                 stock: productData.stock || 0,
                 active: true,
-                image: productData.image || `imagens/produtos/${newId}/1.png`
+                image: productData.image || `imagens/produtos/${newId}/1.png`,
+                createdAt: new Date().toISOString()
             };
+            
+            // Registrar histórico
+            this.logProductChange(null, newProduct, 'CREATE');
             
             products.push(newProduct);
             return this.saveProducts(products);
@@ -437,43 +890,292 @@ class DataManager {
         }
     }
 
-    // Salvar produtos
-    saveProducts(products) {
+    // CORREÇÃO CRÍTICA: Salvar produtos com persistência garantida
+    async saveProducts(products) {
         try {
-            const data = JSON.parse(localStorage.getItem(this.storageKey) || '{}');
-            data.products = products;
-            data.lastUpdate = new Date().toISOString();
+            console.log(`💾 SALVAMENTO CRÍTICO: ${products.length} produtos...`);
             
-            localStorage.setItem(this.storageKey, JSON.stringify(data));
-            window.dispatchEvent(new CustomEvent('productsUpdated', { detail: products }));
+            // 1. SEMPRE salvar no localStorage (fonte única de verdade)
+            const saveData = {
+                products: products,
+                lastUpdate: new Date().toISOString(),
+                savedAt: new Date().toISOString(),
+                version: '2.0.1'
+            };
+            
+            // Salvar com verificação tripla
+            localStorage.setItem(this.storageKey, JSON.stringify(saveData));
+            
+            // Verificação imediata 1
+            const check1 = localStorage.getItem(this.storageKey);
+            if (!check1) {
+                console.error('❌ FALHA CRÍTICA: localStorage não salvou!');
+                return false;
+            }
+            
+            // Verificação imediata 2
+            let parsedCheck;
+            try {
+                parsedCheck = JSON.parse(check1);
+            } catch (parseError) {
+                console.error('❌ FALHA CRÍTICA: Dados corrompidos no localStorage!');
+                return false;
+            }
+            
+            // Verificação imediata 3
+            if (!parsedCheck.products || parsedCheck.products.length !== products.length) {
+                console.error('❌ FALHA CRÍTICA: Dados incompletos no localStorage!');
+                console.log('Esperado:', products.length, 'Salvo:', parsedCheck.products?.length || 0);
+                return false;
+            }
+            
+            console.log(`✅ SUCESSO CRÍTICO: ${parsedCheck.products.length} produtos salvos`);
+            console.log(`📅 Timestamp: ${parsedCheck.lastUpdate}`);
+            console.log(`🔍 Primeiro produto: ${parsedCheck.products[0].name} - R$ ${parsedCheck.products[0].price}`);
+            
+            // 2. Sincronizar com SQLite (não crítico)
+            try {
+                await this.saveToSQLiteIfAvailable(products);
+            } catch (sqliteError) {
+                console.warn('⚠️ SQLite sync falhou (não crítico):', sqliteError);
+            }
+            
+            // 3. Disparar evento de atualização
+            window.dispatchEvent(new CustomEvent('productsUpdated', { 
+                detail: { 
+                    products: products, 
+                    source: 'saveProducts',
+                    timestamp: saveData.lastUpdate
+                }
+            }));
+            console.log('📡 Evento productsUpdated disparado');
+            
+            // 4. Verificação final após 100ms
+            setTimeout(() => {
+                const finalCheck = localStorage.getItem(this.storageKey);
+                if (finalCheck) {
+                    const finalParsed = JSON.parse(finalCheck);
+                    console.log(`🔒 VERIFICAÇÃO FINAL: ${finalParsed.products?.length || 0} produtos persistidos`);
+                } else {
+                    console.error('❌ VERIFICAÇÃO FINAL FALHOU!');
+                }
+            }, 100);
+            
             return true;
+            
         } catch (error) {
-            console.error('Erro ao salvar produtos:', error);
+            console.error('❌ ERRO CRÍTICO no saveProducts:', error);
+            return false;
+        }
+    }
+    
+    // Salvar no SQLite se disponível
+    async saveToSQLiteIfAvailable(products) {
+        try {
+            console.log('🗄️ Tentando sincronizar com SQLite...');
+            
+            // Verificar se SQLite está disponível (sem depender de flags)
+            if (window.sqliteManager && window.sqliteManager.db) {
+                console.log('✅ SQLite disponível - sincronizando produtos...');
+                
+                // Para cada produto, tentar salvar/atualizar no SQLite
+                for (const product of products) {
+                    try {
+                        // Verificar se produto já existe no SQLite
+                        const existingProducts = window.sqliteManager.getProducts();
+                        const existingProduct = existingProducts.find(p => p.id === product.id);
+                        
+                        if (existingProduct) {
+                            // Atualizar produto existente
+                            console.log(`🔄 Atualizando produto ${product.id} no SQLite...`);
+                            const updated = window.sqliteManager.updateProduct(product.id, product);
+                            if (updated) {
+                                console.log(`✅ SQLite: Produto ${product.id} (${product.name}) atualizado - R$ ${product.price}`);
+                            } else {
+                                console.warn(`⚠️ Falha ao atualizar produto ${product.id} no SQLite`);
+                            }
+                        } else {
+                            // Adicionar novo produto
+                            console.log(`➕ Adicionando produto ${product.id} no SQLite...`);
+                            const added = window.sqliteManager.addProduct(product);
+                            if (added) {
+                                console.log(`✅ SQLite: Produto ${product.id} (${product.name}) adicionado`);
+                            } else {
+                                console.warn(`⚠️ Falha ao adicionar produto ${product.id} no SQLite`);
+                            }
+                        }
+                    } catch (productError) {
+                        console.error(`❌ Erro ao processar produto ${product.id} no SQLite:`, productError);
+                    }
+                }
+                
+                // Verificar se a sincronização funcionou
+                const updatedProducts = window.sqliteManager.getProducts();
+                console.log(`🔍 Verificação pós-sincronização: ${updatedProducts.length} produtos no SQLite`);
+                
+                console.log('✅ Sincronização SQLite concluída');
+                return true;
+                
+            } else {
+                console.log('⚠️ SQLite não disponível - tentando inicializar...');
+                
+                // Tentar inicializar SQLite
+                if (window.initSQLiteManager) {
+                    try {
+                        await window.initSQLiteManager();
+                        // Tentar novamente após inicialização
+                        if (window.sqliteManager && window.sqliteManager.db) {
+                            console.log('🔄 SQLite inicializado, tentando sincronização novamente...');
+                            return await this.saveToSQLiteIfAvailable(products);
+                        }
+                    } catch (initError) {
+                        console.warn('⚠️ Falha ao inicializar SQLite:', initError);
+                    }
+                }
+                
+                console.log('ℹ️ Continuando apenas com localStorage');
+                return false;
+            }
+            
+        } catch (error) {
+            console.error('❌ Erro crítico na sincronização SQLite:', error);
             return false;
         }
     }
 
-    // Atualizar produto
-    updateProduct(productId, productData) {
+    // Enviar dados ao servidor (POST /admin/save-products)
+    // Retorna true se o servidor respondeu com sucesso, false caso contrário
+    async pushDataToServer(timeoutMs = 5000) {
         try {
+            const endpoint = '/admin/save-products';
+            const data = this.getData();
+
+            // Obter token do localStorage ou perguntar ao usuário (uma vez)
+            let token = localStorage.getItem('adminToken') || '';
+            if (!token) {
+                try {
+                    token = prompt('Informe o ADMIN_TOKEN para enviar alterações ao servidor (ou deixe em branco para pular):');
+                    if (token) localStorage.setItem('adminToken', token);
+                } catch (promptError) {
+                    console.warn('⚠️ Prompt de token não disponível:', promptError);
+                }
+            }
+
+            // Se não temos token, não tentamos enviar
+            if (!token) {
+                console.log('ℹ️ Nenhum token fornecido — pulando envio ao servidor');
+                return false;
+            }
+
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeoutMs);
+
+            const resp = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Admin-Token': token
+                },
+                body: JSON.stringify(data),
+                signal: controller.signal
+            });
+
+            clearTimeout(id);
+
+            if (resp.ok) {
+                console.log('✅ Dados enviados ao servidor com sucesso');
+                return true;
+            } else {
+                console.warn('⚠️ Servidor respondeu com erro ao enviar dados:', resp.status, resp.statusText);
+                return false;
+            }
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                console.warn('⚠️ Envio ao servidor abortado por timeout');
+            } else {
+                console.error('❌ Erro ao enviar dados ao servidor:', error);
+            }
+            return false;
+        }
+    }
+    
+    // Backup automático desabilitado - usando SQLite
+    createAutoBackup(data) {
+        console.log('💾 Backup automático desabilitado - usando SQLite');
+        return true;
+    }
+
+    // Função desabilitada - usando SQLite
+    saveProductsToCSV(products) {
+        console.log('💾 CSV backup desabilitado - usando SQLite');
+        return true;
+    }
+
+    // Atualizar produto com histórico
+    async updateProduct(productId, productData) {
+        try {
+            console.log(`🔧 Atualizando produto ${productId}:`, productData);
+            
             const products = this.getProducts();
             const index = products.findIndex(p => p.id === productId);
             
             if (index !== -1) {
-                products[index] = { ...products[index], ...productData };
-                return this.saveProducts(products);
+                const oldProduct = { ...products[index] };
+                const newProduct = { ...products[index], ...productData };
+                
+                console.log(`📝 Produto antes: ${oldProduct.name} - R$ ${oldProduct.price}`);
+                console.log(`📝 Produto depois: ${newProduct.name} - R$ ${newProduct.price}`);
+                
+                // Registrar histórico de alterações
+                this.logProductChange(oldProduct, newProduct, 'UPDATE');
+                
+                products[index] = newProduct;
+                
+                // Salvar produtos (incluindo sincronização com SQLite)
+                const saved = await this.saveProducts(products);
+                
+                if (saved) {
+                    console.log(`✅ Produto ${productId} atualizado com sucesso`);
+                    
+                    // Forçar sincronização imediata com SQLite
+                    if (window.sqliteManager && window.sqliteManager.db) {
+                        try {
+                            const sqliteUpdated = window.sqliteManager.updateProduct(productId, newProduct);
+                            if (sqliteUpdated) {
+                                console.log(`🗄️ SQLite também atualizado para produto ${productId}`);
+                            } else {
+                                console.warn(`⚠️ Falha na atualização direta do SQLite para produto ${productId}`);
+                            }
+                        } catch (sqliteError) {
+                            console.error(`❌ Erro na atualização direta do SQLite:`, sqliteError);
+                        }
+                    }
+                } else {
+                    console.error(`❌ Falha ao salvar produto ${productId}`);
+                }
+                
+                return saved;
+            } else {
+                console.warn(`⚠️ Produto ${productId} não encontrado`);
+                return false;
             }
-            return false;
         } catch (error) {
-            console.error('Erro ao atualizar produto:', error);
+            console.error('❌ Erro ao atualizar produto:', error);
             return false;
         }
     }
 
-    // Deletar produto
+    // Deletar produto com histórico
     deleteProduct(productId) {
         try {
             const products = this.getProducts();
+            const productToDelete = products.find(p => p.id === productId);
+            
+            if (productToDelete) {
+                // Registrar histórico antes de deletar
+                this.logProductChange(productToDelete, null, 'DELETE');
+            }
+            
             const filteredProducts = products.filter(p => p.id !== productId);
             return this.saveProducts(filteredProducts);
         } catch (error) {
@@ -515,9 +1217,170 @@ class DataManager {
         }
     }
 
-    // Importar dados
+    // Registrar histórico de alterações
+    logProductChange(oldProduct, newProduct, action) {
+        try {
+            const history = JSON.parse(localStorage.getItem(this.historyKey) || '[]');
+            const timestamp = new Date().toISOString();
+            
+            const logEntry = {
+                id: Date.now(),
+                timestamp,
+                action, // CREATE, UPDATE, DELETE
+                productId: newProduct?.id || oldProduct?.id,
+                productName: newProduct?.name || oldProduct?.name,
+                changes: []
+            };
+            
+            if (action === 'UPDATE' && oldProduct && newProduct) {
+                // Detectar mudanças específicas
+                const fields = ['name', 'price', 'stock', 'category', 'slogan', 'description'];
+                fields.forEach(field => {
+                    if (oldProduct[field] !== newProduct[field]) {
+                        logEntry.changes.push({
+                            field,
+                            oldValue: oldProduct[field],
+                            newValue: newProduct[field]
+                        });
+                    }
+                });
+            }
+            
+            history.push(logEntry);
+            
+            // Manter apenas os últimos 1000 registros
+            if (history.length > 1000) {
+                history.splice(0, history.length - 1000);
+            }
+            
+            localStorage.setItem(this.historyKey, JSON.stringify(history));
+            
+            console.log(`📝 Histórico registrado: ${action} - Produto ${logEntry.productId}`);
+            return true;
+        } catch (error) {
+            console.error('Erro ao registrar histórico:', error);
+            return false;
+        }
+    }
+    
+    // Obter histórico de alterações
+    getProductHistory(productId = null, limit = 50) {
+        try {
+            const history = JSON.parse(localStorage.getItem(this.historyKey) || '[]');
+            
+            let filtered = history;
+            if (productId) {
+                filtered = history.filter(entry => entry.productId === productId);
+            }
+            
+            return filtered
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, limit);
+        } catch (error) {
+            console.error('Erro ao obter histórico:', error);
+            return [];
+        }
+    }
+    
+    // Exportar histórico como CSV
+    exportHistoryToCSV() {
+        try {
+            const history = this.getProductHistory(null, 1000);
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+            
+            const csvHeader = 'ID,Data_Hora,Acao,Produto_ID,Produto_Nome,Campo_Alterado,Valor_Anterior,Valor_Novo\n';
+            
+            const csvData = history.flatMap(entry => {
+                if (entry.changes && entry.changes.length > 0) {
+                    return entry.changes.map(change => [
+                        entry.id,
+                        entry.timestamp,
+                        entry.action,
+                        entry.productId,
+                        `"${(entry.productName || '').replace(/"/g, '""')}"`,
+                        change.field,
+                        `"${(change.oldValue || '').toString().replace(/"/g, '""')}"`,
+                        `"${(change.newValue || '').toString().replace(/"/g, '""')}"`
+                    ].join(','));
+                } else {
+                    return [[
+                        entry.id,
+                        entry.timestamp,
+                        entry.action,
+                        entry.productId,
+                        `"${(entry.productName || '').replace(/"/g, '""')}"`,
+                        '',
+                        '',
+                        ''
+                    ].join(',')];
+                }
+            }).join('\n');
+            
+            const csvContent = csvHeader + csvData;
+            
+            // Download do arquivo
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `historico_produtos_${timestamp}.csv`;
+            link.click();
+            
+            return true;
+        } catch (error) {
+            console.error('Erro ao exportar histórico:', error);
+            return false;
+        }
+    }
+    
+    // Obter backups CSV disponíveis
+    getCSVBackups() {
+        try {
+            return JSON.parse(localStorage.getItem('csvBackups') || '[]');
+        } catch (error) {
+            console.error('Erro ao obter backups:', error);
+            return [];
+        }
+    }
+    
+    // Download de backup específico
+    downloadCSVBackup(backupIndex) {
+        try {
+            const backups = this.getCSVBackups();
+            if (backups[backupIndex]) {
+                const backup = backups[backupIndex];
+                const blob = new Blob([backup.content], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = backup.filename;
+                link.click();
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Erro ao baixar backup:', error);
+            return false;
+        }
+    }
+
+    // Importar dados com histórico
     importData(backupData) {
         try {
+            // Registrar importação no histórico
+            const history = JSON.parse(localStorage.getItem(this.historyKey) || '[]');
+            history.push({
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                action: 'IMPORT',
+                productId: null,
+                productName: 'Sistema',
+                changes: [{
+                    field: 'import',
+                    oldValue: 'dados anteriores',
+                    newValue: `${backupData.products?.length || 0} produtos importados`
+                }]
+            });
+            localStorage.setItem(this.historyKey, JSON.stringify(history));
+            
             localStorage.setItem(this.storageKey, JSON.stringify(backupData));
             window.dispatchEvent(new CustomEvent('productsUpdated', { detail: backupData.products }));
             return true;
@@ -529,4 +1392,6 @@ class DataManager {
 }
 
 // Instância global do gerenciador de dados
-window.dataManager = new DataManager();
+if (typeof window !== 'undefined') {
+    window.dataManager = new DataManager();
+}

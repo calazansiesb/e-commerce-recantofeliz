@@ -1,7 +1,12 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
+    <meta                <button onclick="showSection('database')" class="nav-btn bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">
+                    <i class="fas fa-database mr-2"></i>Banco de Dados
+                </button>
+                <button onclick="showSection('relatorios')" class="nav-btn bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition">
+                    <i class="fas fa-chart-bar mr-2"></i>Relatórios
+                </button>arset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administração - Granja Recanto Feliz</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,6 +29,12 @@
                 <h1 class="text-2xl font-bold font-lora">Administração - Granja Recanto Feliz</h1>
             </div>
             <div class="flex items-center space-x-4">
+                <button onclick="diagnosticDatabase()" class="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition" title="Diagnóstico do Sistema">
+                    <i class="fas fa-stethoscope mr-2"></i>Diagnóstico
+                </button>
+                <button onclick="testPersistencia(); testDataManager();" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition" title="Teste Debug">
+                    <i class="fas fa-bug mr-2"></i>Debug
+                </button>
                 <a href="index.html" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
                     <i class="fas fa-home mr-2"></i>Voltar ao Site
                 </a>
@@ -41,6 +52,9 @@
                 <button onclick="showSection('produtos')" class="nav-btn bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
                     <i class="fas fa-box mr-2"></i>Produtos
                 </button>
+                <button onclick="window.open('gestao-pedidos.html', '_blank')" class="nav-btn bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                    <i class="fas fa-shopping-cart mr-2"></i>Pedidos
+                </button>
                 <button onclick="showSection('estoque')" class="nav-btn bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">
                     <i class="fas fa-warehouse mr-2"></i>Estoque
                 </button>
@@ -52,6 +66,9 @@
                 </button>
                 <button onclick="showSection('carrossel')" class="nav-btn bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition">
                     <i class="fas fa-images mr-2"></i>Temas Carrossel
+                </button>
+                <button onclick="showSection('mensagens')" class="nav-btn bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition">
+                    <i class="fas fa-comment mr-2"></i>Mensagens
                 </button>
             </div>
         </div>
@@ -66,11 +83,17 @@
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Gestão de Produtos</h2>
                     <div class="flex space-x-3">
+                        <button onclick="window.open('gestao-pedidos.html', '_blank')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-shopping-cart mr-2"></i>Gestão de Pedidos
+                        </button>
+                        <button onclick="salvarProdutosDefinitivo()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-bold">
+                            <i class="fas fa-save mr-2"></i>SALVAR DEFINITIVO
+                        </button>
                         <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-download mr-2"></i>Backup
+                            <i class="fas fa-download mr-2"></i>Backup Sistema
                         </button>
                         <button onclick="document.getElementById('import-file').click()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
-                            <i class="fas fa-upload mr-2"></i>Restaurar
+                            <i class="fas fa-upload mr-2"></i>Restaurar Backup
                         </button>
                         <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
                         <button onclick="openProductModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
@@ -208,6 +231,98 @@
             </div>
         </div>
 
+        <!-- Seção: Banco de Dados -->
+        <div id="database-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-3xl font-bold font-lora text-[#5D4037] mb-6">Gerenciamento do Banco de Dados</h2>
+                
+                <!-- Status do Sistema -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-blue-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-database text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-lg font-semibold">SQLite Status</p>
+                                <p class="text-xl font-bold" id="sqlite-status">Verificando...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-sync text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-lg font-semibold">Sincronização</p>
+                                <p class="text-xl font-bold" id="sync-status">Verificando...</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-purple-500 text-white p-6 rounded-lg">
+                        <div class="flex items-center">
+                            <i class="fas fa-backup text-3xl mr-4"></i>
+                            <div>
+                                <p class="text-lg font-semibold">Backup</p>
+                                <p class="text-xl font-bold" id="backup-status">Automático</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Controles do Banco de Dados -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Diagnóstico -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-stethoscope mr-2 text-purple-600"></i>Diagnóstico do Sistema
+                        </h3>
+                        <p class="text-gray-600 mb-4">Verificar status dos componentes e integridade dos dados.</p>
+                        <button onclick="runFullDiagnostic()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-lg transition w-full">
+                            <i class="fas fa-play mr-2"></i>Executar Diagnóstico
+                        </button>
+                        <div id="diagnostic-results" class="mt-4 p-3 bg-white rounded border hidden">
+                            <h4 class="font-bold mb-2">Resultados:</h4>
+                            <pre id="diagnostic-output" class="text-sm text-gray-700 whitespace-pre-wrap"></pre>
+                        </div>
+                    </div>
+                    
+                    <!-- Migração de Dados -->
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-exchange-alt mr-2 text-blue-600"></i>Migração de Dados
+                        </h3>
+                        <p class="text-gray-600 mb-4">Migrar dados do localStorage para SQLite ou vice-versa.</p>
+                        <div class="space-y-3">
+                            <button onclick="migrateToSQLite()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition w-full">
+                                <i class="fas fa-arrow-right mr-2"></i>localStorage → SQLite
+                            </button>
+                            <button onclick="exportToLocalStorage()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition w-full">
+                                <i class="fas fa-arrow-left mr-2"></i>SQLite → localStorage
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Logs do Sistema -->
+                <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-list mr-2 text-green-600"></i>Logs do Sistema
+                    </h3>
+                    <div class="bg-black text-green-400 p-4 rounded font-mono text-sm h-64 overflow-y-auto" id="system-logs">
+                        <div>Sistema iniciando...</div>
+                    </div>
+                    <div class="mt-3 flex space-x-3">
+                        <button onclick="clearLogs()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition">
+                            <i class="fas fa-trash mr-2"></i>Limpar Logs
+                        </button>
+                        <button onclick="refreshLogs()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition">
+                            <i class="fas fa-sync mr-2"></i>Atualizar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Seção: Relatórios -->
         <div id="relatorios-section" class="section hidden">
             <div class="bg-white rounded-lg shadow-lg p-6">
@@ -270,6 +385,76 @@
                 <!-- Lista de Temas Disponíveis -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="carousel-themes-grid">
                     <!-- Temas serão carregados dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Mensagens Personalizadas -->
+        <div id="mensagens-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-3xl font-bold font-lora text-[#5D4037] mb-6">Mensagens Personalizadas</h2>
+                
+                <!-- Mensagem de Agradecimento -->
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-heart mr-2 text-red-500"></i>Mensagem de Agradecimento
+                    </h3>
+                    <p class="text-gray-600 mb-4">Mensagem exibida após o cliente enviar o pedido via WhatsApp</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Configuração da Mensagem -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Texto da Mensagem</label>
+                            <textarea id="mensagem-agradecimento" rows="6" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Digite a mensagem de agradecimento...">
+Olá, {nome}!
+Seu pedido {pedido} foi confirmado e já estamos preparando com carinho.
+Muito obrigado por escolher nossos produtos naturais.
+Logo, logo estará aí!
+Recanto Feliz</textarea>
+                            <p class="text-xs text-gray-500 mt-2">
+                                <strong>Variáveis disponíveis:</strong><br>
+                                {nome} - Nome do cliente<br>
+                                {pedido} - Número do pedido
+                            </p>
+                        </div>
+                        
+                        <!-- Configuração da Imagem -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Imagem de Agradecimento</label>
+                            <div class="space-y-4">
+                                <div>
+                                    <input type="file" id="imagem-agradecimento-upload" accept="image/*" class="w-full p-3 border border-gray-300 rounded-lg">
+                                    <p class="text-xs text-gray-500 mt-1">Selecione uma nova imagem</p>
+                                </div>
+                                
+                                <div class="text-center text-gray-500 text-sm">
+                                    <span class="bg-gray-100 px-3 py-1 rounded">OU</span>
+                                </div>
+                                
+                                <div>
+                                    <input type="text" id="imagem-agradecimento-url" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="URL da imagem" value="imagens/agradecimento pedido.png">
+                                    <p class="text-xs text-gray-500 mt-1">Caminho da imagem atual</p>
+                                </div>
+                                
+                                <!-- Preview da Imagem -->
+                                <div id="preview-agradecimento" class="mt-4">
+                                    <img id="preview-img-agradecimento" src="imagens/agradecimento pedido.png" alt="Preview" class="w-full h-48 object-cover rounded-lg border" onerror="this.style.display='none'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex space-x-3">
+                        <button onclick="salvarMensagemAgradecimento()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
+                            <i class="fas fa-save mr-2"></i>Salvar Mensagem
+                        </button>
+                        <button onclick="testarMensagemAgradecimento()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition">
+                            <i class="fas fa-eye mr-2"></i>Visualizar
+                        </button>
+                        <button onclick="restaurarMensagemPadrao()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition">
+                            <i class="fas fa-undo mr-2"></i>Restaurar Padrão
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -498,7 +683,255 @@
         </div>
     </div>
 
+    <script>
+        // Verificar autenticação
+        if (!sessionStorage.getItem('adminAuth')) {
+            window.location.href = 'admin/login.html';
+        }
+        
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            sessionStorage.removeItem('adminAuth');
+            window.location.href = 'admin/login.html';
+        });
+        
+        // Funções para a seção de banco de dados
+        async function runFullDiagnostic() {
+            const output = document.getElementById('diagnostic-output');
+            const results = document.getElementById('diagnostic-results');
+            
+            output.textContent = 'Executando diagnóstico...\n';
+            results.classList.remove('hidden');
+            
+            try {
+                if (typeof diagnosticDatabase === 'function') {
+                    // Capturar logs do console temporariamente
+                    const originalLog = console.log;
+                    let logOutput = '';
+                    
+                    console.log = (...args) => {
+                        logOutput += args.join(' ') + '\n';
+                        originalLog.apply(console, args);
+                    };
+                    
+                    await diagnosticDatabase();
+                    
+                    // Restaurar console.log
+                    console.log = originalLog;
+                    
+                    output.textContent = logOutput;
+                } else {
+                    output.textContent = 'Função de diagnóstico não disponível';
+                }
+            } catch (error) {
+                output.textContent = `Erro durante diagnóstico: ${error.message}`;
+            }
+        }
+        
+        async function migrateToSQLite() {
+            addLog('Iniciando migração localStorage → SQLite');
+            try {
+                if (typeof initializeDatabaseManager === 'function') {
+                    await initializeDatabaseManager();
+                    addLog('✅ Migração concluída');
+                    updateDatabaseStatus();
+                } else {
+                    addLog('❌ Função de migração não disponível');
+                }
+            } catch (error) {
+                addLog(`❌ Erro na migração: ${error.message}`);
+            }
+        }
+        
+        async function exportToLocalStorage() {
+            addLog('Iniciando exportação SQLite → localStorage');
+            try {
+                if (window.dbManager && window.dbManager.isInitialized) {
+                    const products = await window.dbManager.getProducts();
+                    const data = {
+                        products: products,
+                        lastUpdate: new Date().toISOString()
+                    };
+                    localStorage.setItem('granjaRecantoFelizData', JSON.stringify(data));
+                    addLog(`✅ ${products.length} produtos exportados para localStorage`);
+                } else {
+                    addLog('❌ DatabaseManager não inicializado');
+                }
+            } catch (error) {
+                addLog(`❌ Erro na exportação: ${error.message}`);
+            }
+        }
+        
+        function addLog(message) {
+            const logs = document.getElementById('system-logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logs.appendChild(logEntry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        function clearLogs() {
+            document.getElementById('system-logs').innerHTML = '<div>Logs limpos...</div>';
+        }
+        
+        function refreshLogs() {
+            addLog('Logs atualizados');
+        }
+        
+        async function updateDatabaseStatus() {
+            try {
+                // Status SQLite
+                const sqliteStatus = document.getElementById('sqlite-status');
+                if (window.dbManager && window.dbManager.isInitialized) {
+                    sqliteStatus.textContent = 'Conectado';
+                    sqliteStatus.parentElement.parentElement.className = 'bg-green-500 text-white p-6 rounded-lg';
+                } else {
+                    sqliteStatus.textContent = 'Desconectado';
+                    sqliteStatus.parentElement.parentElement.className = 'bg-red-500 text-white p-6 rounded-lg';
+                }
+                
+                // Status de sincronização
+                const syncStatus = document.getElementById('sync-status');
+                syncStatus.textContent = 'Ativo';
+                
+            } catch (error) {
+                console.error('Erro ao atualizar status:', error);
+            }
+        }
+        
+        // Atualizar status quando a página carrega
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(updateDatabaseStatus, 2000);
+        });
+        
+        // Escutar evento de DatabaseManager pronto
+        window.addEventListener('databaseManagerReady', function() {
+            addLog('✅ DatabaseManager inicializado e pronto');
+            updateDatabaseStatus();
+        });
+        
+        // Funções para mensagens personalizadas
+        function salvarMensagemAgradecimento() {
+            const mensagem = document.getElementById('mensagem-agradecimento').value;
+            const imagemUrl = document.getElementById('imagem-agradecimento-url').value;
+            
+            localStorage.setItem('mensagemAgradecimento', mensagem);
+            localStorage.setItem('imagemAgradecimento', imagemUrl);
+            
+            alert('✅ Mensagem de agradecimento salva com sucesso!');
+        }
+        
+        function testarMensagemAgradecimento() {
+            const mensagem = document.getElementById('mensagem-agradecimento').value;
+            const imagemUrl = document.getElementById('imagem-agradecimento-url').value;
+            
+            // Simular dados de teste
+            const mensagemTeste = mensagem
+                .replace(/{nome}/g, 'João da Silva')
+                .replace(/{pedido}/g, 'RF12345678901');
+            
+            // Criar modal de teste
+            const modalHTML = `
+                <div id="modal-teste-agradecimento" style="
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                    background: rgba(0,0,0,0.8); z-index: 3000; display: flex; 
+                    align-items: center; justify-content: center;
+                ">
+                    <div style="
+                        background: white; padding: 30px; border-radius: 15px; 
+                        max-width: 500px; width: 90%; text-align: center;
+                        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+                    ">
+                        <h3 style="margin-bottom: 15px; color: #5D4037;">Preview da Mensagem</h3>
+                        <img src="${imagemUrl}" alt="Agradecimento" style="
+                            max-width: 100%; height: auto; margin-bottom: 20px; border-radius: 10px;
+                        " onerror="this.style.display='none'">
+                        <div style="
+                            font-size: 18px; line-height: 1.6; color: #333; 
+                            white-space: pre-line; margin-bottom: 25px;
+                        ">${mensagemTeste}</div>
+                        <button onclick="fecharTesteMensagem()" style="
+                            background: #25D366; color: white; border: none; 
+                            padding: 12px 30px; border-radius: 8px; font-size: 16px;
+                            cursor: pointer; font-weight: bold;
+                        ">✅ Fechar Preview</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+        
+        function fecharTesteMensagem() {
+            const modal = document.getElementById('modal-teste-agradecimento');
+            if (modal) modal.remove();
+        }
+        
+        function restaurarMensagemPadrao() {
+            const mensagemPadrao = `Olá, {nome}!
+Seu pedido {pedido} foi confirmado e já estamos preparando com carinho.
+Muito obrigado por escolher nossos produtos naturais.
+Logo, logo estará aí!
+Recanto Feliz`;
+            
+            document.getElementById('mensagem-agradecimento').value = mensagemPadrao;
+            document.getElementById('imagem-agradecimento-url').value = 'imagens/agradecimento pedido.png';
+            
+            localStorage.removeItem('mensagemAgradecimento');
+            localStorage.removeItem('imagemAgradecimento');
+            
+            alert('✅ Mensagem restaurada para o padrão!');
+        }
+        
+        // Carregar mensagem salva ao abrir a seção
+        function carregarMensagemSalva() {
+            const mensagemSalva = localStorage.getItem('mensagemAgradecimento');
+            const imagemSalva = localStorage.getItem('imagemAgradecimento');
+            
+            if (mensagemSalva) {
+                document.getElementById('mensagem-agradecimento').value = mensagemSalva;
+            }
+            
+            if (imagemSalva) {
+                document.getElementById('imagem-agradecimento-url').value = imagemSalva;
+                document.getElementById('preview-img-agradecimento').src = imagemSalva;
+            }
+        }
+        
+        // Upload de imagem de agradecimento
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadInput = document.getElementById('imagem-agradecimento-upload');
+            if (uploadInput) {
+                uploadInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imagemUrl = e.target.result;
+                            document.getElementById('imagem-agradecimento-url').value = imagemUrl;
+                            document.getElementById('preview-img-agradecimento').src = imagemUrl;
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+        
+        // Tornar funções globais
+        window.salvarMensagemAgradecimento = salvarMensagemAgradecimento;
+        window.testarMensagemAgradecimento = testarMensagemAgradecimento;
+        window.restaurarMensagemPadrao = restaurarMensagemPadrao;
+        window.fecharTesteMensagem = fecharTesteMensagem;
+        window.carregarMensagemSalva = carregarMensagemSalva;
+    </script>
+    <!-- SQL.js desativado: não carregar no cliente para simplificar o fluxo -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script> -->
+    <!-- <script src="js/sqlite-manager.js"></script> -->
+    <!-- <script src="js/sqlite-robust-initializer.js"></script> -->
+    <script src="js/unified-data-source.js"></script>
     <script src="js/data-manager.js"></script>
     <script src="js/admin.js"></script>
+    <script src="js/fix-admin-produtos.js"></script>
 </body>
 </html>

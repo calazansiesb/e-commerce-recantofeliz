@@ -280,17 +280,14 @@
                 <a href="#produtos" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Produtos</a>
                 <a href="#sobre" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Sobre Nós</a>
                 <a href="#contato" class="nav-link text-gray-600 hover:text-[#5D4037] pb-1">Contato</a>
-                <a href="admin.html" class="bg-[#5D4037] hover:bg-[#4A2C20] text-white px-4 py-2 rounded-lg transition duration-300">
-                    <i class="fas fa-cog mr-2"></i>Admin
-                </a>
-                <button onclick="debugLayoutReload()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg transition duration-300 text-sm">
-                    <i class="fas fa-sync mr-1"></i>Debug Layout
-                </button>
+                <a href="admin.html" class="nav-link text-red-600 hover:text-red-800 pb-1 font-bold">Admin</a>
             </div>
             <div class="flex items-center space-x-4">
-                <button id="cart-button" class="relative flex items-center bg-[#8B4513] hover:bg-[#5D4037] text-white px-4 py-2 rounded-lg transition duration-300">
+                <button id="cart-button" onclick="document.getElementById('cart-modal').classList.remove('hidden'); document.getElementById('cart-modal').style.display='flex'; updateCartModal();" class="relative flex items-center bg-[#8B4513] hover:bg-[#5D4037] text-white px-4 py-2 rounded-lg transition duration-300 cursor-pointer">
                     <i class="fas fa-shopping-cart mr-2"></i>
-                    <span id="cart-count" class="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    <span class="mr-2">Carrinho</span>
+                    <span id="cart-count" class="cart-counter bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">0</span>
+                    <span id="cart-total-display" class="ml-2 text-sm font-bold">R$ 0,00</span>
                 </button>
                 <button id="mobile-menu-button" class="md:hidden text-2xl">
                     <i class="fas fa-bars"></i>
@@ -303,7 +300,7 @@
             <a href="#produtos" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-shopping-basket mr-2"></i>Produtos</a>
             <a href="#sobre" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-info-circle mr-2"></i>Sobre Nós</a>
             <a href="#contato" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-envelope mr-2"></i>Contato</a>
-            <a href="#" id="admin-link-mobile" class="block text-center py-3 text-gray-600 hover:text-[#5D4037] hover:bg-gray-100"><i class="fas fa-lock mr-2"></i>Administração</a>
+            <a href="admin.html" class="block text-center py-3 text-red-600 hover:text-red-800 hover:bg-red-50 font-bold"><i class="fas fa-cog mr-2"></i>Admin</a>
         </div>
     </header>
 
@@ -389,26 +386,41 @@
                     <p class="text-center max-w-3xl mx-auto text-gray-600">Cada item é fruto de um trabalho cuidadoso e sustentável. Conheça a linha de produtos da Granja Recanto Feliz, pensada para levar mais saúde e sabor para a sua mesa.</p>
                 </div>
                 
-                <!-- Filtros melhorados -->
-                <div id="product-filters" class="flex flex-wrap justify-center gap-2 md:gap-4 mb-12">
-                    <button class="filter-btn active bg-[#8B4513] text-white py-2 px-4 rounded-full flex items-center" data-filter="all">
-                        <i class="fas fa-border-all mr-2"></i> Todos
-                    </button>
-                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="fertilizantes">
-                        <i class="fas fa-seedling mr-2"></i> Fertilizantes
-                    </button>
-                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="aves">
-                        <i class="fas fa-drumstick-bite mr-2"></i> Aves
-                    </button>
-                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="ovos">
-                        <i class="fas fa-egg mr-2"></i> Ovos
-                    </button>
-                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="parceiros">
-                        <i class="fas fa-handshake mr-2"></i> Parceiros
-                    </button>
-                    <button class="filter-btn bg-white text-[#8B4513] border border-[#8B4513] hover:bg-[#8B4513] hover:text-white py-2 px-4 rounded-full transition flex items-center" data-filter="granja">
-                        <i class="fas fa-home mr-2"></i> Só da Granja
-                    </button>
+                <!-- Filtros com Boxes de Categorias -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Box Todos -->
+                    <div class="bg-white border-2 border-[#8B4513] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onclick="filterProducts('all')">
+                        <i class="fas fa-border-all text-3xl text-[#8B4513] mb-3"></i>
+                        <h3 class="text-xl font-bold text-[#8B4513] mb-2">Todos os Produtos</h3>
+                        <p class="text-gray-600 text-sm">Ver todos os produtos disponíveis</p>
+                    </div>
+                    
+                    <!-- Box Produtos da Granja -->
+                    <div class="bg-white border-2 border-[#228B22] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onmouseenter="showSubcategories()" onmouseleave="hideSubcategories()" onclick="toggleSubcategories()">
+                        <i class="fas fa-home text-3xl text-[#228B22] mb-3"></i>
+                        <h3 class="text-xl font-bold text-[#228B22] mb-2">Produtos da Granja</h3>
+                        <p class="text-gray-600 text-sm mb-4">Fertilizantes, Aves e Ovos</p>
+                        
+                        <!-- Subcategorias (ocultas por padrão) -->
+                        <div id="granja-subcategories" class="hidden space-y-2 mt-4">
+                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('fertilizantes')">
+                                <i class="fas fa-seedling mr-2"></i> Fertilizantes
+                            </button>
+                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('aves')">
+                                <i class="fas fa-drumstick-bite mr-2"></i> Aves
+                            </button>
+                            <button class="w-full bg-[#228B22] text-white py-2 px-4 rounded hover:bg-green-700 transition" onclick="event.stopPropagation(); filterProducts('ovos')">
+                                <i class="fas fa-egg mr-2"></i> Ovos
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Box Parceiros -->
+                    <div class="bg-white border-2 border-[#8B4513] rounded-lg p-6 text-center hover:shadow-lg transition cursor-pointer" onclick="filterProducts('parceiros')">
+                        <i class="fas fa-handshake text-3xl text-[#8B4513] mb-3"></i>
+                        <h3 class="text-xl font-bold text-[#8B4513] mb-2">Parceiros</h3>
+                        <p class="text-gray-600 text-sm">Produtos de nossos parceiros</p>
+                    </div>
                 </div>
 
                 <!-- Grade de produtos melhorada -->
@@ -916,7 +928,10 @@
         <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col">
             <div class="p-4 border-b flex justify-between items-center">
                 <h3 id="modal-product-title" class="text-2xl font-bold font-lora text-[#5D4037]">Detalhes do Produto</h3>
-                <button id="close-modal-btn" class="text-3xl text-gray-500 hover:text-gray-800">&times;</button>
+                <button id="close-modal-btn" 
+                        class="text-3xl text-gray-500 hover:text-gray-800 cursor-pointer z-10 p-2 hover:bg-gray-100 rounded-full transition-all duration-200" 
+                        style="pointer-events: auto;"
+                        onclick="console.log('🔲 Onclick disparado'); document.getElementById('product-modal').classList.add('hidden'); document.getElementById('product-modal').style.display='none';">&times;</button>
             </div>
             <div id="modal-content-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 overflow-y-auto">
                 <!-- Conteúdo do modal (galeria e detalhes) será injetado aqui pelo JavaScript -->
@@ -929,7 +944,7 @@
         <div class="bg-white rounded-lg shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
             <div class="p-6 border-b flex justify-between items-center">
                 <h3 class="text-2xl font-bold font-lora text-[#5D4037]">Seu Carrinho</h3>
-                <button id="close-cart-btn" class="text-2xl text-gray-500 hover:text-gray-800">&times;</button>
+                <button onclick="document.getElementById('cart-modal').classList.add('hidden'); document.getElementById('cart-modal').style.display='none';" class="text-2xl text-gray-500 hover:text-gray-800 cursor-pointer">&times;</button>
             </div>
             <div id="cart-items" class="p-6 overflow-y-auto flex-grow">
                 <p class="text-gray-500">Seu carrinho está vazio.</p>
@@ -949,137 +964,82 @@
                 </div>
                 <div id="checkout-section">
                      <h4 class="text-lg font-semibold mb-2">Verificar Entrega</h4>
-                     <input type="text" id="address-input" placeholder="Digite seu bairro ou CEP" class="w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
-                     <button id="checkout-btn" class="w-full bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
-                        <i class="fas fa-credit-card mr-2"></i> Finalizar Pedido
+                     <input type="text" id="cep-frete" maxlength="9" placeholder="Digite seu CEP" class="w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
+                     <button onclick="verificarFrete()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3">
+                        <i class="fas fa-search mr-2"></i> Verificar Frete
                      </button>
-                     <p id="delivery-message" class="text-center mt-2 text-sm"></p>
+                     <div id="frete-resultado" class="mb-3" style="display: none;"></div>
+                     <button id="btn-finalizar" onclick="finalizarViaWhatsApp()" disabled class="w-full bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center cursor-not-allowed">
+                        <i class="fab fa-whatsapp mr-2"></i> Enviar Pedido via WhatsApp
+                     </button>
+                     <p class="text-xs text-gray-500 mt-2 text-center">
+                        <i class="fas fa-info-circle mr-1"></i> 
+                        Você precisará informar seus dados pessoais antes de enviar o pedido
+                     </p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- SQL.js desativado: usar produtos.json como fonte canônica -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script> -->
     <script src="js/data-manager.js"></script>
     <script src="js/scripts.js"></script>
+    <script src="js/fix-produtos-minimo.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Usar produtos do data manager em vez de array estático
-        const products = window.dataManager ? window.dataManager.getActiveProducts() : [
-            {
-                id: 1,
-                name: "Substrato BioFértil 3 Anos",
-                category: "fertilizantes",
-                slogan: "Mais do que Adubo: um substrato vivo e completo.",
-                description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
-                price: 40.00,
-                image: "imagens/produtos/1/1.png"
-            },
-            {
-                id: 2,
-                name: "FertiGota",
-                category: "fertilizantes",
-                slogan: "Adubo de galinha líquido e potente.",
-                description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.",
-                price: 25.00,
-                image: "imagens/produtos/2/1.png"
-            },
-            {
-                id: 3,
-                name: "Ovos Caipira 10",
-                category: "ovos",
-                slogan: "10 ovos frescos da granja.",
-                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.",
-                price: 18.00,
-                image: "imagens/produtos/3/1.jpeg"
-            },
-            {
-                id: 4,
-                name: "Ovos Caipira 20",
-                category: "ovos",
-                slogan: "20 ovos frescos da granja.",
-                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.",
-                price: 30.00,
-                image: "imagens/produtos/4/1.jpeg"
-            },
-            {
-                id: 5,
-                name: "Ovos Caipira 30",
-                category: "ovos",
-                slogan: "30 ovos frescos da granja.",
-                description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.",
-                price: 45.00,
-                image: "imagens/produtos/5/1.png"
-            },
-            {
-                id: 6,
-                name: "Galinha Caipira Picada",
-                category: "aves",
-                slogan: "Galinha caipira cortada, pronta para cozinhar.",
-                description: "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.",
-                price: 60.00,
-                image: "imagens/produtos/6/1.png"
-            },
-            {
-                id: 7,
-                name: "Galinha Caipira Inteira",
-                category: "aves",
-                slogan: "Galinha caipira inteira, fresca e saborosa.",
-                description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
-                price: 110.00,
-                image: "imagens/produtos/7/1.png"
-            },
-            {
-                id: 8,
-                name: "Mel Puro do Cerrado",
-                category: "parceiros",
-                slogan: "Mel artesanal direto das colmeias.",
-                description: "Mel puro e natural, coletado artesanalmente das flores do cerrado. Rico em propriedades medicinais e sabor único.",
-                price: 35.00,
-                image: "imagens/produtos/8/1.png",
-                stock: 20,
-                active: true,
-                partner: {
-                    name: "Apiário Flor do Cerrado",
-                    producer: "Sr. João Silva",
-                    location: "Planaltina - DF",
-                    description: "Família tradicional na apicultura há 3 gerações"
+        // Aguardar DataManager estar completamente carregado
+        let products = [];
+        
+        // Função para carregar produtos com retry
+        async function carregarProdutos(tentativa = 1) {
+            console.log(`🔍 Tentativa ${tentativa}: Verificando DataManager...`);
+            
+            if (!window.dataManager) {
+                console.log('⚠️ DataManager não encontrado, criando...');
+                window.dataManager = new DataManager();
+            }
+            
+            try {
+                // Carregar produtos de forma assíncrona
+                products = await window.dataManager.getActiveProducts();
+                console.log('📦 Produtos carregados:', products.length);
+                
+                if (products.length > 0) {
+                    renderProducts('all');
+                    console.log('✅ Produtos renderizados com sucesso');
+                } else if (tentativa < 5) {
+                    console.log(`⚠️ Nenhum produto encontrado, tentativa ${tentativa}/5`);
+                    // Tentar novamente após um delay maior
+                    setTimeout(() => carregarProdutos(tentativa + 1), 1000);
+                } else {
+                    console.log('❌ Falha ao carregar produtos após 5 tentativas');
+                    // Tentar restaurar produtos padrão
+                    if (window.dataManager.restoreDefaultProducts) {
+                        console.log('🔄 Tentando restaurar produtos padrão...');
+                        const restored = window.dataManager.restoreDefaultProducts();
+                        if (restored && restored.products) {
+                            products = restored.products.filter(p => p.active !== false);
+                            renderProducts('all');
+                            console.log('✅ Produtos padrão restaurados e renderizados');
+                        } else {
+                            productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
+                        }
+                    } else {
+                        productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
+                    }
                 }
-            },
-            {
-                id: 9,
-                name: "Queijo Minas Artesanal",
-                category: "parceiros",
-                slogan: "Queijo curado tradicionalmente.",
-                description: "Queijo minas artesanal, curado por 60 dias, produzido com leite fresco de vacas criadas a pasto.",
-                price: 45.00,
-                image: "imagens/produtos/8/1.png",
-                stock: 15,
-                active: true,
-                partner: {
-                    name: "Queijaria Vale Verde",
-                    producer: "Família Santos",
-                    location: "Sobradinho - DF",
-                    description: "Tradição familiar na produção de queijos artesanais"
-                }
-            },
-            {
-                id: 10,
-                name: "Doce de Leite Caseiro",
-                category: "parceiros",
-                slogan: "Doce de leite da vovó.",
-                description: "Doce de leite cremoso, feito no tacho de cobre seguindo receita tradicional da família.",
-                price: 18.00,
-                image: "imagens/produtos/8/1.png",
-                stock: 30,
-                active: true,
-                partner: {
-                    name: "Doces da Vovó Maria",
-                    producer: "Maria Conceição",
-                    location: "Jardim Botânico - DF",
-                    description: "Receitas tradicionais passadas de geração em geração"
+            } catch (error) {
+                console.error('❌ Erro ao carregar produtos:', error);
+                if (tentativa < 5) {
+                    setTimeout(() => carregarProdutos(tentativa + 1), 1000);
+                } else {
+                    productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
                 }
             }
-        ];
+        }
+        
+        // Script mínimo já carrega os produtos
 
         // Função para descobrir automaticamente todas as imagens de um produto
         async function discoverProductImages(productId) {
@@ -1135,6 +1095,12 @@
         const productModal = document.getElementById('product-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
         
+        // Debug: verificar se elementos foram encontrados
+        console.log('🔍 Debug elementos:');
+        console.log('- productGrid:', productGrid ? '✅' : '❌');
+        console.log('- productModal:', productModal ? '✅' : '❌');
+        console.log('- closeModalBtn:', closeModalBtn ? '✅' : '❌');
+        
         const cartButton = document.getElementById('cart-button');
         const cartModal = document.getElementById('cart-modal');
         const closeCartBtn = document.getElementById('close-cart-btn');
@@ -1184,13 +1150,39 @@
         }
 
         async function openProductModal(productId) {
+            console.log('🔍 Abrindo modal para produto ID:', productId);
             const product = products.find(p => p.id === productId);
-            if (!product) return;
+            if (!product) {
+                console.error('❌ Produto não encontrado:', productId);
+                return;
+            }
 
-            // Usar galeria do produto ou descobrir automaticamente
-            const gallery = product.gallery && product.gallery.length > 0 ? product.gallery : await discoverProductImages(productId);
+            console.log('✅ Produto encontrado:', product.name);
+
+            // Usar galeria do produto ou a imagem principal
+            let gallery = [];
+            if (product.gallery && product.gallery.length > 0) {
+                gallery = product.gallery;
+            } else {
+                // Tentar descobrir imagens automaticamente, mas com fallback seguro
+                try {
+                    gallery = await discoverProductImages(productId);
+                } catch (error) {
+                    console.warn('⚠️ Erro ao descobrir imagens:', error);
+                    gallery = [product.image];
+                }
+            }
+            
+            if (!gallery || gallery.length === 0) {
+                gallery = [product.image];
+            }
 
             const modalContent = productModal.querySelector('#modal-content-grid');
+            
+            if (!modalContent) {
+                console.error('❌ Modal content não encontrado');
+                return;
+            }
             
             // Criar carrossel de imagens
             modalContent.innerHTML = `
@@ -1232,8 +1224,20 @@
                             </div>
                         </div>
                     ` : ''}
-                    <p class="text-gray-600 mb-6 leading-relaxed flex-grow">${product.description}</p>
+                    <p class="text-gray-600 mb-6 leading-relaxed flex-grow">${product.description || product.slogan || 'Produto de qualidade da Granja Recanto Feliz.'}</p>
                     <span class="text-2xl font-bold text-[#5D4037] mb-6 block">R$ ${product.price.toFixed(2)}</span>
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold mb-2">Quantidade:</label>
+                        <div class="flex items-center space-x-3">
+                            <button id="qty-minus" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input id="product-quantity" type="number" value="1" min="1" class="w-20 text-center border rounded py-2">
+                            <button id="qty-plus" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-3 rounded">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
                     <button id="add-to-cart-modal" class="w-full bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center">
                         <i class="fas fa-cart-plus mr-2"></i> Adicionar ao Carrinho
                     </button>
@@ -1279,6 +1283,14 @@
             updateCarousel();
             productModal.classList.remove('hidden');
             productModal.style.display = 'flex';
+            
+            // Atualizar título do modal
+            const modalTitle = productModal.querySelector('#modal-product-title');
+            if (modalTitle) {
+                modalTitle.textContent = product.name;
+            }
+            
+            console.log('✅ Modal aberto com sucesso para:', product.name);
         }
 
         // --- Event Listeners ---
@@ -1286,21 +1298,35 @@
         // Filter buttons
         filterButtons.forEach(btn => {
             btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                
+                // Se for "granja", mostrar subcategorias
+                if (filter === 'granja') {
+                    showGranjaCategories();
+                    return;
+                }
+                
                 filterButtons.forEach(b => {
                     b.classList.remove('active', 'bg-[#8B4513]', 'text-white');
                     b.classList.add('bg-white', 'text-[#8B4513]');
                 });
                 this.classList.add('active', 'bg-[#8B4513]', 'text-white');
                 this.classList.remove('bg-white', 'text-[#8B4513]');
-                renderProducts(this.getAttribute('data-filter'));
+                renderProducts(filter);
             });
         });
 
         // "Ver Detalhes" buttons (event delegation on productGrid)
         productGrid.addEventListener('click', function(e) {
+            console.log('🖱️ Clique detectado:', e.target);
+            console.log('🏷️ Classes do elemento:', e.target.classList);
+            
             if (e.target && e.target.classList.contains('detail-btn')) {
                 const id = parseInt(e.target.getAttribute('data-id'));
+                console.log('🎯 Botão de detalhes clicado, ID:', id);
                 openProductModal(id);
+            } else {
+                console.log('⚠️ Clique não foi em um botão de detalhes');
             }
         });
         
@@ -1313,27 +1339,139 @@
         });
 
         // Close product modal
-        closeModalBtn.addEventListener('click', () => {
-            productModal.classList.add('hidden');
-            productModal.style.display = 'none';
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                console.log('🔲 Botão de fechar clicado (método tradicional)');
+                productModal.classList.add('hidden');
+                productModal.style.display = 'none';
+            });
+        } else {
+            console.warn('⚠️ closeModalBtn não encontrado');
+        }
+        
+        // Adicionar também delegação de eventos para o botão de fechar (backup)
+        productModal.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'close-modal-btn') {
+                console.log('🔲 Botão de fechar clicado (delegação de eventos)');
+                productModal.classList.add('hidden');
+                productModal.style.display = 'none';
+            }
+        });
+        
+        // Event listener global para botão de fechar (backup adicional)
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'close-modal-btn') {
+                console.log('🔲 Botão de fechar clicado (listener global)');
+                productModal.classList.add('hidden');
+                productModal.style.display = 'none';
+            }
+        });
+        
+        // Fechar modal clicando fora
+        productModal.addEventListener('click', (e) => {
+            if (e.target === productModal) {
+                productModal.classList.add('hidden');
+                productModal.style.display = 'none';
+            }
+        });
+        
+        // Fechar modal com ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !productModal.classList.contains('hidden')) {
+                productModal.classList.add('hidden');
+                productModal.style.display = 'none';
+            }
+        });
+
+        // Event listeners para modal do produto (usando delegação)
+        productModal.addEventListener('click', function(e) {
+            // Botões de quantidade
+            if (e.target && e.target.id === 'qty-minus') {
+                const qtyInput = productModal.querySelector('#product-quantity');
+                if (qtyInput && qtyInput.value > 1) {
+                    qtyInput.value = parseInt(qtyInput.value) - 1;
+                }
+            }
+            
+            if (e.target && e.target.id === 'qty-plus') {
+                const qtyInput = productModal.querySelector('#product-quantity');
+                if (qtyInput) {
+                    qtyInput.value = parseInt(qtyInput.value) + 1;
+                }
+            }
+            
+            // Botão "Adicionar ao Carrinho"
+            if (e.target && e.target.id === 'add-to-cart-modal') {
+                const qtyInput = productModal.querySelector('#product-quantity');
+                const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+                
+                // Encontrar o produto atual do modal
+                const productTitle = productModal.querySelector('#modal-product-title');
+                if (productTitle) {
+                    const productName = productTitle.textContent;
+                    const product = products.find(p => p.name === productName);
+                    
+                    if (product) {
+                        for (let i = 0; i < quantity; i++) {
+                            adicionarAoCarrinho(product);
+                        }
+                        
+                        // Fechar modal
+                        productModal.classList.add('hidden');
+                        productModal.style.display = 'none';
+                        
+                        console.log(`✅ ${quantity}x ${product.name} adicionado(s) ao carrinho`);
+                    }
+                }
+            }
         });
 
         // Open/Close Cart Modal
-        cartButton.addEventListener('click', () => {
-            cartModal.classList.remove('hidden');
-            cartModal.style.display = 'flex';
-        });
-        closeCartBtn.addEventListener('click', () => {
-            cartModal.classList.add('hidden');
-            cartModal.style.display = 'none';
+        if (cartButton) {
+            cartButton.addEventListener('click', () => {
+                updateCartModal();
+                cartModal.classList.remove('hidden');
+                cartModal.style.display = 'flex';
+            });
+        }
+        if (closeCartBtn) {
+            closeCartBtn.addEventListener('click', () => {
+                cartModal.classList.add('hidden');
+                cartModal.style.display = 'none';
+            });
+        }
+        
+        // Fechar carrinho clicando fora
+        cartModal.addEventListener('click', (e) => {
+            if (e.target === cartModal) {
+                cartModal.classList.add('hidden');
+                cartModal.style.display = 'none';
+            }
         });
 
         // Escutar mudanças nos produtos vindas da administração
         window.addEventListener('productsUpdated', function(event) {
             console.log('🔄 Produtos atualizados! Recarregando...');
-            // Recarregar produtos e renderizar novamente
-            window.location.reload(); // Forma simples de sincronizar
+            // Recarregar produtos do DataManager
+            if (loadProducts()) {
+                console.log('✅ Produtos recarregados com sucesso');
+            } else {
+                console.log('⚠️ Falhou ao recarregar, recarregando página...');
+                window.location.reload();
+            }
         });
+        
+        // Verificar atualizações periodicamente
+        setInterval(() => {
+            if (window.dataManager) {
+                const newProducts = window.dataManager.getActiveProducts();
+                if (newProducts.length > 0 && newProducts.length !== products.length) {
+                    console.log('🔄 Produtos atualizados, recarregando...');
+                    products = newProducts;
+                    renderProducts('all');
+                }
+            }
+        }, 3000);
 
         // Escutar mudanças de layout vindas da administração
         window.addEventListener('message', function(event) {
@@ -1438,9 +1576,6 @@
             }
         }
 
-        // Initial render of all products
-        renderProducts('all');
-        
         // Aplicar layout temático atual
         if (window.dataManager) {
             window.dataManager.applyCurrentLayout();
@@ -1859,6 +1994,77 @@
             nextSlide();
         }, 5000);
     }
+    
+    // Função global para abrir carrinho
+    function openCartModal() {
+        console.log('🛒 Abrindo carrinho...');
+        
+        // Debug: verificar localStorage
+        const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+        console.log('📦 Carrinho atual:', carrinho);
+        
+        updateCartModal();
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal) {
+            cartModal.classList.remove('hidden');
+            cartModal.style.display = 'flex';
+        } else {
+            console.error('❌ Modal do carrinho não encontrado');
+        }
+    }
+    
+    // Tornar função global
+    window.openCartModal = openCartModal;
+    
+    // Funções para controlar subcategorias
+    function showSubcategories() {
+        document.getElementById('granja-subcategories').classList.remove('hidden');
+    }
+    
+    function hideSubcategories() {
+        document.getElementById('granja-subcategories').classList.add('hidden');
+    }
+    
+    function toggleSubcategories() {
+        const subcategories = document.getElementById('granja-subcategories');
+        subcategories.classList.toggle('hidden');
+    }
+    
+    // Função para filtrar produtos
+    function filterProducts(category) {
+        const productGrid = document.getElementById('product-grid');
+        let filtered;
+        
+        if (category === 'all') {
+            filtered = produtos;
+        } else if (category === 'granja') {
+            filtered = produtos.filter(p => 
+                p.category === 'fertilizantes' || 
+                p.category === 'aves' || 
+                p.category === 'ovos'
+            );
+        } else if (category === 'parceiros') {
+            filtered = produtos.filter(p => p.category === 'parceiros');
+        } else {
+            filtered = produtos.filter(p => p.category === category);
+        }
+        
+        productGrid.innerHTML = filtered.map(p => `
+            <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
+                <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
+                <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
+                <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
+            </div>
+        `).join('');
+    }
+    
+    // Tornar funções globais
+    window.showSubcategories = showSubcategories;
+    window.hideSubcategories = hideSubcategories;
+    window.toggleSubcategories = toggleSubcategories;
+    window.filterProducts = filterProducts;
     
     // Função de debug para forçar reaplicação do layout
     function debugLayoutReload() {
