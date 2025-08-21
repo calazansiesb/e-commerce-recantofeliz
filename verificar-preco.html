@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificação de Preço - Produto ID 1</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #45a049; }
+        .red { background: #f44336; }
+        .red:hover { background: #da190b; }
+        .price-check { border: 2px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .price-match { border-color: #4CAF50; background: #e8f5e8; }
+        .price-mismatch { border-color: #f44336; background: #ffebee; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Verificação de Preço - FertiGota</h1>
+        
+        <div class="warning">
+            <strong>🎯 Verificando se o preço alterado (R$ 5,00) foi salvo em todas as fontes de dados</strong>
+        </div>
+
+        <div class="section">
+            <h2>Controles</h2>
+            <button class="button" onclick="verificarPrecos()">💰 Verificar Preços</button>
+            <button class="button red" onclick="sincronizarDados()">🔄 Sincronizar Dados</button>
+        </div>
+
+        <div id="resultado-verificacao" class="section">
+            <h3>📊 Resultados da Verificação</h3>
+            <div id="resultado-content">Clique em "Verificar Preços" para começar...</div>
+        </div>
+
+        <div class="section">
+            <h3>🔧 Detalhes Técnicos</h3>
+            <div id="detalhes-tecnicos"></div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <!-- sqlite disabled: <script src="js/sqlite-manager.js"></script> -->
+    <script>
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        function verificarPrecos() {
+            const resultadoContent = document.getElementById('resultado-content');
+            const detalhesTecnicos = document.getElementById('detalhes-tecnicos');
+            
+            resultadoContent.innerHTML = '<p>🔍 Verificando preços em todas as fontes...</p>';
+            detalhesTecnicos.innerHTML = '';
+            
+            const resultados = [];
+            let precoEsperado = 5.00; // Preço que deveria estar salvo (FertiGota)
+            
+            // 1. Verificar localStorage
+            try {
+                const localData = localStorage.getItem('granjaRecantoFelizData');
+                if (localData) {
+                    const parsed = JSON.parse(localData);
+                    const produto = parsed.products?.find(p => p.id === 2);
+                    if (produto) {
+                        resultados.push({
+                            fonte: 'localStorage',
+                            preco: produto.price,
+                            nome: produto.name,
+                            status: produto.price === precoEsperado ? 'match' : 'mismatch',
+                            detalhes: JSON.stringify(produto, null, 2)
+                        });
+                    } else {
+                        resultados.push({
+                            fonte: 'localStorage',
+                            preco: 'N/A',
+                            nome: 'Produto não encontrado',
+                            status: 'error'
+                        });
+                    }
+                } else {
+                    resultados.push({
+                        fonte: 'localStorage',
+                        preco: 'N/A',
+                        nome: 'localStorage vazio',
+                        status: 'error'
+                    });
+                }
+            } catch (error) {
+                resultados.push({
+                    fonte: 'localStorage',
+                    preco: 'Erro',
+                    nome: error.message,
+                    status: 'error'
+                });
+            }
+
+            // 2. Verificar SQLite
+            try {
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const produtos = window.sqliteManager.getProducts();
+                    const produto = produtos.find(p => p.id === 2);
+                    if (produto) {
+                        resultados.push({
+                            fonte: 'SQLite',
+                            preco: produto.price,
+                            nome: produto.name,
+                            status: produto.price === precoEsperado ? 'match' : 'mismatch',
+                            detalhes: JSON.stringify(produto, null, 2)
+                        });
+                    } else {
+                        resultados.push({
+                            fonte: 'SQLite',
+                            preco: 'N/A',
+                            nome: 'Produto não encontrado',
+                            status: 'error'
+                        });
+                    }
+                } else {
+                    resultados.push({
+                        fonte: 'SQLite',
+                        preco: 'N/A',
+                        nome: 'SQLite não disponível',
+                        status: 'error'
+                    });
+                }
+            } catch (error) {
+                resultados.push({
+                    fonte: 'SQLite',
+                    preco: 'Erro',
+                    nome: error.message,
+                    status: 'error'
+                });
+            }
+
+            // 3. Verificar DataManager
+            try {
+                if (!window.dataManager) {
+                    window.dataManager = new DataManager();
+                }
+                
+                const produtos = window.dataManager.getProducts();
+                const produto = produtos.find(p => p.id === 2);
+                if (produto) {
+                    resultados.push({
+                        fonte: 'DataManager',
+                        preco: produto.price,
+                        nome: produto.name,
+                        status: produto.price === precoEsperado ? 'match' : 'mismatch',
+                        detalhes: JSON.stringify(produto, null, 2)
+                    });
+                } else {
+                    resultados.push({
+                        fonte: 'DataManager',
+                        preco: 'N/A',
+                        nome: 'Produto não encontrado',
+                        status: 'error'
+                    });
+                }
+            } catch (error) {
+                resultados.push({
+                    fonte: 'DataManager',
+                    preco: 'Erro',
+                    nome: error.message,
+                    status: 'error'
+                });
+            }
+
+            // Exibir resultados
+            exibirResultados(resultados, precoEsperado);
+        }
+
+        function exibirResultados(resultados, precoEsperado) {
+            const resultadoContent = document.getElementById('resultado-content');
+            const detalhesTecnicos = document.getElementById('detalhes-tecnicos');
+            
+            let html = `<h4>🎯 Preço esperado: R$ ${precoEsperado.toFixed(2)}</h4>`;
+            
+            let todasFontesCorretas = true;
+            
+            resultados.forEach(resultado => {
+                const statusClass = resultado.status === 'match' ? 'price-match' : 
+                                  resultado.status === 'mismatch' ? 'price-mismatch' : 'price-check';
+                
+                const statusIcon = resultado.status === 'match' ? '✅' : 
+                                 resultado.status === 'mismatch' ? '❌' : '⚠️';
+                
+                if (resultado.status !== 'match') {
+                    todasFontesCorretas = false;
+                }
+                
+                html += `
+                    <div class="${statusClass}">
+                        <strong>${statusIcon} ${resultado.fonte}</strong><br>
+                        Produto: ${resultado.nome}<br>
+                        Preço: R$ ${typeof resultado.preco === 'number' ? resultado.preco.toFixed(2) : resultado.preco}
+                        ${resultado.status === 'mismatch' ? `<br><span style="color: red;">Esperado: R$ ${precoEsperado.toFixed(2)}</span>` : ''}
+                    </div>
+                `;
+            });
+            
+            // Resumo geral
+            if (todasFontesCorretas) {
+                html += `
+                    <div class="success">
+                        <strong>🎉 SUCESSO!</strong><br>
+                        O preço de R$ ${precoEsperado.toFixed(2)} foi salvo corretamente em todas as fontes de dados!
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="error">
+                        <strong>⚠️ INCONSISTÊNCIA!</strong><br>
+                        O preço não está consistente em todas as fontes. Use "Sincronizar Dados" para corrigir.
+                    </div>
+                `;
+            }
+            
+            resultadoContent.innerHTML = html;
+            
+            // Mostrar detalhes técnicos
+            let detalhesHtml = '<h4>🔧 Detalhes dos Dados:</h4>';
+            resultados.forEach(resultado => {
+                if (resultado.detalhes) {
+                    detalhesHtml += `
+                        <div style="margin: 10px 0;">
+                            <strong>${resultado.fonte}:</strong>
+                            <pre style="background: #f8f8f8; padding: 10px; border-radius: 4px; font-size: 12px; overflow-x: auto;">${resultado.detalhes}</pre>
+                        </div>
+                    `;
+                }
+            });
+            detalhesTecnicos.innerHTML = detalhesHtml;
+        }
+
+        function sincronizarDados() {
+            const resultadoContent = document.getElementById('resultado-content');
+            resultadoContent.innerHTML = '<p>🔄 Sincronizando dados...</p>';
+            
+            try {
+                // Tentar sincronizar SQLite para localStorage
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const produtosSQLite = window.sqliteManager.getProducts();
+                    const produtoAtualizado = produtosSQLite.find(p => p.id === 2);
+                    
+                    if (produtoAtualizado) {
+                        // Atualizar localStorage
+                        const dadosExistentes = JSON.parse(localStorage.getItem('granjaRecantoFelizData') || '{}');
+                        dadosExistentes.products = produtosSQLite;
+                        dadosExistentes.lastUpdate = new Date().toISOString();
+                        dadosExistentes.syncFrom = 'SQLite';
+                        
+                        localStorage.setItem('granjaRecantoFelizData', JSON.stringify(dadosExistentes));
+                        
+                        // Recriar DataManager
+                        window.dataManager = new DataManager();
+                        
+                        resultadoContent.innerHTML = `
+                            <div class="success">
+                                <strong>✅ Sincronização concluída!</strong><br>
+                                Dados do SQLite foram copiados para localStorage e DataManager atualizado.
+                            </div>
+                        `;
+                        
+                        // Verificar novamente após 1 segundo
+                        setTimeout(() => {
+                            verificarPrecos();
+                        }, 1000);
+                    } else {
+                        resultadoContent.innerHTML = `
+                            <div class="error">
+                                <strong>❌ Erro na sincronização!</strong><br>
+                                Produto não encontrado no SQLite.
+                            </div>
+                        `;
+                    }
+                } else {
+                    resultadoContent.innerHTML = `
+                        <div class="error">
+                            <strong>❌ Erro na sincronização!</strong><br>
+                            SQLite não está disponível.
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultadoContent.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Erro na sincronização!</strong><br>
+                        ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-verificar ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                verificarPrecos();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

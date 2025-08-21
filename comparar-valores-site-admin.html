@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparar Valores: Site vs Admin - Granja Recanto Feliz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .source-panel {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .source-panel.site {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .source-panel.admin {
+            border-color: #007bff;
+            background: #f8f9ff;
+        }
+        
+        .product-item {
+            border: 1px solid #eee;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            background: white;
+        }
+        
+        .product-item.different {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+        
+        .product-item.same {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .product-name {
+            font-weight: bold;
+            color: #2D5016;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            font-size: 1.1em;
+            color: #dc3545;
+            font-weight: bold;
+        }
+        
+        .product-details {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        button {
+            background-color: #2D5016;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #1a3009;
+        }
+        
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .summary {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .iframe-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+        }
+        
+        .iframe-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            height: 90%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .iframe-header {
+            background: #2D5016;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-iframe {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Comparação: Site Principal vs Administração</h1>
+        <p>Esta ferramenta compara os valores dos produtos entre o site principal e a página administrativa para identificar se os dados estão sendo salvos corretamente.</p>
+        
+        <div id="status-container">
+            <div class="status info">⏳ Preparando comparação...</div>
+        </div>
+        
+        <div>
+            <button onclick="compararValores()">🔄 Comparar Valores</button>
+            <button onclick="abrirSite()">🌐 Abrir Site Principal</button>
+            <button onclick="abrirAdmin()">⚙️ Abrir Admin</button>
+            <button onclick="testarEdicao()">✏️ Testar Edição</button>
+            <button onclick="limparLog()">🧹 Limpar Log</button>
+        </div>
+        
+        <div class="log" id="log-container"></div>
+        
+        <div class="summary" id="summary-container" style="display: none;">
+            <h3>📊 Resumo da Comparação</h3>
+            <div id="summary-content"></div>
+        </div>
+        
+        <div class="comparison-grid" id="comparison-grid" style="display: none;">
+            <div class="source-panel site">
+                <h3>🌐 Site Principal (index.html)</h3>
+                <div id="site-products"></div>
+            </div>
+            
+            <div class="source-panel admin">
+                <h3>⚙️ Página Administrativa</h3>
+                <div id="admin-products"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Container para iframes -->
+    <div class="iframe-container" id="iframe-container">
+        <div class="iframe-content">
+            <div class="iframe-header">
+                <span id="iframe-title">Carregando...</span>
+                <button class="close-iframe" onclick="fecharIframe()">&times;</button>
+            </div>
+            <iframe id="main-iframe" src="" style="width: 100%; height: calc(100% - 50px); border: none;"></iframe>
+        </div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="js/data-manager.js"></script>
+    
+    <script>
+        let logContainer;
+        let produtosSite = [];
+        let produtosAdmin = [];
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            logContainer = document.getElementById('log-container');
+            log('🚀 Ferramenta de comparação carregada');
+            
+            // Aguardar DataManager carregar
+            setTimeout(() => {
+                if (window.dataManager) {
+                    log('✅ DataManager encontrado');
+                } else {
+                    log('⚠️ DataManager não encontrado, criando...');
+                    window.dataManager = new DataManager();
+                }
+            }, 1000);
+        });
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            
+            if (logContainer) {
+                logContainer.innerHTML += logMessage + '\n';
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        async function compararValores() {
+            log('🔍 Iniciando comparação de valores...');
+            updateStatus('🔄 Comparando valores entre site e admin...', 'info');
+            
+            try {
+                // 1. Obter produtos do DataManager (usado pelo site)
+                produtosSite = await obterProdutosSite();
+                log(`📦 Site: ${produtosSite.length} produtos encontrados`);
+                
+                // 2. Obter produtos do localStorage (usado pelo admin)
+                produtosAdmin = await obterProdutosAdmin();
+                log(`⚙️ Admin: ${produtosAdmin.length} produtos encontrados`);
+                
+                // 3. Comparar os dados
+                const resultado = compararDados(produtosSite, produtosAdmin);
+                
+                // 4. Exibir resultados
+                exibirComparacao(resultado);
+                
+                // 5. Mostrar resumo
+                exibirResumo(resultado);
+                
+                if (resultado.diferencas > 0) {
+                    updateStatus(`⚠️ ${resultado.diferencas} diferenças encontradas entre site e admin`, 'warning');
+                } else {
+                    updateStatus('✅ Site e admin estão sincronizados', 'success');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na comparação: ${error.message}`);
+                updateStatus('❌ Erro ao comparar valores', 'error');
+            }
+        }
+        
+        async function obterProdutosSite() {
+            log('🌐 Obtendo produtos do site principal...');
+            
+            if (!window.dataManager) {
+                log('⚠️ DataManager não disponível, criando...');
+                window.dataManager = new DataManager();
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            const produtos = window.dataManager.getProducts();
+            log(`📊 DataManager retornou ${produtos.length} produtos`);
+            
+            if (produtos.length > 0) {
+                log(`🔍 Primeiro produto do site: ${produtos[0].name} - R$ ${produtos[0].price}`);
+            }
+            
+            return produtos;
+        }
+        
+        async function obterProdutosAdmin() {
+            log('⚙️ Obtendo produtos do localStorage (admin)...');
+            
+            try {
+                const data = localStorage.getItem('granjaRecantoFelizData');
+                if (!data) {
+                    log('❌ Nenhum dado encontrado no localStorage');
+                    return [];
+                }
+                
+                const parsed = JSON.parse(data);
+                const produtos = parsed.products || [];
+                
+                log(`📊 localStorage contém ${produtos.length} produtos`);
+                
+                if (produtos.length > 0) {
+                    log(`🔍 Primeiro produto do admin: ${produtos[0].name} - R$ ${produtos[0].price}`);
+                }
+                
+                return produtos;
+                
+            } catch (error) {
+                log(`❌ Erro ao acessar localStorage: ${error.message}`);
+                return [];
+            }
+        }
+        
+        function compararDados(produtosSite, produtosAdmin) {
+            log('🔄 Comparando dados...');
+            
+            const resultado = {
+                total: Math.max(produtosSite.length, produtosAdmin.length),
+                iguais: 0,
+                diferencas: 0,
+                somenteNoSite: [],
+                somenteNoAdmin: [],
+                diferentes: [],
+                detalhes: []
+            };
+            
+            // Criar mapas para facilitar comparação
+            const mapSite = new Map();
+            const mapAdmin = new Map();
+            
+            produtosSite.forEach(p => mapSite.set(p.id, p));
+            produtosAdmin.forEach(p => mapAdmin.set(p.id, p));
+            
+            // Obter todos os IDs únicos
+            const todosIds = new Set([...mapSite.keys(), ...mapAdmin.keys()]);
+            
+            todosIds.forEach(id => {
+                const produtoSite = mapSite.get(id);
+                const produtoAdmin = mapAdmin.get(id);
+                
+                if (produtoSite && produtoAdmin) {
+                    // Produto existe em ambos - comparar valores
+                    const diferencas = [];
+                    
+                    if (produtoSite.name !== produtoAdmin.name) {
+                        diferencas.push(`Nome: "${produtoSite.name}" vs "${produtoAdmin.name}"`);
+                    }
+                    
+                    if (produtoSite.price !== produtoAdmin.price) {
+                        diferencas.push(`Preço: R$ ${produtoSite.price} vs R$ ${produtoAdmin.price}`);
+                    }
+                    
+                    if (produtoSite.category !== produtoAdmin.category) {
+                        diferencas.push(`Categoria: "${produtoSite.category}" vs "${produtoAdmin.category}"`);
+                    }
+                    
+                    if (diferencas.length > 0) {
+                        resultado.diferencas++;
+                        resultado.diferentes.push({
+                            id,
+                            nome: produtoSite.name || produtoAdmin.name,
+                            diferencas,
+                            site: produtoSite,
+                            admin: produtoAdmin
+                        });
+                        log(`⚠️ Diferenças no produto ${id}: ${diferencas.join(', ')}`);
+                    } else {
+                        resultado.iguais++;
+                        log(`✅ Produto ${id} idêntico em ambos`);
+                    }
+                    
+                } else if (produtoSite && !produtoAdmin) {
+                    resultado.somenteNoSite.push(produtoSite);
+                    log(`🌐 Produto ${id} existe apenas no site: ${produtoSite.name}`);
+                    
+                } else if (!produtoSite && produtoAdmin) {
+                    resultado.somenteNoAdmin.push(produtoAdmin);
+                    log(`⚙️ Produto ${id} existe apenas no admin: ${produtoAdmin.name}`);
+                }
+            });
+            
+            log(`📊 Comparação concluída: ${resultado.iguais} iguais, ${resultado.diferencas} diferentes`);
+            return resultado;
+        }
+        
+        function exibirComparacao(resultado) {
+            log('📋 Exibindo comparação visual...');
+            
+            const grid = document.getElementById('comparison-grid');
+            const siteContainer = document.getElementById('site-products');
+            const adminContainer = document.getElementById('admin-products');
+            
+            // Limpar containers
+            siteContainer.innerHTML = '';
+            adminContainer.innerHTML = '';
+            
+            // Criar mapa de produtos por ID para facilitar exibição
+            const mapSite = new Map();
+            const mapAdmin = new Map();
+            
+            produtosSite.forEach(p => mapSite.set(p.id, p));
+            produtosAdmin.forEach(p => mapAdmin.set(p.id, p));
+            
+            // Obter todos os IDs únicos
+            const todosIds = new Set([...mapSite.keys(), ...mapAdmin.keys()]);
+            
+            todosIds.forEach(id => {
+                const produtoSite = mapSite.get(id);
+                const produtoAdmin = mapAdmin.get(id);
+                
+                // Determinar se são iguais ou diferentes
+                let saoIguais = false;
+                if (produtoSite && produtoAdmin) {
+                    saoIguais = (
+                        produtoSite.name === produtoAdmin.name &&
+                        produtoSite.price === produtoAdmin.price &&
+                        produtoSite.category === produtoAdmin.category
+                    );
+                }
+                
+                const cssClass = saoIguais ? 'same' : 'different';
+                
+                // Criar elemento para o site
+                if (produtoSite) {
+                    siteContainer.innerHTML += `
+                        <div class="product-item ${cssClass}">
+                            <div class="product-name">${produtoSite.name}</div>
+                            <div class="product-price">R$ ${produtoSite.price.toFixed(2)}</div>
+                            <div class="product-details">
+                                ID: ${produtoSite.id} | Categoria: ${produtoSite.category || 'N/A'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    siteContainer.innerHTML += `
+                        <div class="product-item different">
+                            <div class="product-name">❌ Produto ${id} não encontrado no site</div>
+                        </div>
+                    `;
+                }
+                
+                // Criar elemento para o admin
+                if (produtoAdmin) {
+                    adminContainer.innerHTML += `
+                        <div class="product-item ${cssClass}">
+                            <div class="product-name">${produtoAdmin.name}</div>
+                            <div class="product-price">R$ ${produtoAdmin.price.toFixed(2)}</div>
+                            <div class="product-details">
+                                ID: ${produtoAdmin.id} | Categoria: ${produtoAdmin.category || 'N/A'}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    adminContainer.innerHTML += `
+                        <div class="product-item different">
+                            <div class="product-name">❌ Produto ${id} não encontrado no admin</div>
+                        </div>
+                    `;
+                }
+            });
+            
+            grid.style.display = 'grid';
+        }
+        
+        function exibirResumo(resultado) {
+            const summaryContainer = document.getElementById('summary-container');
+            const summaryContent = document.getElementById('summary-content');
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #e8f5e8; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #28a745;">${resultado.iguais}</div>
+                        <div>Produtos Idênticos</div>
+                    </div>
+                    <div style="background: #fff3cd; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #856404;">${resultado.diferencas}</div>
+                        <div>Produtos Diferentes</div>
+                    </div>
+                    <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #0c5460;">${resultado.somenteNoSite.length}</div>
+                        <div>Só no Site</div>
+                    </div>
+                    <div style="background: #f8d7da; padding: 15px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 2em; font-weight: bold; color: #721c24;">${resultado.somenteNoAdmin.length}</div>
+                        <div>Só no Admin</div>
+                    </div>
+                </div>
+            `;
+            
+            if (resultado.diferentes.length > 0) {
+                html += `
+                    <h4>🔍 Detalhes das Diferenças:</h4>
+                    <ul>
+                `;
+                resultado.diferentes.forEach(diff => {
+                    html += `<li><strong>${diff.nome}</strong>: ${diff.diferencas.join(', ')}</li>`;
+                });
+                html += `</ul>`;
+            }
+            
+            // Diagnóstico
+            html += `<h4>🩺 Diagnóstico:</h4>`;
+            
+            if (resultado.diferencas === 0 && resultado.somenteNoSite.length === 0 && resultado.somenteNoAdmin.length === 0) {
+                html += `<p style="color: #28a745; font-weight: bold;">✅ Perfeito! Site e admin estão completamente sincronizados.</p>`;
+            } else {
+                html += `<p style="color: #dc3545; font-weight: bold;">⚠️ Há inconsistências entre site e admin:</p><ul>`;
+                
+                if (resultado.diferencas > 0) {
+                    html += `<li>Produtos com valores diferentes: Pode indicar que as edições no admin não estão sendo salvas corretamente.</li>`;
+                }
+                
+                if (resultado.somenteNoSite.length > 0) {
+                    html += `<li>Produtos apenas no site: Pode indicar que o site está usando dados estáticos ou cache antigo.</li>`;
+                }
+                
+                if (resultado.somenteNoAdmin.length > 0) {
+                    html += `<li>Produtos apenas no admin: Pode indicar que novos produtos não estão sendo sincronizados com o site.</li>`;
+                }
+                
+                html += `</ul>`;
+            }
+            
+            summaryContent.innerHTML = html;
+            summaryContainer.style.display = 'block';
+        }
+        
+        function abrirSite() {
+            log('🌐 Abrindo site principal...');
+            const iframe = document.getElementById('main-iframe');
+            const title = document.getElementById('iframe-title');
+            
+            iframe.src = 'index.html';
+            title.textContent = '🌐 Site Principal - index.html';
+            document.getElementById('iframe-container').style.display = 'block';
+        }
+        
+        function abrirAdmin() {
+            log('⚙️ Abrindo página administrativa...');
+            const iframe = document.getElementById('main-iframe');
+            const title = document.getElementById('iframe-title');
+            
+            iframe.src = 'admin.html';
+            title.textContent = '⚙️ Página Administrativa - admin.html';
+            document.getElementById('iframe-container').style.display = 'block';
+        }
+        
+        function fecharIframe() {
+            document.getElementById('iframe-container').style.display = 'none';
+            document.getElementById('main-iframe').src = '';
+        }
+        
+        async function testarEdicao() {
+            log('✏️ Iniciando teste de edição...');
+            updateStatus('🧪 Testando se edições são salvas corretamente...', 'info');
+            
+            try {
+                // 1. Capturar estado inicial
+                const estadoInicial = await obterProdutosSite();
+                log(`📊 Estado inicial: ${estadoInicial.length} produtos`);
+                
+                if (estadoInicial.length === 0) {
+                    log('❌ Nenhum produto encontrado para testar');
+                    updateStatus('❌ Nenhum produto disponível para teste', 'error');
+                    return;
+                }
+                
+                // 2. Simular edição (alterar preço do primeiro produto)
+                const produtoTeste = {...estadoInicial[0]};
+                const precoOriginal = produtoTeste.price;
+                const novoPreco = precoOriginal + 0.01; // Adicionar 1 centavo
+                
+                log(`🔧 Testando edição do produto "${produtoTeste.name}"`);
+                log(`💰 Preço original: R$ ${precoOriginal.toFixed(2)}`);
+                log(`💰 Novo preço: R$ ${novoPreco.toFixed(2)}`);
+                
+                // 3. Simular salvamento
+                produtoTeste.price = novoPreco;
+                
+                if (window.dataManager && window.dataManager.updateProduct) {
+                    const sucesso = await window.dataManager.updateProduct(produtoTeste.id, produtoTeste);
+                    
+                    if (sucesso) {
+                        log('✅ Produto atualizado via DataManager');
+                        
+                        // 4. Verificar se a mudança persistiu
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        
+                        const estadoFinal = await obterProdutosSite();
+                        const produtoAtualizado = estadoFinal.find(p => p.id === produtoTeste.id);
+                        
+                        if (produtoAtualizado && produtoAtualizado.price === novoPreco) {
+                            log('✅ TESTE PASSOU: Edição foi salva e persistiu');
+                            updateStatus('✅ Edições estão sendo salvas corretamente', 'success');
+                            
+                            // Restaurar preço original
+                            await window.dataManager.updateProduct(produtoTeste.id, {price: precoOriginal});
+                            log('🔄 Preço original restaurado');
+                            
+                        } else {
+                            log('❌ TESTE FALHOU: Edição não persistiu');
+                            log(`💰 Preço esperado: R$ ${novoPreco.toFixed(2)}`);
+                            log(`💰 Preço atual: R$ ${produtoAtualizado?.price?.toFixed(2) || 'N/A'}`);
+                            updateStatus('❌ Edições NÃO estão sendo salvas - valores são estáticos', 'error');
+                        }
+                        
+                    } else {
+                        log('❌ Falha ao atualizar produto via DataManager');
+                        updateStatus('❌ Erro ao salvar edições', 'error');
+                    }
+                    
+                } else {
+                    log('❌ DataManager.updateProduct não disponível');
+                    updateStatus('❌ Sistema de edição não disponível', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro no teste de edição: ${error.message}`);
+                updateStatus('❌ Erro durante teste de edição', 'error');
+            }
+        }
+        
+        function limparLog() {
+            if (logContainer) {
+                logContainer.innerHTML = '';
+            }
+            log('🧹 Log limpo');
+        }
+        
+        // Auto-executar comparação após 2 segundos
+        setTimeout(() => {
+            compararValores();
+        }, 2000);
+    </script>
+</body>
+</html>

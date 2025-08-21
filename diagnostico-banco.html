@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Banco - Granja Recanto Feliz</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+        .status { padding: 15px; margin: 10px 0; border-radius: 5px; font-weight: bold; }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0056b3; }
+        .log { background: #f8f9fa; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-height: 300px; overflow-y: auto; margin: 10px 0; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .panel { border: 1px solid #ddd; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico Completo do Sistema</h1>
+        
+        <div id="status-container">
+            <div class="status info">🔍 Analisando sistema...</div>
+        </div>
+        
+        <button onclick="diagnosticoCompleto()">🔍 Diagnóstico Completo</button>
+        <button onclick="criarBancoReal()">🗄️ Criar Banco SQLite Real</button>
+        <button onclick="testarSalvamentoReal()">💾 Testar Salvamento Real</button>
+        
+        <div class="log" id="log-container"></div>
+        
+        <div class="grid">
+            <div class="panel">
+                <h3>📦 localStorage</h3>
+                <div id="localStorage-info">Verificando...</div>
+            </div>
+            <div class="panel">
+                <h3>🗄️ SQLite</h3>
+                <div id="sqlite-info">Verificando...</div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h3>🔧 Ações de Correção</h3>
+            <button onclick="forcarSalvamentoLocalStorage()">💾 Forçar localStorage</button>
+            <button onclick="desabilitarSQLite()">❌ Desabilitar SQLite</button>
+            <button onclick="resetarSistema()">🔄 Resetar Sistema</button>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <!-- sqlite disabled: <script src="js/sqlite-manager.js"></script> -->
+    
+    <script>
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logMessage = `[${timestamp}] ${message}`;
+            console.log(logMessage);
+            
+            const logContainer = document.getElementById('log-container');
+            if (logContainer) {
+                logContainer.innerHTML += logMessage + '\n';
+                logContainer.scrollTop = logContainer.scrollHeight;
+            }
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        async function diagnosticoCompleto() {
+            log('🔍 Iniciando diagnóstico completo...');
+            updateStatus('🔄 Executando diagnóstico...', 'info');
+            
+            // 1. Verificar localStorage
+            log('📦 Verificando localStorage...');
+            const localStorageInfo = document.getElementById('localStorage-info');
+            
+            try {
+                const data = localStorage.getItem('granjaRecantoFelizData');
+                if (data) {
+                    const parsed = JSON.parse(data);
+                    const produtos = parsed.products || [];
+                    localStorageInfo.innerHTML = `
+                        ✅ Ativo<br>
+                        📊 ${produtos.length} produtos<br>
+                        🕐 ${parsed.lastUpdate || 'N/A'}<br>
+                        💰 Primeiro: R$ ${produtos[0]?.price || 'N/A'}
+                    `;
+                    log(`✅ localStorage: ${produtos.length} produtos`);
+                } else {
+                    localStorageInfo.innerHTML = '❌ Vazio';
+                    log('❌ localStorage está vazio');
+                }
+            } catch (error) {
+                localStorageInfo.innerHTML = '❌ Erro';
+                log(`❌ Erro no localStorage: ${error.message}`);
+            }
+            
+            // 2. Verificar SQLite
+            log('🗄️ Verificando SQLite...');
+            const sqliteInfo = document.getElementById('sqlite-info');
+            
+            try {
+                if (window.sqliteManager) {
+                    log('✅ SQLiteManager existe');
+                    
+                    if (window.sqliteManager.db) {
+                        log('✅ Banco SQLite conectado');
+                        
+                        try {
+                            const produtos = window.sqliteManager.getProducts();
+                            sqliteInfo.innerHTML = `
+                                ✅ Conectado<br>
+                                📊 ${produtos.length} produtos<br>
+                                💰 Primeiro: R$ ${produtos[0]?.price || 'N/A'}
+                            `;
+                            log(`✅ SQLite: ${produtos.length} produtos`);
+                        } catch (getError) {
+                            sqliteInfo.innerHTML = '⚠️ Conectado mas erro ao ler';
+                            log(`⚠️ SQLite conectado mas erro: ${getError.message}`);
+                        }
+                    } else {
+                        sqliteInfo.innerHTML = '❌ Não conectado';
+                        log('❌ SQLite não conectado');
+                    }
+                } else {
+                    sqliteInfo.innerHTML = '❌ Não existe';
+                    log('❌ SQLiteManager não existe');
+                }
+            } catch (error) {
+                sqliteInfo.innerHTML = '❌ Erro';
+                log(`❌ Erro no SQLite: ${error.message}`);
+            }
+            
+            // 3. Verificar DataManager
+            log('🔧 Verificando DataManager...');
+            
+            try {
+                if (window.dataManager) {
+                    const produtos = window.dataManager.getProducts();
+                    log(`✅ DataManager: ${produtos.length} produtos`);
+                    log(`💰 Primeiro produto: ${produtos[0]?.name} - R$ ${produtos[0]?.price}`);
+                } else {
+                    log('❌ DataManager não existe');
+                }
+            } catch (error) {
+                log(`❌ Erro no DataManager: ${error.message}`);
+            }
+            
+            // 4. Conclusão
+            const hasLocalStorage = !!localStorage.getItem('granjaRecantoFelizData');
+            const hasSQLite = !!(window.sqliteManager && window.sqliteManager.db);
+            
+            if (!hasLocalStorage && !hasSQLite) {
+                updateStatus('❌ PROBLEMA: Nenhum sistema de persistência funcionando', 'error');
+                log('❌ DIAGNÓSTICO: Sistema sem persistência');
+            } else if (hasLocalStorage && !hasSQLite) {
+                updateStatus('⚠️ Apenas localStorage funcionando (SQLite inativo)', 'warning');
+                log('⚠️ DIAGNÓSTICO: Apenas localStorage');
+            } else if (!hasLocalStorage && hasSQLite) {
+                updateStatus('⚠️ Apenas SQLite funcionando (localStorage vazio)', 'warning');
+                log('⚠️ DIAGNÓSTICO: Apenas SQLite');
+            } else {
+                updateStatus('✅ Ambos os sistemas funcionando', 'success');
+                log('✅ DIAGNÓSTICO: Sistema completo');
+            }
+        }
+        
+        async function criarBancoReal() {
+            log('⚠️ A criação de um banco SQLite no cliente foi desativada nesta versão.');
+            updateStatus('⚠️ SQLite no cliente desativado — use o endpoint server-side para persistência', 'warning');
+            return;
+        }
+        
+        async function testarSalvamentoReal() {
+            log('💾 Testando salvamento real...');
+            
+            try {
+                if (!window.dataManager) {
+                    window.dataManager = new DataManager();
+                }
+                
+                const produtos = window.dataManager.getProducts();
+                if (produtos.length === 0) {
+                    log('❌ Nenhum produto para testar');
+                    return;
+                }
+                
+                const produto = produtos[0];
+                const precoOriginal = produto.price;
+                const novoPreco = precoOriginal + 0.01;
+                
+                log(`🧪 Testando: ${produto.name}`);
+                log(`💰 ${precoOriginal.toFixed(2)} → ${novoPreco.toFixed(2)}`);
+                
+                // Salvar diretamente no localStorage
+                produto.price = novoPreco;
+                produtos[0] = produto;
+                
+                const saveData = {
+                    products: produtos,
+                    lastUpdate: new Date().toISOString()
+                };
+                
+                localStorage.setItem('granjaRecantoFelizData', JSON.stringify(saveData));
+                log('💾 Salvo no localStorage');
+                
+                // Salvar no SQLite se disponível
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const sqliteSuccess = window.sqliteManager.updateProduct(produto.id, produto);
+                    if (sqliteSuccess) {
+                        log('💾 Salvo no SQLite');
+                    }
+                }
+                
+                // Verificar se persistiu
+                const verificacao = localStorage.getItem('granjaRecantoFelizData');
+                if (verificacao) {
+                    const parsed = JSON.parse(verificacao);
+                    const produtoVerificado = parsed.products.find(p => p.id === produto.id);
+                    
+                    if (produtoVerificado && produtoVerificado.price === novoPreco) {
+                        log('✅ TESTE PASSOU: Valor persistiu');
+                        updateStatus('✅ Salvamento funcionando', 'success');
+                    } else {
+                        log('❌ TESTE FALHOU: Valor não persistiu');
+                        updateStatus('❌ Salvamento com problemas', 'error');
+                    }
+                }
+                
+            } catch (error) {
+                log(`❌ Erro no teste: ${error.message}`);
+                updateStatus('❌ Erro no teste', 'error');
+            }
+        }
+        
+        function forcarSalvamentoLocalStorage() {
+            log('💾 Forçando uso apenas do localStorage...');
+            
+            // Desabilitar SQLite
+            window.sqliteManager = null;
+            
+            // Recriar DataManager para usar apenas localStorage
+            window.dataManager = new DataManager();
+            
+            log('✅ Sistema configurado para usar apenas localStorage');
+            updateStatus('✅ Configurado para localStorage apenas', 'success');
+        }
+        
+        function desabilitarSQLite() {
+            log('❌ Desabilitando SQLite...');
+            
+            window.sqliteManager = null;
+            window.sqliteReady = false;
+            
+            log('✅ SQLite desabilitado');
+            updateStatus('✅ SQLite desabilitado', 'success');
+        }
+        
+        function resetarSistema() {
+            log('🔄 Resetando sistema completo...');
+            
+            // Limpar localStorage
+            localStorage.removeItem('granjaRecantoFelizData');
+            
+            // Recriar DataManager
+            window.dataManager = new DataManager();
+            
+            // Desabilitar SQLite
+            window.sqliteManager = null;
+            
+            log('✅ Sistema resetado - valores padrão restaurados');
+            updateStatus('✅ Sistema resetado', 'success');
+        }
+        
+        // Auto-executar diagnóstico
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(diagnosticoCompleto, 1000);
+        });
+    </script>
+</body>
+</html>

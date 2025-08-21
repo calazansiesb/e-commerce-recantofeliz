@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Rápido - Produtos</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .produto { border: 1px solid #ddd; padding: 10px; margin: 10px; border-radius: 5px; display: inline-block; width: 200px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Rápido - Carregamento de Produtos</h1>
+    
+    <div id="status" class="status">Carregando...</div>
+    
+    <h2>📦 Produtos Encontrados:</h2>
+    <div id="produtos"></div>
+    
+    <h2>🔧 Ações:</h2>
+    <button onclick="testarNovamente()">🔄 Testar Novamente</button>
+    <button onclick="limparDados()">🗑️ Limpar Dados</button>
+    <button onclick="window.location.href='index.html'">🏠 Voltar ao Site</button>
+    
+    <script src="js/data-manager.js"></script>
+    <script>
+        function atualizarStatus(mensagem, tipo = 'warning') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = mensagem;
+            statusDiv.className = `status ${tipo}`;
+        }
+        
+        function exibirProdutos(produtos) {
+            const produtosDiv = document.getElementById('produtos');
+            
+            if (!produtos || produtos.length === 0) {
+                produtosDiv.innerHTML = '<p>❌ Nenhum produto encontrado</p>';
+                return;
+            }
+            
+            let html = '';
+            produtos.forEach(produto => {
+                html += `
+                    <div class="produto">
+                        <h3>${produto.name}</h3>
+                        <p><strong>ID:</strong> ${produto.id}</p>
+                        <p><strong>Preço:</strong> R$ ${produto.price?.toFixed(2) || 'N/A'}</p>
+                        <p><strong>Categoria:</strong> ${produto.category}</p>
+                        <p><strong>Estoque:</strong> ${produto.stock || 0}</p>
+                    </div>
+                `;
+            });
+            
+            produtosDiv.innerHTML = html;
+        }
+        
+        function testarCarregamento() {
+            console.log('🧪 Iniciando teste de carregamento...');
+            atualizarStatus('Testando carregamento de produtos...', 'warning');
+            
+            try {
+                // Verificar se DataManager existe
+                if (!window.dataManager) {
+                    console.log('📦 Criando DataManager...');
+                    window.dataManager = new DataManager();
+                }
+                
+                // Aguardar um pouco para inicialização
+                setTimeout(() => {
+                    try {
+                        const produtos = window.dataManager.getActiveProducts();
+                        console.log(`📊 Produtos obtidos: ${produtos.length}`);
+                        
+                        if (produtos.length > 0) {
+                            atualizarStatus(`✅ Sucesso! ${produtos.length} produtos carregados`, 'success');
+                            exibirProdutos(produtos);
+                        } else {
+                            atualizarStatus('⚠️ Nenhum produto encontrado - tentando restaurar padrão...', 'warning');
+                            
+                            // Tentar restaurar produtos padrão
+                            if (window.dataManager.restoreDefaultProducts) {
+                                window.dataManager.restoreDefaultProducts();
+                                setTimeout(() => {
+                                    const produtosRestaurados = window.dataManager.getActiveProducts();
+                                    if (produtosRestaurados.length > 0) {
+                                        atualizarStatus(`✅ Produtos padrão restaurados! ${produtosRestaurados.length} produtos`, 'success');
+                                        exibirProdutos(produtosRestaurados);
+                                    } else {
+                                        atualizarStatus('❌ Falha ao restaurar produtos padrão', 'error');
+                                    }
+                                }, 500);
+                            } else {
+                                atualizarStatus('❌ Método de restauração não disponível', 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('❌ Erro ao obter produtos:', error);
+                        atualizarStatus(`❌ Erro: ${error.message}`, 'error');
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('❌ Erro no teste:', error);
+                atualizarStatus(`❌ Erro no teste: ${error.message}`, 'error');
+            }
+        }
+        
+        function testarNovamente() {
+            document.getElementById('produtos').innerHTML = '';
+            testarCarregamento();
+        }
+        
+        function limparDados() {
+            if (confirm('Tem certeza que deseja limpar todos os dados?')) {
+                localStorage.clear();
+                atualizarStatus('🗑️ Dados limpos - recarregando...', 'warning');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+            }
+        }
+        
+        // Iniciar teste automaticamente
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 Página de teste carregada');
+            testarCarregamento();
+        });
+    </script>
+</body>
+</html>

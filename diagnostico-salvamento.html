@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Rápido - Salvamento de Produtos</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #f0f0f0; }
+        .log { background: white; padding: 15px; border-radius: 5px; margin: 10px 0; }
+        .success { border-left: 5px solid #28a745; }
+        .error { border-left: 5px solid #dc3545; }
+        .warning { border-left: 5px solid #ffc107; }
+        .info { border-left: 5px solid #17a2b8; }
+        button { background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin: 5px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Diagnóstico Rápido - Sistema de Salvamento</h1>
+    
+    <button onclick="executarDiagnostico()">🔍 Executar Diagnóstico Completo</button>
+    <button onclick="testarSalvamento()">💾 Testar Salvamento Manual</button>
+    <button onclick="limparLogs()">🗑️ Limpar Logs</button>
+    <button onclick="verificarPersistencia()">🔄 Verificar Persistência</button>
+    
+    <div id="logs"></div>
+
+    <!-- Scripts necessários -->
+    <script src="js/persistence-fix.js"></script>
+    <script src="js/data-manager.js"></script>
+    <script src="js/scripts.js"></script>
+    
+    <script>
+        let logsContainer = document.getElementById('logs');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = `log ${type}`;
+            div.innerHTML = `<strong>[${timestamp}]</strong> ${message}`;
+            logsContainer.appendChild(div);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function limparLogs() {
+            logsContainer.innerHTML = '';
+        }
+        
+        function executarDiagnostico() {
+            log('🚀 Iniciando diagnóstico completo...', 'info');
+            
+            // 1. Verificar se scripts carregaram
+            log('📋 1. Verificando carregamento de scripts:', 'info');
+            log(`   - PersistenceManager: ${window.persistenceManager ? '✅ Carregado' : '❌ Não encontrado'}`, window.persistenceManager ? 'success' : 'error');
+            log(`   - DataManager: ${window.dataManager ? '✅ Carregado' : '❌ Não encontrado'}`, window.dataManager ? 'success' : 'error');
+            log(`   - SQLiteManager: ${window.sqliteManager ? '✅ Carregado' : '❌ Não encontrado'}`, window.sqliteManager ? 'success' : 'error');
+            
+            // 2. Verificar dados atuais
+            log('📋 2. Verificando dados atuais:', 'info');
+            
+            if (window.dataManager) {
+                const produtos = window.dataManager.getProducts();
+                log(`   - Produtos no DataManager: ${produtos.length}`, produtos.length > 0 ? 'success' : 'warning');
+                
+                if (produtos.length > 0) {
+                    const primeiro = produtos[0];
+                    log(`   - Primeiro produto: ${primeiro.name} - R$ ${primeiro.price}`, 'info');
+                }
+            }
+            
+            // 3. Verificar localStorage
+            log('📋 3. Verificando localStorage:', 'info');
+            const lsData = localStorage.getItem('granjaRecantoFelizData');
+            if (lsData) {
+                try {
+                    const parsed = JSON.parse(lsData);
+                    log(`   - Produtos no localStorage: ${parsed.products ? parsed.products.length : 0}`, 'success');
+                    log(`   - Última atualização: ${parsed.lastUpdate || 'N/A'}`, 'info');
+                } catch (e) {
+                    log(`   - Erro ao ler localStorage: ${e.message}`, 'error');
+                }
+            } else {
+                log('   - localStorage vazio ou não encontrado', 'warning');
+            }
+            
+            // 4. Verificar dados persistentes
+            log('📋 4. Verificando dados persistentes:', 'info');
+            if (window.persistenceManager) {
+                const persistentData = window.persistenceManager.loadPersistentData();
+                if (persistentData && persistentData.products) {
+                    log(`   - Produtos persistentes: ${persistentData.products.length}`, 'success');
+                    log(`   - Fonte: ${persistentData.source || 'desconhecida'}`, 'info');
+                } else {
+                    log('   - Nenhum dado persistente encontrado', 'warning');
+                }
+            }
+            
+            log('✅ Diagnóstico concluído', 'success');
+        }
+        
+        function testarSalvamento() {
+            log('🧪 Iniciando teste de salvamento...', 'info');
+            
+            if (!window.dataManager) {
+                log('❌ DataManager não disponível para teste', 'error');
+                return;
+            }
+            
+            try {
+                // Obter produtos atuais
+                const produtos = window.dataManager.getProducts();
+                log(`📦 Produtos atuais: ${produtos.length}`, 'info');
+                
+                if (produtos.length === 0) {
+                    log('⚠️ Nenhum produto para testar', 'warning');
+                    return;
+                }
+                
+                // Fazer uma alteração de teste
+                const produtoTeste = {...produtos[0]};
+                const precoOriginal = produtoTeste.price;
+                const novoPreco = precoOriginal + 0.01; // Adicionar 1 centavo
+                
+                log(`🔧 Alterando preço de teste: R$ ${precoOriginal} → R$ ${novoPreco}`, 'info');
+                
+                // Tentar salvar
+                const sucesso = window.dataManager.updateProduct(produtoTeste.id, {price: novoPreco});
+                
+                if (sucesso) {
+                    log('✅ Salvamento via DataManager: SUCESSO', 'success');
+                    
+                    // Verificar se foi salvo mesmo
+                    setTimeout(() => {
+                        const produtosVerificacao = window.dataManager.getProducts();
+                        const produtoVerificado = produtosVerificacao.find(p => p.id === produtoTeste.id);
+                        
+                        if (produtoVerificado && produtoVerificado.price === novoPreco) {
+                            log('✅ Verificação: Dados persistiram no DataManager', 'success');
+                        } else {
+                            log('❌ Verificação: Dados NÃO persistiram no DataManager', 'error');
+                        }
+                        
+                        // Verificar localStorage
+                        const lsCheck = localStorage.getItem('granjaRecantoFelizData');
+                        if (lsCheck) {
+                            const lsParsed = JSON.parse(lsCheck);
+                            const lsProduto = lsParsed.products?.find(p => p.id === produtoTeste.id);
+                            
+                            if (lsProduto && lsProduto.price === novoPreco) {
+                                log('✅ Verificação: Dados persistiram no localStorage', 'success');
+                            } else {
+                                log('❌ Verificação: Dados NÃO persistiram no localStorage', 'error');
+                                log(`   Expected: R$ ${novoPreco}, Got: R$ ${lsProduto?.price || 'undefined'}`, 'error');
+                            }
+                        }
+                        
+                        // Restaurar preço original
+                        window.dataManager.updateProduct(produtoTeste.id, {price: precoOriginal});
+                        log(`🔄 Preço restaurado para R$ ${precoOriginal}`, 'info');
+                        
+                    }, 100);
+                    
+                } else {
+                    log('❌ Salvamento via DataManager: FALHOU', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro durante teste de salvamento: ${error.message}`, 'error');
+            }
+        }
+        
+        function verificarPersistencia() {
+            log('🔍 Verificando sistema de persistência...', 'info');
+            
+            if (!window.persistenceManager) {
+                log('❌ PersistenceManager não encontrado', 'error');
+                return;
+            }
+            
+            try {
+                // Testar salvamento persistente
+                const dadosTeste = {
+                    products: window.dataManager ? window.dataManager.getProducts() : [],
+                    lastUpdate: new Date().toISOString(),
+                    source: 'teste_diagnostico'
+                };
+                
+                log(`📤 Tentando salvar ${dadosTeste.products.length} produtos de forma persistente...`, 'info');
+                
+                window.persistenceManager.savePersistentData(dadosTeste);
+                log('✅ Salvamento persistente executado', 'success');
+                
+                // Verificar se foi salvo
+                setTimeout(() => {
+                    const dadosRecuperados = window.persistenceManager.loadPersistentData();
+                    
+                    if (dadosRecuperados && dadosRecuperados.products) {
+                        log(`✅ Dados recuperados: ${dadosRecuperados.products.length} produtos`, 'success');
+                        log(`📅 Fonte: ${dadosRecuperados.source}`, 'info');
+                    } else {
+                        log('❌ Falha ao recuperar dados persistentes', 'error');
+                    }
+                }, 100);
+                
+            } catch (error) {
+                log(`❌ Erro na verificação de persistência: ${error.message}`, 'error');
+            }
+        }
+        
+        // Executar diagnóstico automaticamente ao carregar
+        window.addEventListener('load', () => {
+            setTimeout(executarDiagnostico, 1000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Console - Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #45a049; }
+        .red { background: #f44336; }
+        .red:hover { background: #da190b; }
+        .blue { background: #2196F3; }
+        .blue:hover { background: #0b7dda; }
+        .console-output { background: #1e1e1e; color: #fff; padding: 15px; border-radius: 4px; font-family: monospace; max-height: 400px; overflow-y: auto; font-size: 12px; }
+        .log-info { color: #4CAF50; }
+        .log-warn { color: #FFC107; }
+        .log-error { color: #F44336; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .status.success { background: #e8f5e8; border: 1px solid #4caf50; }
+        .status.warning { background: #fff3cd; border: 1px solid #ffc107; }
+        .status.error { background: #ffebee; border: 1px solid #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖥️ Monitor de Console - Sistema de Produtos</h1>
+        
+        <div class="section">
+            <h2>Status do Sistema</h2>
+            <div id="system-status">Verificando...</div>
+        </div>
+
+        <div class="section">
+            <h2>Controles</h2>
+            <button class="button" onclick="verificarSistema()">🔍 Verificar Sistema</button>
+            <button class="button blue" onclick="simularCarregamentoPagina()">🔄 Simular Carregamento</button>
+            <button class="button red" onclick="limparConsole()">🗑️ Limpar Console</button>
+        </div>
+
+        <div class="section">
+            <h3>📝 Console Output</h3>
+            <div id="console-output" class="console-output">
+                Console logs aparecerão aqui...
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>📊 Resultados dos Testes</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <!-- sqlite-manager disabled: using localStorage + server-save flow -->
+    <!-- <script src="js/sqlite-manager.js"></script> -->
+    <script>
+        const consoleOutput = document.getElementById('console-output');
+        const systemStatus = document.getElementById('system-status');
+        const testResults = document.getElementById('test-results');
+
+        // Interceptar console.log para mostrar na página
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        const originalError = console.error;
+
+        function addToConsole(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = `log-${type}`;
+            div.innerHTML = `[${timestamp}] ${message}`;
+            consoleOutput.appendChild(div);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'info');
+        };
+
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        function verificarSistema() {
+            console.log('🔍 === INICIANDO VERIFICAÇÃO DO SISTEMA ===');
+            
+            // 1. Verificar localStorage
+            const localData = localStorage.getItem('granjaRecantoFelizData');
+            if (localData) {
+                const parsed = JSON.parse(localData);
+                console.log(`📦 localStorage: ${parsed.products ? parsed.products.length : 0} produtos`);
+            } else {
+                console.log('📦 localStorage: Vazio');
+            }
+
+            // 2. Verificar DataManager
+            if (!window.dataManager) {
+                console.log('⚠️ DataManager não encontrado, criando...');
+                window.dataManager = new DataManager();
+            }
+
+            const produtos = window.dataManager.getActiveProducts();
+            console.log(`⚙️ DataManager: ${produtos.length} produtos ativos`);
+
+            // 3. Verificar SQLite (opcional / caso disponível)
+            try {
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const sqliteProdutos = window.sqliteManager.getProducts();
+                    console.log(`🗄️ SQLite: ${sqliteProdutos.length} produtos`);
+                } else {
+                    console.log('🗄️ SQLite: Não disponível');
+                }
+            } catch (e) {
+                console.warn('⚠️ Verificação SQLite falhou:', e);
+                console.log('🗄️ SQLite: Não disponível');
+            }
+
+            // 4. Atualizar status
+            updateSystemStatus();
+
+            console.log('✅ === VERIFICAÇÃO CONCLUÍDA ===');
+        }
+
+        function simularCarregamentoPagina() {
+            console.log('🔄 === SIMULANDO CARREGAMENTO DA PÁGINA ===');
+            
+            // Simular o que acontece no index.html
+            let products = [];
+            let tentativa = 1;
+
+            function carregarProdutos() {
+                console.log(`🔍 Tentativa ${tentativa}: Verificando DataManager...`);
+                
+                if (!window.dataManager) {
+                    console.log('⚠️ DataManager não encontrado, criando...');
+                    window.dataManager = new DataManager();
+                }
+                
+                setTimeout(() => {
+                    try {
+                        products = window.dataManager.getActiveProducts();
+                        console.log('📦 Produtos carregados:', products.length);
+                        
+                        if (products.length > 0) {
+                            console.log('✅ Produtos renderizados com sucesso');
+                            
+                            // Mostrar produtos encontrados
+                            testResults.innerHTML = `
+                                <div class="status success">
+                                    <strong>✅ SUCESSO: ${products.length} produtos carregados</strong><br>
+                                    ${products.map(p => `• ${p.name} (ID: ${p.id})`).join('<br>')}
+                                </div>
+                            `;
+                        } else if (tentativa < 5) {
+                            console.log(`⚠️ Nenhum produto encontrado, tentativa ${tentativa}/5`);
+                            tentativa++;
+                            setTimeout(carregarProdutos, 1000);
+                        } else {
+                            console.log('❌ Falha ao carregar produtos após 5 tentativas');
+                            
+                            if (window.dataManager.restoreDefaultProducts) {
+                                console.log('🔄 Tentando restaurar produtos padrão...');
+                                window.dataManager.restoreDefaultProducts();
+                                setTimeout(() => {
+                                    products = window.dataManager.getActiveProducts();
+                                    if (products.length > 0) {
+                                        console.log('✅ Produtos padrão restaurados e renderizados');
+                                        
+                                        testResults.innerHTML = `
+                                            <div class="status success">
+                                                <strong>✅ RESTAURADO: ${products.length} produtos padrão</strong><br>
+                                                ${products.map(p => `• ${p.name} (ID: ${p.id})`).join('<br>')}
+                                            </div>
+                                        `;
+                                    } else {
+                                        console.error('❌ Falha ao restaurar produtos padrão');
+                                        testResults.innerHTML = `
+                                            <div class="status error">
+                                                <strong>❌ ERRO: Não foi possível carregar nem produtos padrão</strong>
+                                            </div>
+                                        `;
+                                    }
+                                }, 500);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('❌ Erro ao carregar produtos:', error);
+                        if (tentativa < 5) {
+                            tentativa++;
+                            setTimeout(carregarProdutos, 1000);
+                        }
+                    }
+                }, 200 * tentativa);
+            }
+
+            carregarProdutos();
+        }
+
+        function updateSystemStatus() {
+            const localData = localStorage.getItem('granjaRecantoFelizData');
+            const hasDataManager = !!window.dataManager;
+            const hasSQLite = !!(window.sqliteManager && window.sqliteManager.db);
+            
+            let localCount = 0;
+            if (localData) {
+                const parsed = JSON.parse(localData);
+                localCount = parsed.products ? parsed.products.length : 0;
+            }
+
+            const dmCount = hasDataManager ? window.dataManager.getActiveProducts().length : 0;
+            
+            let status = '';
+            let statusClass = 'success';
+
+            if (localCount > 0 && dmCount > 0) {
+                status = `✅ Sistema funcionando: localStorage(${localCount}) + DataManager(${dmCount})`;
+            } else if (dmCount > 0) {
+                status = `⚠️ Apenas DataManager funcionando: ${dmCount} produtos`;
+                statusClass = 'warning';
+            } else if (localCount > 0) {
+                status = `⚠️ Apenas localStorage funcionando: ${localCount} produtos`;
+                statusClass = 'warning';
+            } else {
+                status = `❌ Sistema com problemas: Nenhum produto encontrado`;
+                statusClass = 'error';
+            }
+
+            systemStatus.innerHTML = `<div class="status ${statusClass}">${status}</div>`;
+        }
+
+        function limparConsole() {
+            consoleOutput.innerHTML = 'Console limpo...';
+            testResults.innerHTML = '';
+        }
+
+        // Verificação automática ao carregar
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                console.log('🚀 Monitor de Console carregado');
+                verificarSistema();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Sistema de Pedidos Completo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-center text-green-700">
+            <i class="fas fa-clipboard-check mr-2"></i>
+            Teste do Sistema de Pedidos Completo
+        </h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Seção de Teste do Carrinho -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 text-blue-700">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                    Teste do Carrinho
+                </h2>
+                
+                <div class="space-y-4">
+                    <button onclick="adicionarProdutoTeste()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-plus mr-2"></i>
+                        Adicionar Produto de Teste
+                    </button>
+                    
+                    <button onclick="abrirCarrinho()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-eye mr-2"></i>
+                        Abrir Carrinho
+                    </button>
+                    
+                    <button onclick="limparCarrinho()" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-trash mr-2"></i>
+                        Limpar Carrinho
+                    </button>
+                </div>
+                
+                <div id="status-carrinho" class="mt-4 p-3 bg-gray-100 rounded text-sm">
+                    <strong>Status:</strong> <span id="carrinho-info">Carrinho vazio</span>
+                </div>
+            </div>
+            
+            <!-- Seção de Teste do Sistema de Pedidos -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-bold mb-4 text-purple-700">
+                    <i class="fas fa-database mr-2"></i>
+                    Sistema de Pedidos
+                </h2>
+                
+                <div class="space-y-4">
+                    <button onclick="testarSistemaPedidos()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-cog mr-2"></i>
+                        Testar Sistema de Pedidos
+                    </button>
+                    
+                    <button onclick="simularPedidoCompleto()" class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-play mr-2"></i>
+                        Simular Pedido Completo
+                    </button>
+                    
+                    <button onclick="verificarBancoDados()" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">
+                        <i class="fas fa-search mr-2"></i>
+                        Verificar Banco de Dados
+                    </button>
+                </div>
+                
+                <div id="status-pedidos" class="mt-4 p-3 bg-gray-100 rounded text-sm">
+                    <strong>Status:</strong> <span id="pedidos-info">Sistema não testado</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Seção de Logs -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-gray-700">
+                <i class="fas fa-terminal mr-2"></i>
+                Logs do Sistema
+            </h2>
+            <div id="logs" class="bg-black text-green-400 p-4 rounded font-mono text-sm h-64 overflow-y-auto">
+                <div>Sistema de teste carregado...</div>
+            </div>
+            <button onclick="limparLogs()" class="mt-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">
+                <i class="fas fa-eraser mr-1"></i>
+                Limpar Logs
+            </button>
+        </div>
+        
+        <!-- Seção de Resultados -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4 text-green-700">
+                <i class="fas fa-check-circle mr-2"></i>
+                Resultados dos Testes
+            </h2>
+            <div id="resultados" class="space-y-2">
+                <div class="text-gray-500">Nenhum teste executado ainda</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts necessários -->
+    <script src="js/data-manager.js"></script>
+    <script src="js/pedidos-manager.js"></script>
+    <script src="js/scripts.js"></script>
+    
+    <script>
+        // Função para adicionar logs
+        function addLog(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? 'text-red-400' : 
+                         type === 'success' ? 'text-green-400' : 
+                         type === 'warning' ? 'text-yellow-400' : 'text-blue-400';
+            
+            logs.innerHTML += `<div class="${color}">[${timestamp}] ${message}</div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+        
+        // Função para adicionar resultado
+        function addResult(test, status, details = '') {
+            const resultados = document.getElementById('resultados');
+            const icon = status === 'success' ? 'fa-check text-green-500' : 
+                        status === 'error' ? 'fa-times text-red-500' : 
+                        'fa-exclamation text-yellow-500';
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'flex items-center p-2 border rounded';
+            resultDiv.innerHTML = `
+                <i class="fas ${icon} mr-2"></i>
+                <span class="font-semibold">${test}:</span>
+                <span class="ml-2">${details}</span>
+            `;
+            
+            if (resultados.children[0].textContent.includes('Nenhum teste')) {
+                resultados.innerHTML = '';
+            }
+            
+            resultados.appendChild(resultDiv);
+        }
+        
+        // Função para adicionar produto de teste
+        function adicionarProdutoTeste() {
+            addLog('Adicionando produto de teste ao carrinho...', 'info');
+            
+            const produtoTeste = {
+                id: 'teste-' + Date.now(),
+                name: 'Ovos Caipira Teste',
+                price: 15.00
+            };
+            
+            try {
+                if (typeof adicionarAoCarrinho === 'function') {
+                    adicionarAoCarrinho(produtoTeste);
+                    addLog('✅ Produto adicionado com sucesso', 'success');
+                    atualizarStatusCarrinho();
+                    addResult('Adicionar Produto', 'success', 'Produto de teste adicionado');
+                } else {
+                    throw new Error('Função adicionarAoCarrinho não encontrada');
+                }
+            } catch (error) {
+                addLog('❌ Erro ao adicionar produto: ' + error.message, 'error');
+                addResult('Adicionar Produto', 'error', error.message);
+            }
+        }
+        
+        // Função para abrir carrinho
+        function abrirCarrinho() {
+            addLog('Tentando abrir modal do carrinho...', 'info');
+            
+            try {
+                if (typeof openCartModal === 'function') {
+                    openCartModal();
+                    addLog('✅ Modal do carrinho aberto', 'success');
+                    addResult('Abrir Carrinho', 'success', 'Modal aberto corretamente');
+                } else if (typeof updateCartModal === 'function') {
+                    // Alternativa: usar updateCartModal e mostrar modal manualmente
+                    updateCartModal();
+                    const modal = document.getElementById('cart-modal');
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.style.display = 'flex';
+                        addLog('✅ Modal do carrinho aberto (método alternativo)', 'success');
+                        addResult('Abrir Carrinho', 'success', 'Modal aberto via método alternativo');
+                    } else {
+                        throw new Error('Modal do carrinho não encontrado no DOM');
+                    }
+                } else {
+                    throw new Error('Funções do carrinho não encontradas');
+                }
+            } catch (error) {
+                addLog('❌ Erro ao abrir carrinho: ' + error.message, 'error');
+                addResult('Abrir Carrinho', 'error', error.message);
+            }
+        }
+        
+        // Função para limpar carrinho
+        function limparCarrinho() {
+            addLog('Limpando carrinho...', 'info');
+            
+            try {
+                localStorage.removeItem('carrinho');
+                addLog('✅ Carrinho limpo', 'success');
+                atualizarStatusCarrinho();
+                addResult('Limpar Carrinho', 'success', 'Carrinho esvaziado');
+            } catch (error) {
+                addLog('❌ Erro ao limpar carrinho: ' + error.message, 'error');
+                addResult('Limpar Carrinho', 'error', error.message);
+            }
+        }
+        
+        // Função para atualizar status do carrinho
+        function atualizarStatusCarrinho() {
+            const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+            const info = document.getElementById('carrinho-info');
+            
+            if (carrinho.length === 0) {
+                info.textContent = 'Carrinho vazio';
+            } else {
+                const total = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+                info.textContent = `${carrinho.length} itens - Total: R$ ${total.toFixed(2)}`;
+            }
+        }
+        
+        // Função para testar sistema de pedidos
+        async function testarSistemaPedidos() {
+            addLog('Testando sistema de pedidos...', 'info');
+            
+            try {
+                // Verificar se PedidosManager existe
+                if (!window.pedidosManager) {
+                    throw new Error('PedidosManager não encontrado');
+                }
+                
+                addLog('✅ PedidosManager encontrado', 'success');
+                
+                // Verificar se está inicializado
+                if (!window.pedidosManager.isInitialized) {
+                    addLog('⏳ Aguardando inicialização...', 'warning');
+                    
+                    // Aguardar até 5 segundos
+                    let tentativas = 0;
+                    while (!window.pedidosManager.isInitialized && tentativas < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        tentativas++;
+                    }
+                }
+                
+                if (window.pedidosManager.isInitialized) {
+                    addLog('✅ Sistema de pedidos inicializado', 'success');
+                    
+                    // Testar geração de número de pedido
+                    const numeroPedido = window.pedidosManager.gerarNumeroPedido();
+                    addLog(`✅ Número de pedido gerado: ${numeroPedido}`, 'success');
+                    
+                    // Atualizar status
+                    document.getElementById('pedidos-info').textContent = 'Sistema funcionando';
+                    addResult('Sistema de Pedidos', 'success', 'Inicializado e funcionando');
+                } else {
+                    throw new Error('Sistema não inicializou dentro do tempo limite');
+                }
+                
+            } catch (error) {
+                addLog('❌ Erro no sistema de pedidos: ' + error.message, 'error');
+                document.getElementById('pedidos-info').textContent = 'Erro: ' + error.message;
+                addResult('Sistema de Pedidos', 'error', error.message);
+            }
+        }
+        
+        // Função para simular pedido completo
+        async function simularPedidoCompleto() {
+            addLog('Iniciando simulação de pedido completo...', 'info');
+            
+            try {
+                // 1. Adicionar produto ao carrinho
+                const produtoTeste = {
+                    id: 'teste-completo',
+                    name: 'Teste Pedido Completo',
+                    price: 25.00
+                };
+                
+                if (typeof adicionarAoCarrinho === 'function') {
+                    adicionarAoCarrinho(produtoTeste);
+                    addLog('✅ Produto adicionado ao carrinho', 'success');
+                } else {
+                    // Adicionar manualmente
+                    const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+                    carrinho.push({
+                        id: produtoTeste.id,
+                        nome: produtoTeste.name,
+                        preco: produtoTeste.price,
+                        quantidade: 1
+                    });
+                    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+                    addLog('✅ Produto adicionado manualmente', 'success');
+                }
+                
+                // 2. Testar dados do cliente
+                const dadosCliente = {
+                    nome: 'João da Silva Teste',
+                    telefone: '(61) 99999-9999',
+                    endereco: 'Rua Teste, 123, Jardim Botânico, Brasília - CEP: 71680-000',
+                    documento: 'CPF: 123.456.789-00'
+                };
+                
+                addLog('✅ Dados do cliente preparados', 'success');
+                
+                // 3. Testar validação
+                if (window.pedidosManager && window.pedidosManager.validarDadosCliente) {
+                    const erros = window.pedidosManager.validarDadosCliente(dadosCliente);
+                    if (erros.length === 0) {
+                        addLog('✅ Dados do cliente válidos', 'success');
+                    } else {
+                        addLog('⚠️ Erros de validação: ' + erros.join(', '), 'warning');
+                    }
+                }
+                
+                // 4. Simular criação de pedido (sem salvar)
+                addLog('✅ Simulação de pedido completa', 'success');
+                addResult('Pedido Completo', 'success', 'Simulação executada com sucesso');
+                
+            } catch (error) {
+                addLog('❌ Erro na simulação: ' + error.message, 'error');
+                addResult('Pedido Completo', 'error', error.message);
+            }
+        }
+        
+        // Função para verificar banco de dados
+        async function verificarBancoDados() {
+            addLog('Verificando banco de dados...', 'info');
+            
+            try {
+                if (!window.pedidosManager) {
+                    throw new Error('PedidosManager não encontrado');
+                }
+                
+                // Verificar tipo de storage
+                addLog(`✅ Tipo de storage: ${window.pedidosManager.storageType}`, 'success');
+                
+                // Tentar obter métricas
+                if (window.pedidosManager.obterMetricas) {
+                    const metricas = await window.pedidosManager.obterMetricas();
+                    addLog(`✅ Total de pedidos: ${metricas.totalPedidos}`, 'success');
+                    addLog(`✅ Pedidos hoje: ${metricas.pedidosHoje}`, 'success');
+                    addLog(`✅ Último backup: ${metricas.ultimoBackup}`, 'success');
+                    
+                    addResult('Banco de Dados', 'success', `${metricas.totalPedidos} pedidos encontrados`);
+                } else {
+                    addLog('⚠️ Função de métricas não disponível', 'warning');
+                    addResult('Banco de Dados', 'warning', 'Métricas não disponíveis');
+                }
+                
+            } catch (error) {
+                addLog('❌ Erro ao verificar banco: ' + error.message, 'error');
+                addResult('Banco de Dados', 'error', error.message);
+            }
+        }
+        
+        // Função para limpar logs
+        function limparLogs() {
+            document.getElementById('logs').innerHTML = '<div>Logs limpos...</div>';
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('Sistema de teste carregado', 'success');
+            atualizarStatusCarrinho();
+            
+            // Verificar se os scripts necessários estão carregados
+            setTimeout(() => {
+                if (window.dataManager) {
+                    addLog('✅ DataManager carregado', 'success');
+                } else {
+                    addLog('❌ DataManager não encontrado', 'error');
+                }
+                
+                if (window.pedidosManager) {
+                    addLog('✅ PedidosManager carregado', 'success');
+                } else {
+                    addLog('❌ PedidosManager não encontrado', 'error');
+                }
+                
+                if (typeof adicionarAoCarrinho === 'function') {
+                    addLog('✅ Função adicionarAoCarrinho disponível', 'success');
+                } else {
+                    addLog('❌ Função adicionarAoCarrinho não encontrada', 'error');
+                }
+            }, 1000);
+        });
+        
+        // Atualizar status do carrinho periodicamente
+        setInterval(atualizarStatusCarrinho, 2000);
+    </script>
+</body>
+</html>
