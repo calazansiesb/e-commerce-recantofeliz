@@ -2,79 +2,146 @@
 
 Site de e-commerce para a Granja Recanto Feliz, especializada em produtos orgânicos e agricultura familiar.
 
-## 🚀 Início Rápido
+## ✅ Funcionalidades Implementadas
 
-```bash
-# 1. Clone o repositório
-git clone [url-do-repositorio]
+### 🎠 Carrossel Hero
+- Auto-play a cada 5 segundos
+- Navegação manual (botões anterior/próximo)
+- Indicadores clicáveis
+- Pausa no hover
+- 4 slides temáticos
 
-# 2. Abra o projeto
-cd e-commerce-recantofeliz
+### 🛍️ Sistema de Produtos
+- Renderização dinâmica via JavaScript
+- 7 produtos padrão (fertilizantes, ovos, aves)
+- Filtros funcionais por categoria
+- Cards responsivos com imagens
+- Integração com DataManager
 
-# 3. Execute o site
-# Abra src/index.html em um navegador
-# Ou use um servidor local (recomendado)
-python -m http.server 8000
+### 🎨 Layouts Temáticos
+- Layout padrão da granja
+- Layout especial Dia das Mães
+- Sistema de cores dinâmicas
+- Carrossel temático por layout
+
+### 📱 Interface Responsiva
+- Design mobile-first
+- Navegação adaptativa
+- Cards de produtos responsivos
+- Modais informativos
+
+## 📁 Estrutura de Arquivos
+
+```
+src/
+├── index.html              # Página principal
+├── js/
+│   ├── scripts.js          # Carrossel + Produtos
+│   └── data-manager.js     # Gerenciamento de dados
+├── css/
+│   └── estilos.css         # Estilos customizados
+└── imagens/
+    ├── carrocel/           # Imagens do carrossel
+    └── produtos/           # Imagens dos produtos
 ```
 
-## 📁 Estrutura do Projeto
+## 🔧 Arquivos JavaScript
 
-```
-e-commerce-recantofeliz/
-├── src/                    # Código fonte
-│   ├── index.html         # Site principal
-│   ├── admin.html         # Painel administrativo
-│   ├── js/               # Scripts JavaScript
-│   ├── data/             # Base de dados
-│   └── imagens/          # Assets de imagem
-├── docs/                 # Documentação completa
-├── backup-docs-desnecessarios/  # Arquivos históricos
-└── README.md            # Este arquivo
-```
+### scripts.js
+- `initCarousel()` - Inicializa carrossel
+- `initProducts()` - Renderiza produtos
+- Controles de navegação
+- Sistema de filtros
 
-## ✨ Funcionalidades
+### data-manager.js
+- Gerenciamento de produtos
+- Layouts temáticos
+- Persistência localStorage
+- API para administração
 
-- 🛍️ **E-commerce Completo** - Carrinho, checkout, WhatsApp
-- 🔧 **Painel Admin** - Gestão de produtos e estoque
-- 🎨 **Layouts Temáticos** - Dinâmicos por data
-- 📱 **Responsivo** - Mobile e desktop
-- 🔄 **Sincronização** - Dados em tempo real
+## 🚀 Como Usar
 
-## 🛠️ Tecnologias
+1. Abra `index.html` no navegador
+2. O carrossel inicia automaticamente
+3. Produtos são carregados via JavaScript
+4. Use filtros para navegar por categorias
 
-- HTML5, CSS3, JavaScript ES6
-- Tailwind CSS
-- Font Awesome
-- localStorage para persistência
+## 🛠️ Correções Realizadas
 
-## 📖 Documentação
+### Carrossel
+- ✅ Código JavaScript implementado
+- ✅ Auto-play funcional
+- ✅ Controles manuais ativos
+- ✅ Indicadores responsivos
 
-Toda a documentação está organizada na pasta `docs/`:
+### Produtos
+- ✅ Renderização dinâmica
+- ✅ Filtros por categoria
+- ✅ Integração com DataManager
+- ✅ Cards responsivos
 
-- **[Funcionalidades Ativas](docs/DOCUMENTACAO-FUNCIONALIDADES-ATIVAS.md)** - Marco de restauração
-- **[Guia de Deploy](docs/DEPLOY.md)** - Instruções de publicação
-- **[Sistema Administrativo](docs/sistema-administrativo.md)** - Guia do admin
+## 📋 Produtos Disponíveis
 
-## 🚀 Deploy
+1. **Substrato BioFértil 3 Anos** - R$ 40,00
+2. **FertiGota** - R$ 25,00
+3. **Ovos Caipira 10** - R$ 18,00
+4. **Ovos Caipira 20** - R$ 30,00
+5. **Ovos Caipira 30** - R$ 45,00
+6. **Galinha Caipira Picada** - R$ 60,00
+7. **Galinha Caipira Inteira** - R$ 110,00
 
-1. **Desenvolvimento Local:**
-   ```bash
-   # Servidor Python
-   cd src && python -m http.server 8000
-   
-   # Ou servidor Node.js
-   npx serve src
-   ```
+## 🎯 Filtros de Produtos
 
-2. **Produção:**
-   - Upload da pasta `src/` para servidor web
-   - Configurar domínio para apontar para `index.html`
+- **Todos** - Exibe todos os produtos
+- **Fertilizantes** - Substratos e adubos
+- **Aves** - Galinhas caipira
+- **Ovos** - Ovos caipira frescos
+- **Parceiros** - Produtos de parceiros
+- **Só da Granja** - Produtos próprios
 
-## 📞 Suporte
+## 🔄 Status do Sistema
 
-- **Localização:** Jardim Botânico e Lago Sul - DF
-- **WhatsApp:** Integrado no sistema
+- ✅ Carrossel funcionando
+- ✅ Produtos sendo exibidos
+- ✅ Filtros operacionais
+- ✅ Layout responsivo
+- ✅ DataManager integrado
+- ✅ Sistema de pedidos com banco de dados
+- ✅ Interface administrativa simplificada
+- ✅ **Correção: Erro ao salvar produto (20/08/2025)**
 
----
+## 🐛 Correções Recentes
 
-**Versão:** 2.1.0 | **Atualização:** 21/08/2025
+### 20/08/2025 (09:30) - Sincronização de Dados na Edição
+- **Problema:** Valores editados não eram refletidos na interface após salvamento
+- **Causa:** Inconsistência entre fontes de dados (SQLite vs localStorage)
+- **Solução:** Sistema de sincronização automática entre ambos os sistemas
+- **Status:** ✅ Resolvido
+- **Documentação:** [CORRECAO-SINCRONIZACAO-DADOS.md](./CORRECAO-SINCRONIZACAO-DADOS.md)
+
+### 20/08/2025 (09:00) - Erro ao Salvar Produto
+- **Problema:** Interface administrativa apresentava erro ao tentar salvar novos produtos
+- **Causa:** Falhas na inicialização do SQLiteManager e validações inadequadas
+- **Solução:** Sistema robusto de fallback entre SQLite e localStorage
+- **Status:** ✅ Resolvido
+- **Documentação:** [CORRECAO-ERRO-SALVAMENTO.md](./CORRECAO-ERRO-SALVAMENTO.md)
+
+### Melhorias Implementadas
+- 🔒 Validações extensivas de campos obrigatórios
+- 🔄 Sistema de fallback automático (SQLite → localStorage)
+- 📝 Logs detalhados para diagnóstico
+- 💬 Mensagens de erro específicas e acionáveis
+- 🛡️ Inicialização defensiva com verificações múltiplas
+
+## 📚 Documentação
+
+### Arquivos de Documentação
+- [CHANGELOG-DETALHADO.md](./CHANGELOG-DETALHADO.md) - Histórico completo de mudanças
+- [SISTEMA-BANCO-PEDIDOS.md](./SISTEMA-BANCO-PEDIDOS.md) - Documentação do sistema de banco
+- [CORRECAO-ERRO-SALVAMENTO.md](./CORRECAO-ERRO-SALVAMENTO.md) - Detalhes da correção recente
+- [INTERFACE-ADMIN-SIMPLIFICADA.md](./INTERFACE-ADMIN-SIMPLIFICADA.md) - Simplificação da interface
+
+### Links Úteis
+- **Administração:** `/admin.html`
+- **Gestão de Pedidos:** `/gestao-pedidos.html`
+- **Site Principal:** `/index.html`

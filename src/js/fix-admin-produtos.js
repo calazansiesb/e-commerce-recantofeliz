@@ -1,7 +1,15 @@
 // Correção mínima para exibir produtos no admin
 console.log('🔧 Carregando produtos no admin...');
 
-let produtos = [];
+const produtos = [
+    { id: 1, name: "Substrato BioFértil 3 Anos", category: "fertilizantes", slogan: "Mais do que Adubo: um substrato vivo e completo.", description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.", price: 40.00, image: "imagens/produtos/1/1.png", stock: 25, active: true },
+    { id: 2, name: "FertiGota", category: "fertilizantes", slogan: "Adubo de galinha líquido e potente.", description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.", price: 25.00, image: "imagens/produtos/2/1.png", stock: 40, active: true },
+    { id: 3, name: "Ovos Caipira 10", category: "ovos", slogan: "10 ovos frescos da granja.", description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.", price: 18.00, image: "imagens/produtos/3/1.jpeg", stock: 120, active: true },
+    { id: 4, name: "Ovos Caipira 20", category: "ovos", slogan: "20 ovos frescos da granja.", description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.", price: 30.00, image: "imagens/produtos/4/1.jpeg", stock: 80, active: true },
+    { id: 5, name: "Ovos Caipira 30", category: "ovos", slogan: "30 ovos frescos da granja.", description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.", price: 45.00, image: "imagens/produtos/5/1.png", stock: 50, active: true },
+    { id: 6, name: "Galinha Caipira Picada", category: "aves", slogan: "Galinha caipira cortada, pronta para cozinhar.", description: "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.", price: 60.00, image: "imagens/produtos/6/1.png", stock: 15, active: true },
+    { id: 7, name: "Galinha Caipira Inteira", category: "aves", slogan: "Galinha caipira inteira, fresca e saborosa.", description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.", price: 110.00, image: "imagens/produtos/7/1.png", stock: 8, active: true }
+];
 
 function renderizarProdutosAdmin() {
     const tbody = document.getElementById('products-table-body');
@@ -143,30 +151,11 @@ Baixar arquivo agora?`;
     }
 }
 
-// Carregar produtos do arquivo JSON
-async function carregarProdutosDoArquivo() {
-    try {
-        const response = await fetch('data/produtos.json', { cache: 'no-store' });
-        if (response.ok) {
-            const data = await response.json();
-            if (data.products && data.products.length > 0) {
-                produtos.splice(0, produtos.length, ...data.products);
-                console.log(`✅ ${data.products.length} produtos carregados do arquivo JSON`);
-                renderizarProdutosAdmin();
-            }
-        } else {
-            console.error('❌ Erro ao carregar produtos.json:', response.status);
-        }
-    } catch (error) {
-        console.error('❌ Erro ao carregar produtos.json:', error);
-    }
-}
-
 // Executar quando DOM estiver pronto
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', carregarProdutosDoArquivo);
+    document.addEventListener('DOMContentLoaded', renderizarProdutosAdmin);
 } else {
-    carregarProdutosDoArquivo();
+    renderizarProdutosAdmin();
 }
 
 // Tornar funções globais

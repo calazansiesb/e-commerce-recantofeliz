@@ -76,8 +76,19 @@
       "image": "imagens/produtos/7/1.png",
       "stock": 8,
       "active": true
+    },
+    {
+      "id": 8,
+      "image": "imagens/produtos/8/1.png",
+      "name": "Queijo Minas",
+      "category": "laticínios",
+      "slogan": "🧀 Queijo Minas Artesanal – Sabor que vem da tradição  ",
+      "description": "Produzido com leite fresco e técnicas centenárias, o Queijo Minas Artesanal é a expressão pura da cultura queijeira brasileira. Com textura macia, sabor levemente ácido e aroma marcante, ele conquista paladares exigentes e transforma qualquer refeição em um momento especial. Ideal para acompanhar cafés, compor tábuas de queijos ou ser apreciado puro, como manda a tradição mineira.\nFeito com carinho, maturado naturalmente e certificado por sua origem, esse queijo é mais que um alimento — é uma experiência.\n",
+      "price": 37,
+      "stock": 50,
+      "active": true
     }
   ],
-  "lastUpdate": "2025-08-21T13:38:03.573Z",
+  "lastUpdate": "2025-08-21T16:41:44.461Z",
   "version": "1.0"
 }

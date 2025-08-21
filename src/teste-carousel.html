@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste CarouselManager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .carousel-slide {
+            transition: opacity 1s ease-in-out;
+        }
+        .carousel-slide.active {
+            opacity: 1 !important;
+        }
+        .carousel-indicator.active {
+            background-color: white !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Teste do CarouselManager</h1>
+        
+        <!-- Estrutura do carrossel igual ao index.html -->
+        <div id="hero-carousel" class="relative w-full h-96 mb-8">
+            <div class="carousel-slide active absolute inset-0 bg-cover bg-center transition-all duration-1000" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/ovos-caipira.png')">
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center text-white">
+                        <h2 class="text-4xl font-bold mb-4">Ovos Caipira Frescos</h2>
+                        <p class="text-xl">Direto da nossa granja para sua mesa</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/galinhas-caipira.png')">
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center text-white">
+                        <h2 class="text-4xl font-bold mb-4">Galinhas Caipira</h2>
+                        <p class="text-xl">Criadas livres, alimentadas naturalmente</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/adubo-organico.png')">
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center text-white">
+                        <h2 class="text-4xl font-bold mb-4">Fertilizantes Orgânicos</h2>
+                        <p class="text-xl">Para sua horta crescer saudável</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Controles -->
+            <button id="prev-slide" class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition">
+                ‹
+            </button>
+            <button id="next-slide" class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 text-white p-2 rounded-full hover:bg-black/50 transition">
+                ›
+            </button>
+            
+            <!-- Indicadores -->
+            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                <button class="carousel-indicator active w-3 h-3 bg-white rounded-full transition duration-300" data-slide="0"></button>
+                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="1"></button>
+                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="2"></button>
+            </div>
+        </div>
+        
+        <!-- Controles de teste -->
+        <div class="text-center">
+            <button onclick="testCarouselManager()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">
+                Testar CarouselManager
+            </button>
+            <button onclick="testNextSlide()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mr-2">
+                Próximo Slide
+            </button>
+            <button onclick="testPrevSlide()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+                Slide Anterior
+            </button>
+        </div>
+        
+        <!-- Log de teste -->
+        <div class="mt-8 bg-black text-green-400 p-4 rounded font-mono text-sm h-64 overflow-y-auto" id="test-log">
+            <div>🧪 Console de teste do CarouselManager</div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/modules/carousel-manager.js"></script>
+    
+    <script>
+        function log(message) {
+            const logElement = document.getElementById('test-log');
+            logElement.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function testCarouselManager() {
+            log('🧪 Testando CarouselManager...');
+            
+            if (window.CarouselManager) {
+                log('✅ CarouselManager encontrado');
+                
+                if (window.carouselManager) {
+                    log('✅ Instância carouselManager encontrada');
+                    
+                    // Testar métodos
+                    const themes = window.carouselManager.getCarouselThemes();
+                    log(`📊 Temas encontrados: ${themes.length}`);
+                    
+                    const activeTheme = window.carouselManager.getActiveCarouselTheme();
+                    log(`🎯 Tema ativo: ${activeTheme.name}`);
+                    
+                } else {
+                    log('⚠️ Instância carouselManager não encontrada, criando...');
+                    window.carouselManager = new CarouselManager();
+                    window.carouselManager.initializeCarousel();
+                    log('✅ CarouselManager criado e inicializado');
+                }
+            } else {
+                log('❌ CarouselManager não encontrado');
+            }
+        }
+        
+        function testNextSlide() {
+            if (window.nextSlide) {
+                window.nextSlide();
+                log('➡️ Próximo slide executado');
+            } else {
+                log('❌ Função nextSlide não encontrada');
+            }
+        }
+        
+        function testPrevSlide() {
+            if (window.prevSlide) {
+                window.prevSlide();
+                log('⬅️ Slide anterior executado');
+            } else {
+                log('❌ Função prevSlide não encontrada');
+            }
+        }
+        
+        // Inicializar teste
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🚀 DOM carregado, aguardando CarouselManager...');
+            
+            setTimeout(() => {
+                testCarouselManager();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
