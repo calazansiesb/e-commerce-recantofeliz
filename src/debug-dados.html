@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Dados do Sistema</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #45a049; }
+        .red { background: #f44336; }
+        .red:hover { background: #da190b; }
+        .blue { background: #2196F3; }
+        .blue:hover { background: #0b7dda; }
+        pre { background: #f8f8f8; padding: 15px; border-radius: 4px; overflow-x: auto; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug - Sistema de Dados</h1>
+        
+        <div class="section">
+            <h2>Controles de Debug</h2>
+            <button class="button" onclick="verificarDados()">🔍 Verificar Dados</button>
+            <button class="button blue" onclick="verificarDataManager()">⚙️ Verificar DataManager</button>
+            <button class="button blue" onclick="forcarReload()">🔄 Forçar Reload</button>
+            <button class="button red" onclick="limparDados()">🗑️ Limpar Dados</button>
+            <button class="button" onclick="exportarDados()">📤 Exportar Dados</button>
+        </div>
+
+        <div id="status" class="section">
+            <h2>Status do Sistema</h2>
+            <div id="status-content">Clique em "Verificar Dados" para começar...</div>
+        </div>
+
+        <div id="localStorage-data" class="section">
+            <h2>Dados no localStorage</h2>
+            <pre id="localStorage-content">Carregando...</pre>
+        </div>
+
+        <div id="dataManager-data" class="section">
+            <h2>Dados no DataManager</h2>
+            <pre id="dataManager-content">Carregando...</pre>
+        </div>
+
+        <div id="comparison" class="section">
+            <h2>Comparação de Dados</h2>
+            <div id="comparison-content">Aguardando verificação...</div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <script>
+        let dataManager;
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Debug inicializando...');
+            
+            setTimeout(() => {
+                if (!window.dataManager) {
+                    window.dataManager = new DataManager();
+                }
+                dataManager = window.dataManager;
+                verificarDados();
+            }, 500);
+        });
+
+        function verificarDados() {
+            console.log('🔍 Verificando dados...');
+            
+            // Status do sistema
+            let statusHtml = '';
+            
+            // Verificar localStorage
+            const localData = localStorage.getItem('granjaRecantoFelizData');
+            if (localData) {
+                try {
+                    const parsed = JSON.parse(localData);
+                    statusHtml += `<div class="success">✅ localStorage: ${parsed.products?.length || 0} produtos encontrados</div>`;
+                    
+                    document.getElementById('localStorage-content').textContent = JSON.stringify(parsed, null, 2);
+                } catch (error) {
+                    statusHtml += `<div class="error">❌ localStorage: Erro ao parsear dados</div>`;
+                    document.getElementById('localStorage-content').textContent = 'Erro: ' + error.message;
+                }
+            } else {
+                statusHtml += `<div class="warning">⚠️ localStorage: Nenhum dado encontrado</div>`;
+                document.getElementById('localStorage-content').textContent = 'Nenhum dado encontrado';
+            }
+
+            // Verificar DataManager
+            if (dataManager) {
+                try {
+                    const products = dataManager.getActiveProducts();
+                    statusHtml += `<div class="success">✅ DataManager: ${products.length} produtos carregados</div>`;
+                    
+                    document.getElementById('dataManager-content').textContent = JSON.stringify(products, null, 2);
+                } catch (error) {
+                    statusHtml += `<div class="error">❌ DataManager: Erro ao obter produtos</div>`;
+                    document.getElementById('dataManager-content').textContent = 'Erro: ' + error.message;
+                }
+            } else {
+                statusHtml += `<div class="error">❌ DataManager: Não inicializado</div>`;
+                document.getElementById('dataManager-content').textContent = 'DataManager não encontrado';
+            }
+
+            document.getElementById('status-content').innerHTML = statusHtml;
+            
+            // Comparar dados
+            compararDados();
+        }
+
+        function compararDados() {
+            let comparisonHtml = '';
+            
+            try {
+                const localData = localStorage.getItem('granjaRecantoFelizData');
+                const localProducts = localData ? JSON.parse(localData).products : [];
+                const managerProducts = dataManager ? dataManager.getActiveProducts() : [];
+
+                if (localProducts.length !== managerProducts.length) {
+                    comparisonHtml += `<div class="warning">⚠️ Diferença na quantidade: localStorage(${localProducts.length}) vs DataManager(${managerProducts.length})</div>`;
+                }
+
+                // Comparar primeiro produto se existir
+                if (localProducts.length > 0 && managerProducts.length > 0) {
+                    const local = localProducts[0];
+                    const manager = managerProducts[0];
+                    
+                    if (local.price !== manager.price) {
+                        comparisonHtml += `<div class="error">❌ Preço diferente no produto 1: localStorage(R$ ${local.price}) vs DataManager(R$ ${manager.price})</div>`;
+                    }
+                    
+                    if (local.name !== manager.name) {
+                        comparisonHtml += `<div class="error">❌ Nome diferente no produto 1: localStorage("${local.name}") vs DataManager("${manager.name}")</div>`;
+                    }
+                    
+                    if (local.price === manager.price && local.name === manager.name) {
+                        comparisonHtml += `<div class="success">✅ Produto 1 consistente entre localStorage e DataManager</div>`;
+                    }
+                }
+
+                if (comparisonHtml === '') {
+                    comparisonHtml = '<div class="success">✅ Dados parecem consistentes</div>';
+                }
+
+            } catch (error) {
+                comparisonHtml = `<div class="error">❌ Erro na comparação: ${error.message}</div>`;
+            }
+
+            document.getElementById('comparison-content').innerHTML = comparisonHtml;
+        }
+
+        function verificarDataManager() {
+            if (dataManager) {
+                const debugInfo = dataManager.debugDataIntegrity();
+                alert('Informações de debug registradas no console');
+                console.log('🔍 Debug DataManager:', debugInfo);
+            } else {
+                alert('DataManager não encontrado!');
+            }
+        }
+
+        function forcarReload() {
+            if (dataManager) {
+                dataManager.forceRefresh();
+                setTimeout(() => {
+                    verificarDados();
+                    alert('Dados recarregados! Verifique o console para mais detalhes.');
+                }, 500);
+            } else {
+                alert('DataManager não encontrado!');
+            }
+        }
+
+        function limparDados() {
+            if (confirm('⚠️ Isso irá limpar TODOS os dados. Tem certeza?')) {
+                localStorage.removeItem('granjaRecantoFelizData');
+                localStorage.removeItem('granjaRecantoFelizHistory');
+                location.reload();
+            }
+        }
+
+        function exportarDados() {
+            const localData = localStorage.getItem('granjaRecantoFelizData');
+            if (localData) {
+                const blob = new Blob([localData], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dados-backup-' + new Date().toISOString().slice(0,10) + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                alert('Nenhum dado para exportar');
+            }
+        }
+
+        // Monitorar mudanças no localStorage
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'granjaRecantoFelizData') {
+                console.log('📡 Mudança detectada no localStorage!');
+                setTimeout(verificarDados, 100);
+            }
+        });
+
+        // Atualizar automaticamente a cada 5 segundos
+        setInterval(verificarDados, 5000);
+    </script>
+</body>
+</html>

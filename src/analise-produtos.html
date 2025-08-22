@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análise de Produtos - Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .section { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .button { background: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        .button:hover { background: #45a049; }
+        .red { background: #f44336; }
+        .red:hover { background: #da190b; }
+        .blue { background: #2196F3; }
+        .blue:hover { background: #0b7dda; }
+        pre { background: #f8f8f8; padding: 15px; border-radius: 4px; overflow-x: auto; max-height: 400px; font-size: 12px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .product-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Análise de Produtos - Debug</h1>
+        
+        <div class="section">
+            <h2>Controles</h2>
+            <button class="button" onclick="analisarProdutos()">🔍 Analisar Produtos</button>
+            <button class="button blue" onclick="forcarSincronizacao()">🔄 Forçar Sincronização</button>
+            <button class="button red" onclick="limparCache()">🗑️ Limpar Cache</button>
+        </div>
+
+        <div id="analise" class="section">
+            <h3>Análise de Fontes</h3>
+            <div id="analise-content">Clique em "Analisar Produtos" para começar...</div>
+        </div>
+
+        <div class="grid">
+            <div class="section">
+                <h3>📦 Produtos do localStorage</h3>
+                <div id="localStorage-produtos"></div>
+            </div>
+            
+            <div class="section">
+                <h3>🗄️ Produtos do SQLite</h3>
+                <div id="sqlite-produtos"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>⚙️ Produtos do DataManager</h3>
+            <div id="datamanager-produtos"></div>
+        </div>
+    </div>
+
+    <script src="js/data-manager.js"></script>
+    <!-- sqlite desativado no cliente: <script src="js/sqlite-manager.js"></script> -->
+    <script>
+        function log(message) {
+            console.log(message);
+            const analiseDiv = document.getElementById('analise-content');
+            analiseDiv.innerHTML += `<div>${message}</div>`;
+        }
+
+        function clearLog() {
+            document.getElementById('analise-content').innerHTML = '';
+        }
+
+        function exibirProdutos(produtos, containerId, fonte) {
+            const container = document.getElementById(containerId);
+            let html = `<h4>${fonte}: ${produtos.length} produtos</h4>`;
+            
+            if (produtos.length === 0) {
+                html += '<p>Nenhum produto encontrado</p>';
+            } else {
+                produtos.forEach((produto, index) => {
+                    html += `
+                        <div class="product-card">
+                            <strong>${produto.name || 'Sem nome'}</strong><br>
+                            <span>R$ ${produto.price ? produto.price.toFixed(2) : '0.00'}</span><br>
+                            <small>ID: ${produto.id} | Categoria: ${produto.category || 'N/A'}</small>
+                        </div>
+                    `;
+                });
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function analisarProdutos() {
+            clearLog();
+            log('🔍 Iniciando análise completa de produtos...');
+            
+            // 1. Verificar localStorage diretamente
+            try {
+                const localData = localStorage.getItem('granjaRecantoFelizData');
+                if (localData) {
+                    const parsed = JSON.parse(localData);
+                    const produtos = parsed.products || [];
+                    log(`📦 localStorage: ${produtos.length} produtos encontrados`);
+                    exibirProdutos(produtos, 'localStorage-produtos', 'localStorage');
+                } else {
+                    log('📦 localStorage: Vazio');
+                    document.getElementById('localStorage-produtos').innerHTML = '<p>localStorage vazio</p>';
+                }
+            } catch (e) {
+                log(`❌ Erro no localStorage: ${e.message}`);
+            }
+
+            // 2. Verificar SQLite
+            try {
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const sqliteProdutos = window.sqliteManager.getProducts();
+                    log(`🗄️ SQLite: ${sqliteProdutos.length} produtos encontrados`);
+                    exibirProdutos(sqliteProdutos, 'sqlite-produtos', 'SQLite');
+                } else {
+                    log('🗄️ SQLite: Não disponível');
+                    document.getElementById('sqlite-produtos').innerHTML = '<p>SQLite não disponível</p>';
+                }
+            } catch (e) {
+                log(`❌ Erro no SQLite: ${e.message}`);
+            }
+
+            // 3. Verificar DataManager
+            try {
+                if (!window.dataManager) {
+                    window.dataManager = new DataManager();
+                    log('⚙️ DataManager criado');
+                }
+                
+                const dmProdutos = window.dataManager.getProducts();
+                const dmAtivos = window.dataManager.getActiveProducts();
+                
+                log(`⚙️ DataManager: ${dmProdutos.length} produtos total, ${dmAtivos.length} ativos`);
+                exibirProdutos(dmAtivos, 'datamanager-produtos', 'DataManager (ativos)');
+                
+            } catch (e) {
+                log(`❌ Erro no DataManager: ${e.message}`);
+            }
+
+            // 4. Verificar qual fonte está sendo usada no site principal
+            log('🔍 Verificando qual fonte o site está usando...');
+            
+            setTimeout(() => {
+                // Simular o que o index.html faz
+                const testProducts = window.dataManager ? window.dataManager.getActiveProducts() : [];
+                log(`🌐 Site principal carregaria: ${testProducts.length} produtos`);
+                
+                if (testProducts.length === 1 && testProducts[0].name === 'Produto Teste') {
+                    log('⚠️ PROBLEMA: Site está carregando apenas produto de teste!');
+                } else if (testProducts.length >= 4) {
+                    log('✅ Site carregaria produtos corretos');
+                } else {
+                    log(`⚠️ Site carregaria poucos produtos: ${testProducts.length}`);
+                }
+            }, 100);
+        }
+
+        function forcarSincronizacao() {
+            clearLog();
+            log('🔄 Forçando sincronização completa...');
+            
+            try {
+                // Primeiro, tentar obter dados do SQLite
+                if (window.sqliteManager && window.sqliteManager.db) {
+                    const sqliteProdutos = window.sqliteManager.getProducts();
+                    log(`📊 SQLite tem ${sqliteProdutos.length} produtos`);
+                    
+                    if (sqliteProdutos.length > 0) {
+                        // Forçar salvamento no localStorage
+                        const dadosCompletos = {
+                            products: sqliteProdutos,
+                            lastUpdate: new Date().toISOString(),
+                            forcedSync: true,
+                            syncSource: 'manual'
+                        };
+                        
+                        localStorage.setItem('granjaRecantoFelizData', JSON.stringify(dadosCompletos));
+                        log(`✅ ${sqliteProdutos.length} produtos sincronizados para localStorage`);
+                        
+                        // Recriar DataManager
+                        window.dataManager = new DataManager();
+                        log('✅ DataManager recriado');
+                        
+                        // Verificar resultado
+                        setTimeout(() => {
+                            const verificacao = window.dataManager.getActiveProducts();
+                            log(`🔍 Verificação: DataManager agora tem ${verificacao.length} produtos`);
+                            analisarProdutos();
+                        }, 200);
+                        
+                    } else {
+                        log('❌ SQLite está vazio, não há dados para sincronizar');
+                    }
+                } else {
+                    log('❌ SQLite não disponível');
+                }
+            } catch (e) {
+                log(`❌ Erro na sincronização: ${e.message}`);
+            }
+        }
+
+        function limparCache() {
+            if (confirm('⚠️ Isso irá limpar todos os dados. Continuar?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // Auto-executar análise
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(analisarProdutos, 500);
+        });
+    </script>
+</body>
+</html>

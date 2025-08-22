@@ -22,9 +22,6 @@
         tailwindScript.async = true;
         document.head.appendChild(tailwindScript);
     </script>
-    
-    <!-- Scripts principais do sistema -->
-    <script src="js/scripts.js"></script>
     <!-- CSS Crítico Inline (Above-the-fold) -->
     <style>
         :root {
@@ -2623,8 +2620,7 @@
         const modules = [
             'js/modules/lazy-loader.js',
             'js/modules/mobile-optimizer.js', 
-            'js/modules/cache-manager.js',
-            'src/js/shipping-calculator.js'
+            'js/modules/cache-manager.js'
         ];
         
         modules.forEach(src => {
