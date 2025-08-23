@@ -51,9 +51,7 @@ async function renderizarProdutos() {
             <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
             <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
             <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
-            <button class="detail-btn bg-[#4CAF50] hover:bg-[#45a049] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">
-                <i class="fas fa-shopping-cart mr-2"></i>Comprar
-            </button>
+            <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
         </div>
     `).join('');
     
@@ -68,38 +66,34 @@ async function renderizarProdutos() {
     }
 }
 
-// Executar quando DOM estiver pronto
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderizarProdutos);
-} else {
-    renderizarProdutos();
-}
+// Executar quando DOM estiver pronto - DESABILITADO para evitar conflito com index.html
+// if (document.readyState === 'loading') {
+//     document.addEventListener('DOMContentLoaded', renderizarProdutos);
+// } else {
+//     renderizarProdutos();
+// }
 
-// Disponibilizar funções globalmente
+// Disponibilizar função globalmente
 window.renderizarProdutosMinimo = renderizarProdutos;
-window.renderizarProdutos = renderizarProdutos;
-window.produtos = produtos;
 
-// Sistema de verificação automática DESABILITADO para evitar conflito com filtros
-// setInterval(async () => {
-//     try {
-//         const response = await fetch('data/produtos.json', { cache: 'no-store' });
-//         if (response.ok) {
-//             const data = await response.json();
-//             if (data.products && data.products.length > 0) {
-//                 const currentLength = produtos.length;
-//                 const currentPrice7 = produtos.find(p => p.id === 7)?.price;
-//                 produtos.splice(0, produtos.length, ...data.products);
-//                 const newPrice7 = produtos.find(p => p.id === 7)?.price;
-//                 
-//                 if (produtos.length !== currentLength || currentPrice7 !== newPrice7) {
-//                     renderizarProdutos();
-//                 }
-//             }
-//         }
-//     } catch (error) {
-//         // Ignorar erros
-//     }
-// }, 3000);
-
-console.log('🔒 Sistema de atualização automática desabilitado para preservar filtros');
+// Verificar atualizações do arquivo a cada 3 segundos
+setInterval(async () => {
+    try {
+        const response = await fetch('data/produtos.json', { cache: 'no-store' });
+        if (response.ok) {
+            const data = await response.json();
+            if (data.products && data.products.length > 0) {
+                const currentLength = produtos.length;
+                const currentPrice7 = produtos.find(p => p.id === 7)?.price;
+                produtos.splice(0, produtos.length, ...data.products);
+                const newPrice7 = produtos.find(p => p.id === 7)?.price;
+                
+                if (produtos.length !== currentLength || currentPrice7 !== newPrice7) {
+                    renderizarProdutos();
+                }
+            }
+        }
+    } catch (error) {
+        // Ignorar erros
+    }
+}, 3000);

@@ -4,75 +4,234 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Granja Recanto Feliz - E-commerce</title>
-    <!-- Preload recursos críticos -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    
-    <!-- Fallback para CSS -->
-    <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&display=swap">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </noscript>
-    
-    <!-- Tailwind carregado assincronamente -->
-    <script>
-        // Carregar Tailwind de forma não bloqueante
-        const tailwindScript = document.createElement('script');
-        tailwindScript.src = 'https://cdn.tailwindcss.com';
-        tailwindScript.async = true;
-        document.head.appendChild(tailwindScript);
-    </script>
-    <!-- CSS Crítico Inline (Above-the-fold) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Montserrat:wght@400;600&family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-color: #2D5016;
             --secondary-color: #8B4513;
             --accent-color: #228B22;
             --background-color: #F0F8E8;
-            --vh: 1vh;
         }
         
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--background-color, #FDFBF5);
-            margin: 0;
-            padding: 0;
         }
         
         h1, h2, h3, .font-lora {
             font-family: 'Lora', serif;
         }
         
-        /* CSS Crítico para carregamento rápido */
         .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1586771107445-d3ca888129ce?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
-            min-height: 100vh;
-            min-height: calc(var(--vh, 1vh) * 100);
+        }
+        
+        /* Dropdown menu styles - Moderno como grandes sites */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 220px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.1);
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            visibility: hidden;
+            transform-origin: top center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            scale: 0.95;
+            padding: 8px 0;
+        }
+        
+        .dropdown-content.show {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .dropdown-content a {
+            color: #374151;
+            padding: 14px 20px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 2px 8px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .dropdown-content a:hover {
+            background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+            color: var(--primary-color, #2D5016);
+            transform: translateX(4px);
+        }
+        
+        .dropdown-content a:active {
+            background: linear-gradient(135deg, var(--accent-color, #228B22), #16A34A);
+            color: white;
+            transform: translateX(4px) scale(0.98);
+        }
+        
+        .dropdown-content a i {
+            width: 18px;
+            font-size: 14px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+        
+        .dropdown-content a:hover i {
+            opacity: 1;
+        }
+        
+        /* Mostrar dropdown no hover */
+        .dropdown:hover .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Mostrar dropdown quando tem classe 'open' */
+        .dropdown.open .dropdown-content {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            scale: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Seta indicadora melhorada */
+        .dropdown-content::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-bottom: 8px solid white;
+            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
         }
         
         .nav-button {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background: linear-gradient(135deg, var(--primary-color, #2D5016), var(--secondary-color, #8B4513));
             color: white;
-            padding: 14px 28px;
-            border-radius: 12px;
+            padding: 12px 24px;
+            border-radius: 8px;
             font-weight: 600;
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
             font-size: 16px;
-            min-height: 44px;
-            min-width: 44px;
+            position: relative;
         }
         
         .nav-button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-
         
-        .nav-link.active {
-            font-weight: 700;
-            color: var(--secondary-color, #8B4513);
+        .nav-button.active {
+            background: linear-gradient(135deg, var(--accent-color, #228B22), var(--primary-color, #2D5016));
+        }
+        
+        /* Indicador visual para botões com dropdown */
+        .dropdown-toggle::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-bottom: 6px solid var(--secondary-color, #8B4513);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .dropdown.open .dropdown-toggle::after,
+        .dropdown:hover .dropdown-toggle::after {
+            opacity: 1;
+        }
+        
+        /* Animações modernas */
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.5s ease-out forwards;
+        }
+        
+        /* Melhorias responsivas para dropdown */
+        @media (max-width: 768px) {
+            .dropdown-content {
+                min-width: 200px;
+                left: 0;
+                right: 0;
+                transform: none;
+                margin: 0 auto;
+            }
+            
+            .dropdown-content::before {
+                left: 50%;
+            }
+        }
+        
+        /* Estados de loading */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color, #2D5016);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Fixed navigation bar */
+        .fixed-nav {
+            position: sticky;
+            top: 80px;
+            z-index: 40;
+            background: rgba(253, 251, 245, 0.95);
+            backdrop-filter: blur(10px);
             border-bottom: 2px solid var(--secondary-color, #8B4513);
         }
         
@@ -206,10 +365,6 @@
             background: linear-gradient(135deg, #1F2937, #F59E0B, #059669);
         }
         
-        .theme-custom {
-            /* Cores serão aplicadas dinamicamente via JavaScript */
-        }
-        
         .product-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
@@ -303,216 +458,7 @@
             background-color: white !important;
             transform: scale(1.2);
         }
-        
-        /* Navegação Fixa - Estrutura Principal */
-        .fixed-nav {
-            position: sticky;
-            top: 80px;
-            z-index: 40;
-            background: rgba(253, 251, 245, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 2px solid var(--secondary-color, #8B4513);
-            padding: 16px 0;
-        }
-        
-        .nav-main-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            align-items: center;
-        }
-        
-        /* Botões principais da navegação */
-        .nav-button {
-            background: linear-gradient(135deg, var(--primary-color, #2D5016), var(--secondary-color, #8B4513));
-            color: white;
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .nav-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-        
-        .nav-button.active {
-            background: linear-gradient(135deg, var(--accent-color, #228B22), var(--primary-color, #2D5016));
-        }
-        
-        /* Dropdown styles */
-        .dropdown {
-            position: relative;
-            display: inline-block;
-        }
-        
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background-color: white;
-            min-width: 280px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
-            z-index: 1000;
-            border-radius: 16px;
-            border: 1px solid rgba(0,0,0,0.1);
-            top: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            scale: 0.95;
-            padding: 12px 0;
-        }
-        
-        /* Área invisível para manter hover */
-        .dropdown-content::after {
-            content: '';
-            position: absolute;
-            top: -12px;
-            left: 0;
-            right: 0;
-            height: 12px;
-            background: transparent;
-        }
-        
-        .dropdown-content.show {
-            display: block;
-            opacity: 1;
-            visibility: visible;
-            scale: 1;
-        }
-        
-        .dropdown-content a {
-            color: #374151;
-            padding: 16px 24px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            transition: all 0.2s ease;
-            border-radius: 12px;
-            margin: 4px 12px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 15px;
-        }
-        
-        .dropdown-content a:hover {
-            background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
-            color: var(--primary-color, #2D5016);
-            transform: translateX(6px);
-        }
-        
-        .dropdown-content a:active {
-            background: linear-gradient(135deg, var(--accent-color, #228B22), #16A34A);
-            color: white;
-            transform: translateX(6px) scale(0.98);
-        }
-        
-        .dropdown-content a i {
-            width: 20px;
-            font-size: 16px;
-            margin-right: 12px;
-            opacity: 0.7;
-            transition: opacity 0.2s ease;
-        }
-        
-        .dropdown-content a:hover i {
-            opacity: 1;
-        }
-        
-        /* Mostrar dropdown no hover */
-        .dropdown:hover .dropdown-content,
-        .dropdown-content:hover {
-            display: block;
-            opacity: 1;
-            visibility: visible;
-            scale: 1;
-        }
-        
-        /* Manter dropdown visível quando hover no conteúdo */
-        .dropdown:hover .dropdown-content {
-            display: block;
-            opacity: 1;
-            visibility: visible;
-            scale: 1;
-        }
-        
-        /* Seta indicadora */
-        .dropdown-content::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 10px solid white;
-            filter: drop-shadow(0 -2px 4px rgba(0,0,0,0.1));
-        }
-        
-        /* Indicador visual para botões com dropdown */
-        .dropdown-toggle::after {
-            content: '▼';
-            margin-left: 8px;
-            font-size: 12px;
-            opacity: 0.7;
-            transition: all 0.3s ease;
-        }
-        
-        .dropdown:hover .dropdown-toggle::after {
-            opacity: 1;
-            transform: rotate(180deg);
-        }
-        
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .nav-main-buttons {
-                flex-direction: column;
-                gap: 12px;
-            }
-            
-            .nav-button {
-                width: 100%;
-                text-align: center;
-            }
-            
-            .dropdown-content {
-                min-width: 250px;
-                left: 0;
-                right: 0;
-                transform: none;
-                margin: 0 auto;
-            }
-        }
     </style>
-    
-    <!-- Carregar CSS não crítico assincronamente -->
-    <script>
-        // Função para carregar CSS de forma assíncrona
-        function loadCSS(href) {
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = href;
-            link.media = 'print';
-            link.onload = function() { this.media = 'all'; };
-            document.head.appendChild(link);
-        }
-        
-        // Carregar estilos não críticos após carregamento inicial
-        window.addEventListener('load', () => {
-            // Carregar fontes adicionais se necessário
-            loadCSS('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
-        });
-    </script>
 </head>
 <body class="text-gray-800">
     <!-- Header melhorado com mais destaque para o carrinho -->
@@ -550,6 +496,56 @@
             <a href="admin.html" class="block text-center py-3 text-red-600 hover:text-red-800 hover:bg-red-50 font-bold"><i class="fas fa-cog mr-2"></i>Admin</a>
         </div>
     </header>
+
+    <!-- Barra de Navegação Fixa com Categorias Principais -->
+    <nav class="fixed-nav py-4">
+        <div class="container mx-auto px-6">
+            <div class="flex justify-center space-x-8">
+                <!-- Botão Todos -->
+                <button class="nav-button" onclick="selectCategoryModern('all')" id="nav-all">
+                    <i class="fas fa-border-all mr-2"></i>
+                    Todos
+                </button>
+                
+                <!-- Botão Produtos da Granja com Dropdown -->
+                <div class="dropdown" id="dropdown-granja">
+                    <button class="nav-button dropdown-toggle" onclick="toggleDropdown('dropdown-granja')" id="nav-granja">
+                        <i class="fas fa-home mr-2"></i>
+                        Produtos da Granja
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-granja-content">
+                        <a href="#" onclick="event.preventDefault(); selectCategory('fertilizantes', 'Fertilizantes')">
+                            <i class="fas fa-seedling mr-2"></i>Fertilizantes
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('aves', 'Aves')">
+                            <i class="fas fa-drumstick-bite mr-2"></i>Aves
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('ovos', 'Ovos')">
+                            <i class="fas fa-egg mr-2"></i>Ovos
+                        </a>
+                        <a href="#" onclick="event.preventDefault(); selectCategory('granja', 'Todos da Granja')">
+                            <i class="fas fa-list mr-2"></i>Todos da Granja
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Botão Parceiros com Dropdown -->
+                <div class="dropdown" id="dropdown-parceiros">
+                    <button class="nav-button dropdown-toggle" onclick="toggleDropdown('dropdown-parceiros')" id="nav-parceiros">
+                        <i class="fas fa-handshake mr-2"></i>
+                        Parceiros
+                        <i class="fas fa-chevron-down ml-2"></i>
+                    </button>
+                    <div class="dropdown-content" id="dropdown-parceiros-content">
+                        <a href="#" onclick="event.preventDefault(); selectCategory('parceiros', 'Todos os Parceiros')">
+                            <i class="fas fa-store mr-2"></i>Todos os Parceiros
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
 
     <main>
         <!-- Carrossel Hero Moderno -->
@@ -606,19 +602,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Slide 5: Novo Slide Adicionado -->
-                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/Gemini_Generated_Image_c97w7dc97w7dc97w.png')">
-                    <div class="flex items-center justify-center h-full text-white text-center px-6">
-                        <div class="max-w-4xl">
-                            <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🍽️ Sabor que Inspira</h1>
-                            <p class="text-xl md:text-2xl mb-8">Nossos produtos na sua mesa, criando momentos inesquecíveis.</p>
-                            <a href="#produtos" class="bg-[#4CAF50] hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full text-lg transition duration-300 inline-flex items-center">
-                                <i class="fas fa-utensils mr-2"></i> Descubra Receitas
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
             
             <!-- Controles do Carrossel -->
@@ -635,73 +618,21 @@
                 <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="1"></button>
                 <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="2"></button>
                 <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="3"></button>
-                <button class="carousel-indicator w-3 h-3 bg-white/50 rounded-full transition duration-300" data-slide="4"></button>
             </div>
         </section>
 
-        <!-- Navegação Fixa com Três Botões Principais -->
-        <nav class="fixed-nav">
-            <div class="container mx-auto px-6">
-                <div class="nav-main-buttons">
-                    <!-- Botão Todos -->
-                    <button class="nav-button active" onclick="filterProducts('all'); setActiveButton(this)">
-                        <i class="fas fa-th-large mr-2"></i>
-                        Todos
-                    </button>
-                    
-                    <!-- Botão Produtos da Granja com Dropdown -->
-                    <div class="dropdown">
-                        <button class="nav-button dropdown-toggle" onclick="filterProducts('granja'); setActiveButton(this)">
-                            <i class="fas fa-home mr-2"></i>
-                            Produtos da Granja
-                        </button>
-                        <div class="dropdown-content">
-                            <a href="#" onclick="event.preventDefault(); filterProducts('fertilizantes'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-seedling"></i>
-                                Fertilizantes
-                            </a>
-                            <a href="#" onclick="event.preventDefault(); filterProducts('aves'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-drumstick-bite"></i>
-                                Aves
-                            </a>
-                            <a href="#" onclick="event.preventDefault(); filterProducts('ovos'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-egg"></i>
-                                Ovos
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Botão Parceiros com Dropdown -->
-                    <div class="dropdown">
-                        <button class="nav-button dropdown-toggle" onclick="filterProducts('parceiros'); setActiveButton(this)">
-                            <i class="fas fa-handshake mr-2"></i>
-                            Parceiros
-                        </button>
-                        <div class="dropdown-content">
-                            <a href="#" onclick="event.preventDefault(); filterProducts('mel'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-cookie-bite"></i>
-                                Mel e Derivados
-                            </a>
-                            <a href="#" onclick="event.preventDefault(); filterProducts('laticinios'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-wine-glass"></i>
-                                Laticínios
-                            </a>
-                            <a href="#" onclick="event.preventDefault(); filterProducts('outros-parceiros'); setActiveButton(this.closest('.dropdown').querySelector('.nav-button')); return false;">
-                                <i class="fas fa-box"></i>
-                                Outros Produtos
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Seção de Produtos melhorada -->
-        <section id="produtos" class="py-20 bg-gray-50">
+        <!-- Seção de Produtos com nova estrutura -->
+        <section id="produtos" class="py-20 bg-gradient-to-br from-[#F0F8E8] to-white">
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold mb-4 font-lora text-[#5D4037]">Nossos Produtos</h2>
                     <p class="text-center max-w-3xl mx-auto text-gray-600">Cada item é fruto de um trabalho cuidadoso e sustentável. Conheça a linha de produtos da Granja Recanto Feliz, pensada para levar mais saúde e sabor para a sua mesa.</p>
+                    
+                    <!-- Indicador de Filtro Ativo -->
+                    <div id="filter-indicator" class="mt-6 p-3 bg-white rounded-lg shadow-sm border-l-4 border-[#8B4513] inline-block">
+                        <span class="text-[#5D4037] font-semibold">Exibindo: </span>
+                        <span id="filter-text" class="text-[#8B4513] font-bold">Todos os Produtos</span>
+                    </div>
                 </div>
 
                 <!-- Grade de produtos melhorada -->
@@ -1246,7 +1177,7 @@
                 <div id="checkout-section">
                      <h4 class="text-lg font-semibold mb-2">Verificar Entrega</h4>
                      <input type="text" id="cep-frete" maxlength="9" placeholder="Digite seu CEP" class="w-full p-3 border rounded mb-2 focus:outline-none focus:ring-2 focus:ring-[#8B4513]">
-                     <button onclick="verificarFrete()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3">
+                     <button onclick="verificarFrete()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3">
                         <i class="fas fa-search mr-2"></i> Verificar Frete
                      </button>
                      <div id="frete-resultado" class="mb-3" style="display: none;"></div>
@@ -1264,44 +1195,60 @@
 
     <!-- SQL.js desativado: usar produtos.json como fonte canônica -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script> -->
-    <script src="js/modules/product-manager.js"></script>
-    <script src="js/modules/layout-manager.js"></script>
-    <script src="js/modules/carousel-manager.js"></script>
-    <script src="js/modules/sync-manager.js"></script>
     <script src="js/data-manager.js"></script>
-    <!-- <script src="js/navigation.js"></script> -->
-    <!-- <script src="js/scripts.js"></script> -->
+    <script src="js/scripts.js"></script>
     <script src="js/fix-produtos-minimo.js"></script>
-    <script src="js/fix-filtros-carrinho.js"></script>
-    <script src="js/fix-modal-completo.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Aguardar DataManager estar completamente carregado
         let products = [];
         
-        // Inicialização simples
-        async function inicializar() {
-            console.log('🔧 Inicializando sistema...');
+        // Função para carregar produtos com retry
+        async function carregarProdutos(tentativa = 1) {
+            console.log(`🔍 Tentativa ${tentativa}: Verificando DataManager...`);
             
             if (!window.dataManager) {
-                console.log('📊 Criando DataManager...');
+                console.log('⚠️ DataManager não encontrado, criando...');
                 window.dataManager = new DataManager();
             }
             
-            // Inicializar CarouselManager se não foi inicializado automaticamente
-            if (!window.carouselManager && window.CarouselManager) {
-                console.log('🎠 Criando CarouselManager...');
-                window.carouselManager = new CarouselManager();
-                window.carouselManager.initializeCarousel();
-            }
-            
-            // Aguardar DataManager estar pronto
-            setTimeout(() => {
-                console.log('🔄 Tentando carregar produtos via inicializar...');
-                if (window.filterProducts) {
-                    window.filterProducts('all');
+            try {
+                // Carregar produtos de forma assíncrona
+                products = await window.dataManager.getActiveProducts();
+                console.log('📦 Produtos carregados:', products.length);
+                
+                if (products.length > 0) {
+                    renderProducts('all');
+                    console.log('✅ Produtos renderizados com sucesso');
+                } else if (tentativa < 5) {
+                    console.log(`⚠️ Nenhum produto encontrado, tentativa ${tentativa}/5`);
+                    // Tentar novamente após um delay maior
+                    setTimeout(() => carregarProdutos(tentativa + 1), 1000);
+                } else {
+                    console.log('❌ Falha ao carregar produtos após 5 tentativas');
+                    // Tentar restaurar produtos padrão
+                    if (window.dataManager.restoreDefaultProducts) {
+                        console.log('🔄 Tentando restaurar produtos padrão...');
+                        const restored = window.dataManager.restoreDefaultProducts();
+                        if (restored && restored.products) {
+                            products = restored.products.filter(p => p.active !== false);
+                            renderProducts('all');
+                            console.log('✅ Produtos padrão restaurados e renderizados');
+                        } else {
+                            productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
+                        }
+                    } else {
+                        productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
+                    }
                 }
-            }, 2000);
+            } catch (error) {
+                console.error('❌ Erro ao carregar produtos:', error);
+                if (tentativa < 5) {
+                    setTimeout(() => carregarProdutos(tentativa + 1), 1000);
+                } else {
+                    productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Erro ao carregar produtos. <a href="diagnostico-produtos.html" class="text-blue-500 underline">Clique aqui para diagnóstico</a></p>';
+                }
+            }
         }
         
         // Script mínimo já carrega os produtos
@@ -1377,27 +1324,13 @@
             if (filter === 'all') {
                 filtered = products;
             } else if (filter === 'granja') {
-                // Produtos da granja: fertilizantes, aves e ovos
-                filtered = products.filter(p => 
-                    p.category === 'fertilizantes' || 
-                    p.category === 'aves' || 
-                    p.category === 'ovos'
-                );
-            } else if (filter === 'parceiros') {
-                // Todos os produtos de parceiros
-                filtered = products.filter(p => 
-                    p.category === 'parceiros' ||
-                    p.category === 'mel' ||
-                    p.category === 'laticinios' ||
-                    p.category === 'outros-parceiros'
-                );
+                filtered = products.filter(p => p.category !== 'parceiros');
             } else {
-                // Categoria específica
                 filtered = products.filter(p => p.category === filter);
             }
             
             if (filtered.length === 0) {
-                productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Nenhum produto encontrado nesta categoria.</p>';
+                productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Nenhum produto encontrado.</p>';
                 return;
             }
 
@@ -1422,9 +1355,7 @@
                         ${partnerInfo}
                         <p class="text-gray-600 mb-4 flex-grow">${product.slogan}</p>
                         <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
-                        <button class="detail-btn bg-[#4CAF50] hover:bg-[#45a049] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">
-                            <i class="fas fa-shopping-cart mr-2"></i>Comprar
-                        </button>
+                        <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">Ver Detalhes</button>
                     </div>
                 `;
             });
@@ -1432,13 +1363,9 @@
 
         async function openProductModal(productId) {
             console.log('🔍 Abrindo modal para produto ID:', productId);
-            
-            // Usar produtos do fix-produtos-minimo.js
-            const product = window.produtos ? window.produtos.find(p => p.id == productId) : null;
-            
+            const product = products.find(p => p.id === productId);
             if (!product) {
                 console.error('❌ Produto não encontrado:', productId);
-                alert('Produto não encontrado!');
                 return;
             }
 
@@ -1578,21 +1505,40 @@
             console.log('✅ Modal aberto com sucesso para:', product.name);
         }
 
-        // Event listeners removidos - usando apenas o sistema da navegação fixa
+        // --- Event Listeners ---
 
-        // "Comprar" buttons (event delegation on productGrid)
+        // Filter buttons
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const filter = this.getAttribute('data-filter');
+                
+                // Se for "granja", mostrar subcategorias
+                if (filter === 'granja') {
+                    showGranjaCategories();
+                    return;
+                }
+                
+                filterButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-[#8B4513]', 'text-white');
+                    b.classList.add('bg-white', 'text-[#8B4513]');
+                });
+                this.classList.add('active', 'bg-[#8B4513]', 'text-white');
+                this.classList.remove('bg-white', 'text-[#8B4513]');
+                renderProducts(filter);
+            });
+        });
+
+        // "Ver Detalhes" buttons (event delegation on productGrid)
         productGrid.addEventListener('click', function(e) {
             console.log('🖱️ Clique detectado:', e.target);
             console.log('🏷️ Classes do elemento:', e.target.classList);
             
-            // Usar closest para capturar cliques no botão ou ícone interno
-            const button = e.target.closest('.detail-btn');
-            if (button) {
-                const id = parseInt(button.getAttribute('data-id'));
-                console.log('🎯 Botão comprar clicado, ID:', id);
+            if (e.target && e.target.classList.contains('detail-btn')) {
+                const id = parseInt(e.target.getAttribute('data-id'));
+                console.log('🎯 Botão de detalhes clicado, ID:', id);
                 openProductModal(id);
             } else {
-                console.log('⚠️ Clique não foi em um botão de comprar');
+                console.log('⚠️ Clique não foi em um botão de detalhes');
             }
         });
         
@@ -1666,10 +1612,8 @@
                 }
             }
             
-            // Botão "Adicionar ao Carrinho" - CORRIGIDO
-            if (e.target && (e.target.id === 'add-to-cart-modal' || e.target.closest('#add-to-cart-modal'))) {
-                console.log('🛒 Botão adicionar ao carrinho clicado!');
-                
+            // Botão "Adicionar ao Carrinho"
+            if (e.target && e.target.id === 'add-to-cart-modal') {
                 const qtyInput = productModal.querySelector('#product-quantity');
                 const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
                 
@@ -1677,12 +1621,11 @@
                 const productTitle = productModal.querySelector('#modal-product-title');
                 if (productTitle) {
                     const productName = productTitle.textContent;
-                    // Usar window.produtos ao invés de products
-                    const product = window.produtos ? window.produtos.find(p => p.name === productName) : null;
+                    const product = products.find(p => p.name === productName);
                     
                     if (product) {
                         for (let i = 0; i < quantity; i++) {
-                            window.adicionarAoCarrinho(product);
+                            adicionarAoCarrinho(product);
                         }
                         
                         // Fechar modal
@@ -1690,11 +1633,7 @@
                         productModal.style.display = 'none';
                         
                         console.log(`✅ ${quantity}x ${product.name} adicionado(s) ao carrinho`);
-                    } else {
-                        console.error('❌ Produto não encontrado para adicionar ao carrinho');
                     }
-                } else {
-                    console.error('❌ Título do produto não encontrado no modal');
                 }
             }
         });
@@ -1722,9 +1661,29 @@
             }
         });
 
-        // Sistema de atualização automática DESABILITADO
+        // Escutar mudanças nos produtos vindas da administração
+        window.addEventListener('productsUpdated', function(event) {
+            console.log('🔄 Produtos atualizados! Recarregando...');
+            // Recarregar produtos do DataManager
+            if (loadProducts()) {
+                console.log('✅ Produtos recarregados com sucesso');
+            } else {
+                console.log('⚠️ Falhou ao recarregar, recarregando página...');
+                window.location.reload();
+            }
+        });
         
-        // TODOS OS SISTEMAS AUTOMÁTICOS DESABILITADOS
+        // Verificar atualizações periodicamente
+        setInterval(() => {
+            if (window.dataManager) {
+                const newProducts = window.dataManager.getActiveProducts();
+                if (newProducts.length > 0 && newProducts.length !== products.length) {
+                    console.log('🔄 Produtos atualizados, recarregando...');
+                    products = newProducts;
+                    renderProducts('all');
+                }
+            }
+        }, 3000);
 
         // Escutar mudanças de layout vindas da administração
         window.addEventListener('message', function(event) {
@@ -2061,103 +2020,6 @@
         }
     });
     
-    // Tornar funções globais
-    window.openProductModal = openProductModal;
-    
-    // FUNÇÕES ESSENCIAIS QUE ESTAVAM FALTANDO
-    
-    // Sistema de carrinho
-    let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
-    
-    window.adicionarAoCarrinho = function(produto) {
-        if (!produto) {
-            console.error('❌ Produto inválido para adicionar ao carrinho');
-            return;
-        }
-        
-        carrinho.push(produto);
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
-        updateCartDisplay();
-        
-        // Mostrar notificação visual
-        showCartNotification(`${produto.name} adicionado ao carrinho!`);
-        
-        console.log('✅ Produto adicionado ao carrinho:', produto.name);
-    };
-    
-    // Função para mostrar notificação do carrinho
-    function showCartNotification(message) {
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-20 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 transition-all duration-300';
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                ${message}
-            </div>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => notification.remove(), 300);
-        }, 2000);
-    }
-    
-    function updateCartDisplay() {
-        const cartCount = document.getElementById('cart-count');
-        const cartTotal = document.getElementById('cart-total-display');
-        
-        if (cartCount) cartCount.textContent = carrinho.length;
-        
-        if (cartTotal) {
-            const total = carrinho.reduce((sum, item) => sum + item.price, 0);
-            cartTotal.textContent = `R$ ${total.toFixed(2)}`;
-        }
-    }
-    
-    window.updateCartModal = function() {
-        const cartItems = document.getElementById('cart-items');
-        const cartSubtotal = document.getElementById('cart-subtotal');
-        const cartTotalEl = document.getElementById('cart-total');
-        
-        if (!cartItems) return;
-        
-        if (carrinho.length === 0) {
-            cartItems.innerHTML = '<p class="text-gray-500">Seu carrinho está vazio.</p>';
-            if (cartSubtotal) cartSubtotal.textContent = 'R$ 0,00';
-            if (cartTotalEl) cartTotalEl.textContent = 'R$ 0,00';
-            return;
-        }
-        
-        const total = carrinho.reduce((sum, item) => sum + item.price, 0);
-        
-        cartItems.innerHTML = carrinho.map((item, index) => `
-            <div class="flex justify-between items-center py-2 border-b">
-                <div>
-                    <h4 class="font-semibold">${item.name}</h4>
-                    <p class="text-sm text-gray-600">R$ ${item.price.toFixed(2)}</p>
-                </div>
-                <button onclick="removerDoCarrinho(${index})" class="text-red-500 hover:text-red-700">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `).join('');
-        
-        if (cartSubtotal) cartSubtotal.textContent = `R$ ${total.toFixed(2)}`;
-        if (cartTotalEl) cartTotalEl.textContent = `R$ ${total.toFixed(2)}`;
-    };
-    
-    window.removerDoCarrinho = function(index) {
-        carrinho.splice(index, 1);
-        localStorage.setItem('carrinho', JSON.stringify(carrinho));
-        updateCartDisplay();
-        updateCartModal();
-    };
-    
-    // Inicializar display do carrinho
-    updateCartDisplay();
-    
     // Funções para o modal de sustentabilidade
     function openSustainabilityModal() {
         const modal = document.getElementById('sustainability-modal');
@@ -2223,16 +2085,6 @@
     let carouselInterval;
     
     function initCarousel() {
-        // Usar o CarouselManager se disponível
-        if (window.carouselManager) {
-            console.log('🎠 Usando CarouselManager para inicializar carrossel');
-            window.carouselManager.initializeCarousel();
-            return;
-        }
-        
-        // Fallback para implementação manual se CarouselManager não estiver disponível
-        console.log('⚠️ CarouselManager não encontrado, usando implementação manual');
-        
         const slides = document.querySelectorAll('.carousel-slide');
         const indicators = document.querySelectorAll('.carousel-indicator');
         const prevBtn = document.getElementById('prev-slide');
@@ -2376,130 +2228,478 @@
     // Tornar função global
     window.openCartModal = openCartModal;
     
-    // Funções para controlar subcategorias
-    function showSubcategories() {
-        document.getElementById('granja-subcategories').classList.remove('hidden');
-    }
-    
-    function hideSubcategories() {
-        document.getElementById('granja-subcategories').classList.add('hidden');
-    }
-    
-    function toggleSubcategories() {
-        const subcategories = document.getElementById('granja-subcategories');
-        subcategories.classList.toggle('hidden');
-    }
-    
-    // SISTEMA DE FILTROS NOVO E SIMPLES
-    window.setActiveButton = function(button) {
-        document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('active'));
-        if (button) button.classList.add('active');
-    };
-    
-    // SISTEMA DE FILTROS SIMPLES E FUNCIONAL
-    window.filterProducts = function(category) {
-        console.log('🔍 Filtrando produtos por:', category);
+    // Definir funções antes dos event listeners
+    function filterProducts(category) {
+        console.log('🔍 FilterProducts chamado com categoria:', category);
         
-        // Carregar produtos se não existirem
-        if (window.renderizarProdutos) {
-            window.renderizarProdutos();
+        // Verificar se produtos já foram carregados
+        if (!window.produtosCarregados) {
+            console.warn('⚠️ Produtos ainda não carregados. Aguardando...');
+            // Aguardar o evento de produtos carregados
+            const handleProdutosCarregados = () => {
+                console.log('✅ Produtos carregados, executando filtro...');
+                window.removeEventListener('produtosCarregados', handleProdutosCarregados);
+                filterProducts(category);
+            };
+            window.addEventListener('produtosCarregados', handleProdutosCarregados);
+            return;
         }
         
-        // Aguardar produtos carregarem e aplicar filtro
+        // Usar produtos global ou window.produtos como fallback
+        const currentProducts = produtos || window.produtos || [];
+        
+        console.log('📦 Produtos disponíveis:', currentProducts.length);
+        console.log('📊 Primeiro produto:', currentProducts[0]);
+        
+        const productGrid = document.getElementById('product-grid');
+        const filterText = document.getElementById('filter-text');
+        let filtered;
+        let filterLabel;
+        
+        // Verificar se produtos está carregado
+        if (!currentProducts || currentProducts.length === 0) {
+            console.warn('⚠️ Produtos não carregados ainda. Tentando recarregar...');
+            setTimeout(() => filterProducts(category), 500);
+            return;
+        }
+        
+        // Atualizar botões ativos
+        updateActiveNavButton(category);
+        
+        if (category === 'all') {
+            filtered = currentProducts;
+            filterLabel = 'Todos os Produtos';
+        } else if (category === 'granja') {
+            filtered = currentProducts.filter(p => 
+                p.category === 'fertilizantes' || 
+                p.category === 'aves' || 
+                p.category === 'ovos'
+            );
+            filterLabel = 'Produtos da Granja';
+        } else if (category === 'parceiros') {
+            filtered = currentProducts.filter(p => p.category === 'parceiros');
+            filterLabel = 'Parceiros';
+        } else if (category === 'fertilizantes') {
+            filtered = currentProducts.filter(p => p.category === 'fertilizantes');
+            filterLabel = 'Fertilizantes';
+        } else if (category === 'aves') {
+            filtered = currentProducts.filter(p => p.category === 'aves');
+            filterLabel = 'Aves';
+        } else if (category === 'ovos') {
+            filtered = currentProducts.filter(p => p.category === 'ovos');
+            filterLabel = 'Ovos';
+        } else {
+            filtered = currentProducts.filter(p => p.category === category);
+            filterLabel = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+        
+        console.log('✅ Produtos filtrados:', filtered.length);
+        console.log('🏷️ Filtro aplicado:', filterLabel);
+        console.log('📋 Lista filtrada:', filtered.map(p => `${p.name} (${p.category})`));
+        
+        // Atualizar indicador de filtro
+        if (filterText) {
+            filterText.textContent = filterLabel;
+        }
+        
+        // Renderizar produtos
+        productGrid.innerHTML = filtered.map(p => `
+            <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
+                <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
+                <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
+                <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
+            </div>
+        `).join('');
+        
+        // Scroll suave para a seção de produtos
+        document.getElementById('produtos').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Tornar funções globais
+    window.filterProducts = filterProducts;
+    window.updateActiveNavButton = updateActiveNavButton;
+    
+    // Inicialização - definir filtro padrão e sistema moderno
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar sistema de dropdown moderno
         setTimeout(() => {
-            const grid = document.getElementById('product-grid');
-            const allCards = grid.querySelectorAll('.product-card');
-            
-            if (allCards.length === 0) {
-                console.log('⚠️ Nenhum produto encontrado para filtrar');
-                return;
-            }
-            
-            let visibleCount = 0;
-            
-            allCards.forEach(card => {
-                const button = card.querySelector('.detail-btn');
-                const productId = button ? button.getAttribute('data-id') : null;
-                
-                if (!productId) {
-                    card.style.display = 'none';
-                    return;
-                }
-                
-                const product = window.produtos ? window.produtos.find(p => p.id == productId) : null;
-                
-                if (!product) {
-                    card.style.display = 'none';
-                    return;
-                }
-                
-                let shouldShow = false;
-                
-                if (category === 'all') {
-                    shouldShow = true;
-                } else if (category === 'granja') {
-                    shouldShow = ['fertilizantes', 'aves', 'ovos'].includes(product.category);
-                } else if (category === 'parceiros') {
-                    shouldShow = ['parceiros', 'mel', 'laticinios'].includes(product.category);
-                } else {
-                    shouldShow = product.category === category;
-                }
-                
-                if (shouldShow) {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-            
-            console.log(`✅ Filtro aplicado: ${visibleCount} produtos visíveis`);
+            initModernDropdowns();
+            updateActiveCategory('all');
         }, 100);
-    };
-    
-    // Funções já são globais acima
-    
-    // Event listener global para botões de comprar (backup)
-    document.addEventListener('click', function(e) {
-        // Verificar se o clique foi no botão ou em um elemento filho (como o ícone)
-        const button = e.target.closest('.detail-btn');
-        if (button) {
-            const productId = button.getAttribute('data-id');
-            console.log('🛒 Comprando produto:', productId);
+        
+        // Aguardar produtos serem carregados
+        window.addEventListener('produtosCarregados', function(event) {
+            console.log('✅ Produtos carregados no index.html:', event.detail.count);
+            console.log('📦 Produtos recebidos:', event.detail.produtos.slice(0, 2));
             
-            // Encontrar o produto nos dados carregados
+            // Agora que os produtos estão carregados, pode filtrar com segurança
+            window.produtosCarregados = true;
+            
+            // Renderizar todos os produtos imediatamente com sistema moderno
+            console.log('🔄 Renderizando todos os produtos com sistema moderno...');
+            setTimeout(() => {
+                applyFilterModern('all');
+            }, 200);
+        });
+        
+        // Teste de debug para verificar se os produtos estão carregados
+        setTimeout(() => {
+            console.log('🧪 TESTE: Verificando produtos após 2s...');
+            console.log('produtos variable:', typeof produtos, produtos?.length);
+            console.log('window.produtos:', typeof window.produtos, window.produtos?.length);
+            console.log('dataManager:', typeof window.dataManager);
+            
             if (window.dataManager) {
                 window.dataManager.getActiveProducts().then(products => {
-                    const product = products.find(p => p.id == productId);
-                    if (product) {
-                        // Abrir modal de detalhes
-                        openProductModal(parseInt(productId));
-                    } else {
-                        alert('Produto não encontrado!');
+                    console.log('🧪 TESTE: Produtos do DataManager:', products.length);
+                    if (products.length > 0) {
+                        console.log('🧪 TESTE: Primeiro produto:', products[0]);
+                        console.log('🧪 TESTE: Categorias disponíveis:', [...new Set(products.map(p => p.category))]);
+                        
+                        // Testar filtro de fertilizantes
+                        const fertilizantes = products.filter(p => p.category === 'fertilizantes');
+                        console.log('🧪 TESTE: Fertilizantes encontrados:', fertilizantes.length, fertilizantes.map(p => p.name));
                     }
                 });
-            } else {
-                alert('Sistema não carregado. Tente novamente.');
             }
-        }
+        }, 2000);
     });
     
-    // Inicializar sistema
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log('🚀 Iniciando sistema...');
+    // Função para atualizar botão ativo na navegação (definida abaixo)
+    
+    // Função para atualizar botão ativo na navegação
+    function updateActiveNavButton(category) {
+        // Remover classe active de todos os botões
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
         
-        // Carregar produtos primeiro
-        if (window.renderizarProdutos) {
-            window.renderizarProdutos();
+        // Adicionar classe active ao botão correspondente
+        if (category === 'all') {
+            document.getElementById('nav-all').classList.add('active');
+        } else if (category === 'granja' || category === 'fertilizantes' || category === 'aves' || category === 'ovos') {
+            document.getElementById('nav-granja').classList.add('active');
+        } else if (category === 'parceiros') {
+            document.getElementById('nav-parceiros').classList.add('active');
+        }
+    }
+    
+    // Sistema de Dropdown Moderno - Padrão de Grandes Sites
+    let activeDropdown = null;
+    let hoverTimeout = null;
+    
+    function initModernDropdowns() {
+        const dropdowns = document.querySelectorAll('.dropdown');
+        
+        dropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('.dropdown-toggle');
+            const content = dropdown.querySelector('.dropdown-content');
+            
+            // Eventos de mouse para hover suave
+            dropdown.addEventListener('mouseenter', () => {
+                clearTimeout(hoverTimeout);
+                openDropdown(dropdown);
+            });
+            
+            dropdown.addEventListener('mouseleave', () => {
+                hoverTimeout = setTimeout(() => {
+                    closeDropdown(dropdown);
+                }, 150); // Delay pequeno para navegação suave
+            });
+            
+            // Evento de clique no botão
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleDropdown(dropdown);
+            });
+            
+            // Eventos nos links das subcategorias
+            const links = content.querySelectorAll('a');
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Extrair categoria do onclick
+                    const onclickAttr = link.getAttribute('onclick');
+                    const match = onclickAttr.match(/selectCategory\('([^']+)'/);
+                    if (match) {
+                        const category = match[1];
+                        console.log('🎯 Categoria clicada:', category);
+                        
+                        // Feedback visual imediato
+                        link.style.transform = 'scale(0.95)';
+                        setTimeout(() => {
+                            link.style.transform = '';
+                        }, 150);
+                        
+                        // Fechar dropdown e filtrar
+                        closeAllDropdowns();
+                        selectCategoryModern(category);
+                    }
+                });
+            });
+        });
+        
+        // Fechar dropdowns ao clicar fora
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                closeAllDropdowns();
+            }
+        });
+        
+        console.log('✅ Sistema de dropdown moderno inicializado');
+    }
+    
+    function openDropdown(dropdown) {
+        closeAllDropdowns();
+        dropdown.classList.add('open');
+        const content = dropdown.querySelector('.dropdown-content');
+        content.classList.add('show');
+        activeDropdown = dropdown;
+    }
+    
+    function closeDropdown(dropdown) {
+        dropdown.classList.remove('open');
+        const content = dropdown.querySelector('.dropdown-content');
+        content.classList.remove('show');
+        if (activeDropdown === dropdown) {
+            activeDropdown = null;
+        }
+    }
+    
+    function closeAllDropdowns() {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            closeDropdown(dropdown);
+        });
+    }
+    
+    function toggleDropdown(dropdown) {
+        if (dropdown.classList.contains('open')) {
+            closeDropdown(dropdown);
+        } else {
+            openDropdown(dropdown);
+        }
+    }
+    
+    function selectCategoryModern(category) {
+        console.log('🔥 FILTRO MODERNO - Categoria:', category);
+        
+        // Mostrar loading visual
+        const productGrid = document.getElementById('product-grid');
+        if (productGrid) {
+            productGrid.innerHTML = `
+                <div class="col-span-full flex justify-center items-center py-20">
+                    <div class="text-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5D4037] mx-auto mb-4"></div>
+                        <p class="text-gray-600">Carregando produtos...</p>
+                    </div>
+                </div>
+            `;
         }
         
-        // Aplicar filtro "todos" após carregar
+        // Usar timeout para simular loading (UX melhor)
         setTimeout(() => {
-            window.filterProducts('all');
-        }, 200);
+            applyFilterModern(category);
+        }, 300);
+    }
+    
+    function applyFilterModern(category) {
+        const produtos = window.produtos || [];
+        console.log('📦 Produtos disponíveis para filtro:', produtos.length);
         
-        inicializar();
+        if (produtos.length === 0) {
+            console.warn('⚠️ Nenhum produto disponível');
+            showErrorMessage('Produtos não carregados. Tente novamente.');
+            return;
+        }
+        
+        let filtered = [];
+        let categoryLabel = '';
+        
+        switch(category) {
+            case 'all':
+                filtered = produtos;
+                categoryLabel = 'Todos os Produtos';
+                break;
+            case 'fertilizantes':
+                filtered = produtos.filter(p => p.category === 'fertilizantes');
+                categoryLabel = 'Fertilizantes';
+                break;
+            case 'aves':
+                filtered = produtos.filter(p => p.category === 'aves');
+                categoryLabel = 'Aves';
+                break;
+            case 'ovos':
+                filtered = produtos.filter(p => p.category === 'ovos');
+                categoryLabel = 'Ovos';
+                break;
+            case 'granja':
+                filtered = produtos.filter(p => ['fertilizantes', 'aves', 'ovos'].includes(p.category));
+                categoryLabel = 'Produtos da Granja';
+                break;
+            case 'parceiros':
+                filtered = produtos.filter(p => p.category === 'parceiros');
+                categoryLabel = 'Parceiros';
+                break;
+            default:
+                filtered = produtos.filter(p => p.category === category);
+                categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+        }
+        
+        console.log(`✅ Filtro aplicado: ${categoryLabel} (${filtered.length} produtos)`);
+        
+        // Renderizar produtos com animação
+        renderProductsModern(filtered, categoryLabel);
+        
+        // Atualizar indicador de categoria ativa
+        updateActiveCategory(category);
+        
+        // Scroll suave para produtos
+        document.getElementById('produtos')?.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+    
+    function renderProductsModern(products, categoryLabel) {
+        const productGrid = document.getElementById('product-grid');
+        const filterText = document.getElementById('filter-text');
+        
+        if (!productGrid) return;
+        
+        // Atualizar indicador de filtro
+        if (filterText) {
+            filterText.textContent = categoryLabel;
+        }
+        
+        if (products.length === 0) {
+            productGrid.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl text-gray-300 mb-4">🔍</div>
+                    <h3 class="text-xl font-bold text-gray-600 mb-2">Nenhum produto encontrado</h3>
+                    <p class="text-gray-500">Tente uma categoria diferente</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Renderizar produtos com fade-in
+        productGrid.innerHTML = products.map((product, index) => `
+            <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl opacity-0 animate-fade-in" style="animation-delay: ${index * 100}ms">
+                <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
+                <h3 class="text-xl font-bold mb-2 font-lora text-[#5D4037]">${product.name}</h3>
+                <p class="text-gray-600 mb-4 flex-grow text-sm">${product.slogan}</p>
+                <span class="text-2xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
+                <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-3 px-6 rounded-lg transition w-full transform hover:scale-105" data-id="${product.id}">
+                    <i class="fas fa-eye mr-2"></i>Ver Detalhes
+                </button>
+            </div>
+        `).join('');
+        
+        // Triggerar animações
+        setTimeout(() => {
+            productGrid.querySelectorAll('.product-card').forEach(card => {
+                card.classList.remove('opacity-0');
+                card.classList.add('opacity-100');
+            });
+        }, 50);
+    }
+    
+    function showErrorMessage(message) {
+        const productGrid = document.getElementById('product-grid');
+        if (productGrid) {
+            productGrid.innerHTML = `
+                <div class="col-span-full text-center py-20">
+                    <div class="text-6xl text-red-300 mb-4">⚠️</div>
+                    <h3 class="text-xl font-bold text-red-600 mb-2">Erro</h3>
+                    <p class="text-red-500">${message}</p>
+                </div>
+            `;
+        }
+    }
+    
+    function updateActiveCategory(category) {
+        // Remover classe active de todos os botões
+        document.querySelectorAll('.nav-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Adicionar classe active ao botão correspondente
+        if (category === 'all') {
+            document.getElementById('nav-all')?.classList.add('active');
+        } else if (['granja', 'fertilizantes', 'aves', 'ovos'].includes(category)) {
+            document.getElementById('nav-granja')?.classList.add('active');
+        } else if (category === 'parceiros') {
+            document.getElementById('nav-parceiros')?.classList.add('active');
+        }
+    }
+    
+    function selectCategory(category, label) {
+        console.log('📂 Categoria selecionada:', category, label);
+        
+        // Fechar todos os dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => {
+            d.classList.remove('open');
+        });
+        
+        // Filtrar produtos - usar window.filterProducts para garantir
+        console.log('🔍 Chamando filtro para categoria:', category);
+        if (window.filterProducts && typeof window.filterProducts === 'function') {
+            console.log('✅ Função filterProducts encontrada');
+            window.filterProducts(category);
+        } else {
+            console.error('❌ Função filterProducts não encontrada ou não é função');
+            console.log('🔍 window.filterProducts:', typeof window.filterProducts);
+            
+            // Fallback: filtro manual
+            const produtos = window.produtos || [];
+            console.log('🔄 Fallback: produtos disponíveis:', produtos.length);
+            
+            if (produtos.length > 0) {
+                let filtered = produtos;
+                if (category === 'fertilizantes') {
+                    filtered = produtos.filter(p => p.category === 'fertilizantes');
+                } else if (category === 'aves') {
+                    filtered = produtos.filter(p => p.category === 'aves');
+                } else if (category === 'ovos') {
+                    filtered = produtos.filter(p => p.category === 'ovos');
+                } else if (category === 'granja') {
+                    filtered = produtos.filter(p => p.category !== 'parceiros');
+                }
+                
+                const productGrid = document.getElementById('product-grid');
+                if (productGrid) {
+                    productGrid.innerHTML = filtered.map(p => `
+                        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                            <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
+                            <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
+                            <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
+                            <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
+                            <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">Ver Detalhes</button>
+                        </div>
+                    `).join('');
+                    
+                    console.log('✅ Produtos filtrados (fallback):', filtered.length);
+                }
+            }
+        }
+        
+        // Scroll para produtos
+        document.getElementById('produtos').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    // Fechar dropdowns ao clicar fora
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.dropdown')) {
+            document.querySelectorAll('.dropdown').forEach(d => {
+                d.classList.remove('open');
+            });
+        }
     });
+
     
     // Função de debug para forçar reaplicação do layout
     function debugLayoutReload() {
@@ -2533,106 +2733,6 @@
             showNotification('Erro: DataManager não carregado', 'error');
         }
     }
-    
-    // CARREGAMENTO FORÇADO DE PRODUTOS
-    setTimeout(() => {
-        console.log('🔄 Carregamento forçado de produtos...');
-        
-        // Tentar múltiplas formas de carregar
-        if (window.filterProducts) {
-            window.filterProducts('all');
-        }
-        
-        if (window.renderizarProdutos) {
-            window.renderizarProdutos();
-        }
-        
-        // Se nada funcionar, carregar manualmente
-        const grid = document.getElementById('product-grid');
-        if (grid && grid.innerHTML.trim() === '') {
-            console.log('⚠️ Grid vazio, carregando produtos manualmente...');
-            
-            // Produtos básicos para teste
-            const produtosTeste = [
-                {id: 1, name: "Substrato BioFértil", category: "fertilizantes", slogan: "Substrato vivo e completo", price: 15, image: "imagens/produtos/1/1.png"},
-                {id: 3, name: "Ovos Caipira 10", category: "ovos", slogan: "10 ovos frescos", price: 15, image: "imagens/produtos/3/1.jpeg"},
-                {id: 6, name: "Galinha Caipira Picada", category: "aves", slogan: "Galinha cortada", price: 45, image: "imagens/produtos/6/1.png"}
-            ];
-            
-            grid.innerHTML = produtosTeste.map(p => `
-                <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
-                    <img src="${p.image}" alt="${p.name}" class="w-40 h-40 object-cover rounded-lg mb-4">
-                    <h3 class="text-xl font-bold mb-2 font-lora">${p.name}</h3>
-                    <p class="text-gray-600 mb-4 flex-grow">${p.slogan}</p>
-                    <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${p.price.toFixed(2)}</span>
-                    <button class="detail-btn bg-[#4CAF50] hover:bg-[#45a049] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${p.id}">
-                        <i class="fas fa-shopping-cart mr-2"></i>Comprar
-                    </button>
-                </div>
-            `).join('');
-            
-            console.log('✅ Produtos de teste carregados');
-        }
-    }, 3000);
-    
-    // Executar imediatamente quando o script carregar
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (window.filterProducts) window.filterProducts('all');
-            }, 1000);
-        });
-    } else {
-        setTimeout(() => {
-            if (window.filterProducts) window.filterProducts('all');
-        }, 1000);
-    }
-    
-    // Sistema de lazy loading otimizado
-    function activateLazyLoading() {
-        const lazyImages = document.querySelectorAll('img[data-src], .lazy-image');
-        
-        if ('IntersectionObserver' in window) {
-            const imageObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const img = entry.target;
-                        if (img.dataset.src) {
-                            img.src = img.dataset.src;
-                            img.removeAttribute('data-src');
-                        }
-                        img.classList.remove('lazy-image');
-                        imageObserver.unobserve(img);
-                    }
-                });
-            }, { rootMargin: '50px' });
-            
-            lazyImages.forEach(img => imageObserver.observe(img));
-        }
-    }
-    
-    // Otimizações de performance
-    window.addEventListener('load', () => {
-        // Ativar lazy loading
-        activateLazyLoading();
-        
-        // Carregar módulos de otimização assincronamente
-        const modules = [
-            'js/modules/lazy-loader.js',
-            'js/modules/mobile-optimizer.js', 
-            'js/modules/cache-manager.js'
-        ];
-        
-        modules.forEach(src => {
-            const script = document.createElement('script');
-            script.src = src;
-            script.async = true;
-            document.head.appendChild(script);
-        });
-        
-        console.log('⚡ Otimizações de performance ativadas');
-    });
-    
     </script>
 </body>
 </html>

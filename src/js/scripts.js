@@ -2,6 +2,9 @@
 let currentSlide = 0;
 let carouselInterval;
 
+// Variável global para produtos (usada pelos filtros)
+let produtos = [];
+
 document.addEventListener('DOMContentLoaded', function() {
     // Aguardar DataManager carregar
     setTimeout(() => {
@@ -497,80 +500,59 @@ function initCarousel() {
     const indicators = document.querySelectorAll('.carousel-indicator');
     const prevBtn = document.getElementById('prev-slide');
     const nextBtn = document.getElementById('next-slide');
-    const totalSlides = slides.length;
-
-    if (totalSlides === 0) {
-        console.warn("Carrossel não inicializado: Nenhum slide encontrado.");
+    
+    if (!slides.length) {
+        console.log('Nenhum slide encontrado');
         return;
     }
-
+    
     function showSlide(index) {
-        // Validate index
-        if (index >= totalSlides || index < 0) {
-            console.error(`Índice de slide inválido: ${index}`);
-            return;
-        }
-
         slides.forEach((slide, i) => {
-            if (i === index) {
-                slide.classList.add('active');
-                slide.classList.remove('opacity-0');
-            } else {
-                slide.classList.remove('active');
-                slide.classList.add('opacity-0');
-            }
+            slide.style.display = i === index ? 'block' : 'none';
         });
         
         indicators.forEach((indicator, i) => {
-            if (i === index) {
-                indicator.classList.add('active');
-            } else {
-                indicator.classList.remove('active');
-            }
+            indicator.classList.toggle('active', i === index);
         });
-        currentSlide = index;
     }
-
+    
     function nextSlide() {
-        const newIndex = (currentSlide + 1) % totalSlides;
-        showSlide(newIndex);
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
     }
-
+    
     function prevSlide() {
-        const newIndex = (currentSlide - 1 + totalSlides) % totalSlides;
-        showSlide(newIndex);
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
     }
-
-    function resetCarouselInterval() {
-        clearInterval(carouselInterval);
-        carouselInterval = setInterval(nextSlide, 5000); // 5 seconds
-    }
-
+    
     // Event listeners
-    if (nextBtn) {
-        nextBtn.addEventListener('click', () => {
-            nextSlide();
-            resetCarouselInterval();
-        });
-    }
-    if (prevBtn) {
-        prevBtn.addEventListener('click', () => {
-            prevSlide();
-            resetCarouselInterval();
-        });
-    }
-
+    if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+    if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+    
     indicators.forEach((indicator, index) => {
         indicator.addEventListener('click', () => {
-            showSlide(index);
-            resetCarouselInterval();
+            currentSlide = index;
+            showSlide(currentSlide);
         });
     });
-
+    
     // Auto-play
     carouselInterval = setInterval(nextSlide, 5000);
-
-    // Show first slide
+    
+    // Pausar auto-play ao passar o mouse
+    const carouselContainer = document.querySelector('.carousel-container');
+    if (carouselContainer) {
+        carouselContainer.addEventListener('mouseenter', () => {
+            clearInterval(carouselInterval);
+        });
+        
+        carouselContainer.addEventListener('mouseleave', () => {
+            carouselInterval = setInterval(nextSlide, 5000);
+        });
+    }
+    
+    // Mostrar primeiro slide
     showSlide(0);
 }
 
@@ -578,68 +560,52 @@ function initCarousel() {
 async function initProducts() {
     // Garantir que está usando os mesmos dados do admin
     const products = window.dataManager ? await window.dataManager.getActiveProducts() : [];
+    
+    // Definir produtos globalmente para usar nos filtros
+    produtos = products;
+    
+    // Tornar produtos disponível globalmente para o index.html
+    window.produtos = produtos;
+    
     console.log('🔍 Site principal carregando produtos:', products.length);
     console.log('📊 Primeiro produto:', products[0]);
+    console.log('🌍 Produtos definidos globalmente:', window.produtos?.length);
+    
+    // Disparar evento de produtos carregados
+    window.dispatchEvent(new CustomEvent('produtosCarregados', {
+        detail: { produtos: products, count: products.length }
+    }));
+    
     const productGrid = document.getElementById('product-grid');
-    const filterButtons = document.querySelectorAll('.filter-btn');
     
     if (!productGrid) return;
     
     console.log('Inicializando produtos:', products.length);
     
-    // Renderizar produtos
-    function renderProducts(filter = 'all') {
-        productGrid.innerHTML = '';
-        let filtered = products;
-        
-        if (filter !== 'all') {
-            if (filter === 'granja') {
-                filtered = products.filter(p => p.category !== 'parceiros');
-            } else {
-                filtered = products.filter(p => p.category === filter);
-            }
-        }
-        
-        if (filtered.length === 0) {
-            productGrid.innerHTML = '<p class="col-span-4 text-center text-gray-500">Nenhum produto encontrado.</p>';
-            return;
-        }
-        
-        filtered.forEach(product => {
-            const partnerBadge = product.partner ? `
-                <div class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center">
-                    <i class="fas fa-handshake mr-1"></i> Parceiro
-                </div>
-            ` : '';
-            
-            const partnerInfo = product.partner ? `
-                <div class="text-sm text-blue-600 mb-2">
-                    <i class="fas fa-user mr-1"></i> ${product.partner.producer}
-                </div>
-            ` : '';
-            
-            productGrid.innerHTML += `
-                <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl relative">
-                    ${partnerBadge}
-                    <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4" loading="lazy" onerror="this.src='imagens/produtos/default/placeholder.png'">
-                    <h3 class="text-xl font-bold mb-2 font-lora">${product.name}</h3>
-                    ${partnerInfo}
-                    <p class="text-gray-600 mb-4 flex-grow">${product.slogan}</p>
-                    <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
-                    <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">Ver Detalhes</button>
-                </div>
-            `;
-        });
+    // Remover sistema de filtros antigo (renderProducts) e usar apenas filterProducts do index.html
+    // Renderizar todos os produtos inicialmente usando a função unificada
+    if (window.filterProducts) {
+        console.log('🔄 Usando filterProducts do index.html');
+        window.filterProducts('all');
+    } else {
+        console.log('⚠️ filterProducts não encontrado, renderizando manualmente...');
+        // Fallback: renderizar manualmente
+        renderProductsManually(products, productGrid);
     }
     
-    // Filtros
-    filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            filterButtons.forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-            renderProducts(this.getAttribute('data-filter'));
-        });
-    });
+    // Função de fallback para renderizar produtos manualmente
+    function renderProductsManually(products, productGrid) {
+        console.log('🔧 Renderização manual de produtos...');
+        productGrid.innerHTML = products.map(product => `
+            <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+                <img src="${product.image}" alt="${product.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
+                <h3 class="text-xl font-bold mb-2 font-lora">${product.name}</h3>
+                <p class="text-gray-600 mb-4 flex-grow">${product.slogan}</p>
+                <span class="text-xl font-bold text-[#5D4037] mb-4">R$ ${product.price.toFixed(2)}</span>
+                <button class="detail-btn bg-[#8B4513] hover:bg-[#5D4037] text-white font-bold py-2 px-4 rounded-lg transition w-full" data-id="${product.id}">Ver Detalhes</button>
+            </div>
+        `).join('');
+    }
     
     // Ver detalhes do produto
     productGrid.addEventListener('click', function(e) {
@@ -648,9 +614,6 @@ async function initProducts() {
             openProductModal(productId);
         }
     });
-    
-    // Renderizar todos os produtos inicialmente
-    renderProducts('all');
     
     // Adicionar eventos do carrinho após renderizar produtos
     if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {

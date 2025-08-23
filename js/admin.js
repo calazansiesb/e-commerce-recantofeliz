@@ -48,7 +48,7 @@ async function carregarProdutosAdmin() {
         }
         
         // Se não tem localStorage, carregar do arquivo JSON
-        const response = await fetch('dados/produtos.json', { cache: 'no-store' });
+        const response = await fetch('data/produtos.json', { cache: 'no-store' });
         if (response.ok) {
             const data = await response.json();
             if (data.products && data.products.length > 0) {
@@ -463,7 +463,7 @@ async function carregarProdutosAdmin() {
         }
         
         // Se não tem localStorage, carregar do arquivo JSON
-        const response = await fetch('dados/produtos.json', { cache: 'no-store' });
+        const response = await fetch('data/produtos.json', { cache: 'no-store' });
         if (response.ok) {
             const data = await response.json();
             if (data.products && data.products.length > 0) {
@@ -600,14 +600,14 @@ function salvarProdutosDefinitivo() {
     const instrucoes = `Para tornar as alterações DEFINITIVAS:
 
 1. Um arquivo 'produtos.json' será baixado
-2. Substitua o arquivo em 'src/dados/produtos.json'
+2. Substitua o arquivo em 'src/data/produtos.json'
 3. As alterações ficarão permanentes
 
 Baixar arquivo agora?`;
     
     if (confirm(instrucoes)) {
         link.click();
-        alert('✅ Arquivo baixado! Substitua o arquivo em src/dados/produtos.json');
+        alert('✅ Arquivo baixado! Substitua o arquivo em src/data/produtos.json');
     }
 }
 
