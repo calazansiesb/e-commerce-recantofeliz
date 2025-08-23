@@ -817,13 +817,14 @@ async function openProductModal(productId) {
 // Função para descobrir imagens do produto
 async function discoverProductImages(productId) {
     const gallery = [];
-    const extensions = ['png', 'jpeg', 'jpg'];
+    const extensions = ['png', 'jpeg', 'jpg', 'webp'];
     
+    // REGRA: imagens/produtos/{id}.{numero}.{extensao}
     for (let i = 1; i <= 10; i++) {
         let foundImage = false;
         
         for (const ext of extensions) {
-            const imagePath = `imagens/produtos/${productId}/${i}.${ext}`;
+            const imagePath = `imagens/produtos/${productId}.${i}.${ext}`;
             
             try {
                 await new Promise((resolve, reject) => {
@@ -847,7 +848,7 @@ async function discoverProductImages(productId) {
     
     // Se não encontrar nenhuma imagem, usar placeholder
     if (gallery.length === 0) {
-        gallery.push('imagens/placeholder.jpg');
+        gallery.push('imagens/produtos/default/placeholder.png');
     }
     
     return gallery;

@@ -12,7 +12,7 @@ class ProductManager {
                 slogan: "Mais do que Adubo: um substrato vivo e completo.",
                 description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
                 price: 15,
-                image: "imagens/produtos/1/1.png",
+                image: "imagens/produtos/1.1.png",
                 stock: 25,
                 active: true
             },
@@ -23,7 +23,7 @@ class ProductManager {
                 slogan: "Adubo de galinha líquido e potente.",
                 description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.",
                 price: 5,
-                image: "imagens/produtos/2/1.png",
+                image: "imagens/produtos/2.1.png",
                 stock: 40,
                 active: true
             },
@@ -34,7 +34,7 @@ class ProductManager {
                 slogan: "10 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.",
                 price: 15,
-                image: "imagens/produtos/3/1.jpeg",
+                image: "imagens/produtos/3.1.jpeg",
                 stock: 120,
                 active: true
             },
@@ -45,7 +45,7 @@ class ProductManager {
                 slogan: "20 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.",
                 price: 25,
-                image: "imagens/produtos/4/1.jpeg",
+                image: "imagens/produtos/4.1.jpeg",
                 stock: 80,
                 active: true
             },
@@ -56,7 +56,7 @@ class ProductManager {
                 slogan: "30 ovos frescos da granja.",
                 description: "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.",
                 price: 34,
-                image: "imagens/produtos/5/1.png",
+                image: "imagens/produtos/5.1.png",
                 stock: 50,
                 active: true
             },
@@ -67,7 +67,7 @@ class ProductManager {
                 slogan: "Galinha caipira cortada, pronta para cozinhar.",
                 description: "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.",
                 price: 45,
-                image: "imagens/produtos/6/1.png",
+                image: "imagens/produtos/6.1.png",
                 stock: 15,
                 active: true
             },
@@ -78,7 +78,7 @@ class ProductManager {
                 slogan: "Galinha caipira inteira, fresca e saborosa.",
                 description: "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
                 price: 40,
-                image: "imagens/produtos/7/1.png",
+                image: "imagens/produtos/7.1.png",
                 stock: 8,
                 active: true
             }
@@ -118,7 +118,7 @@ class ProductManager {
 
             // 1.5 Tentar buscar do servidor (arquivo JSON)
             try {
-                const resp = await fetch('data/produtos.json', { cache: 'no-store' });
+                const resp = await fetch('dados/produtos.json', { cache: 'no-store' });
                 if (resp.ok) {
                     const serverData = await resp.json();
                     if (serverData.products && Array.isArray(serverData.products) && serverData.products.length > 0) {

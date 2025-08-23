@@ -22,6 +22,9 @@
         tailwindScript.async = true;
         document.head.appendChild(tailwindScript);
     </script>
+    <!-- CSS Crítico Inline (Above-the-fold) -->
+    <style>
+        :root {
             --primary-color: #2D5016;
             --secondary-color: #8B4513;
             --accent-color: #228B22;
@@ -1246,7 +1249,7 @@
                      <button onclick="verificarFrete()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3">
                         <i class="fas fa-search mr-2"></i> Verificar Frete
                      </button>
-                     <button onclick="verificarFrete()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mb-3">
+                     <div id="frete-resultado" class="mb-3" style="display: none;"></div>
                      <button id="btn-finalizar" onclick="finalizarViaWhatsApp()" disabled class="w-full bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center cursor-not-allowed">
                         <i class="fab fa-whatsapp mr-2"></i> Enviar Pedido via WhatsApp
                      </button>
@@ -2620,7 +2623,8 @@
             'js/modules/cache-manager.js'
         ];
         
-            'js/modules/cache-manager.js'
+        modules.forEach(src => {
+            const script = document.createElement('script');
             script.src = src;
             script.async = true;
             document.head.appendChild(script);
