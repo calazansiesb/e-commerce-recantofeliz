@@ -185,9 +185,44 @@ Quase tudo funcionando! Principais funcionalidades operacionais, mas há pendên
 - [MUDANCA-ESTRUTURA-ARQUIVOS.md](./docs/MUDANCA-ESTRUTURA-ARQUIVOS.md) - Padronização de arquivos na raiz
 - [CORRECAO-PRODUTOS-ADMIN-LISTAGEM.md](./docs/erros%20corrigidos/CORRECAO-PRODUTOS-ADMIN-LISTAGEM.md) - Correção de listagem
 
+## 🔧 Gestão de Produtos e Imagens
+
+### ⚠️ **IMPORTANTE: Fluxo de Trabalho Atual**
+
+#### 📸 **Inserção de Imagens (Processo Local)**
+1. **Acesse** `admin.html` localmente
+2. **Faça login** (admin/granja2024)
+3. **Edite/Crie produto** e faça upload das imagens
+4. **Sistema baixa automaticamente** arquivos PNG padronizados
+5. **Coloque manualmente** os arquivos na pasta `imagens/produtos/`
+6. **Commit e push** para o repositório
+
+#### 🔄 **Fluxo Completo de Deploy**
+```bash
+# 1. Editar produtos localmente
+# 2. Fazer upload de imagens via admin
+# 3. Colocar arquivos PNG na pasta correta
+git add .
+git commit -m "feat: Adiciona novas imagens de produtos"
+git push origin develop
+# 4. Testar em ambiente de desenvolvimento
+# 5. Merge para main quando aprovado
+```
+
+#### 🚀 **Roadmap Futuro**
+- **v2.0:** Upload direto via web (requer servidor backend)
+- **v2.1:** API de gerenciamento de imagens
+- **v2.2:** Interface administrativa remota completa
+
+### 📋 **Regras de Imagens**
+- **Formato:** PNG, JPG, JPEG (convertido para PNG)
+- **Nomenclatura:** `{id}.{numero}.{extensao}` (ex: `9.1.png`, `9.2.png`)
+- **Tamanho:** Máximo 5MB por arquivo
+- **Localização:** `imagens/produtos/`
+
 ## 📝 Observações Técnicas
 - Sistema usa localStorage como fonte primária de dados
 - Sincronização com `dados/produtos.json` como fallback
-- Imagens organizadas por padrão `{id}.{numero}.{extensao}`
+- **Limitação atual:** Upload de imagens requer processo manual
 - **Estrutura padronizada:** Arquivos principais na raiz para GitHub Pages
 - **Desenvolvimento:** Usar sempre arquivos da raiz, não da pasta `src/`
