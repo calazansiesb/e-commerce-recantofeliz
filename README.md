@@ -2,6 +2,22 @@
 
 Site de e-commerce para a Granja Recanto Feliz, especializada em produtos orgânicos e agricultura familiar.
 
+## 🚦 Status Atual do Projeto
+
+Quase tudo funcionando! Principais funcionalidades operacionais, mas há pendências:
+
+### ✅ Correções Realizadas (27/01/2025)
+- ✅ **Estrutura de arquivos padronizada** - Pasta `src/` removida, arquivos na raiz
+- ✅ **Regra de imagens definida** - `imagens/produtos/{id}.{numero}.{extensao}`
+- ✅ **Admin funcional** - Página administrativa carregando corretamente
+- ✅ **Caminhos corrigidos** - Todos os scripts apontando para estrutura correta
+
+### Próximos Passos
+1. ✅ Corrigir carregamento das imagens.
+2. Testar funcionalidade do botão de frete.
+3. Registrar um commit com essas atualizações.
+4. Deploy para branch `develop` seguindo guia DEPLOY.md.
+
 ## ✅ Funcionalidades Implementadas
 
 ### 🎠 Carrossel Hero
@@ -33,17 +49,30 @@ Site de e-commerce para a Granja Recanto Feliz, especializada em produtos orgân
 ## 📁 Estrutura de Arquivos
 
 ```
-src/
+
+
+├── admin.html              # Página administrativa
 ├── index.html              # Página principal
 ├── js/
 │   ├── scripts.js          # Carrossel + Produtos
-│   └── data-manager.js     # Gerenciamento de dados
+│   ├── data-manager.js     # Gerenciamento de dados
+│   └── fix-admin-produtos.js # Admin funcional
 ├── css/
 │   └── estilos.css         # Estilos customizados
-└── imagens/
-    ├── carrocel/           # Imagens do carrossel
-    └── produtos/           # Imagens dos produtos
+├── imagens/
+│   ├── carrocel/           # Imagens do carrossel
+│   └── produtos/           # Imagens dos produtos
+├── dados/
+│   └── produtos.json       # Dados dos produtos
+
 ```
+
+
+### ⚠️ **IMPORTANTE: Nova Estrutura**
+- Todos os arquivos principais estão agora na RAIZ do projeto.
+- Pasta `src/` foi eliminada.
+- URLs: `admin.html` e `index.html` diretamente na raiz.
+- GitHub Pages funciona automaticamente com arquivos da raiz.
 
 ## 🔧 Arquivos JavaScript
 
@@ -145,3 +174,14 @@ src/
 - **Administração:** `/admin.html`
 - **Gestão de Pedidos:** `/gestao-pedidos.html`
 - **Site Principal:** `/index.html`
+
+### Documentação de Mudanças
+- [MUDANCA-ESTRUTURA-ARQUIVOS.md](./docs/MUDANCA-ESTRUTURA-ARQUIVOS.md) - Padronização de arquivos na raiz
+- [CORRECAO-PRODUTOS-ADMIN-LISTAGEM.md](./docs/erros%20corrigidos/CORRECAO-PRODUTOS-ADMIN-LISTAGEM.md) - Correção de listagem
+
+## 📝 Observações Técnicas
+- Sistema usa localStorage como fonte primária de dados
+- Sincronização com `dados/produtos.json` como fallback
+- Imagens organizadas por padrão `{id}.{numero}.{extensao}`
+- **Estrutura padronizada:** Arquivos principais na raiz para GitHub Pages
+- **Desenvolvimento:** Usar sempre arquivos da raiz, não da pasta `src/`
