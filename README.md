@@ -133,10 +133,6 @@ Quase tudo funcionando! Principais funcionalidades operacionais, mas há pendên
 - ✅ Carrossel funcionando
 - ✅ Produtos sendo exibidos
 - ✅ Filtros operacionais
-- ✅ Layout responsivo
-- ✅ DataManager integrado
-- ✅ Sistema de pedidos com banco de dados
-- ✅ Interface administrativa simplificada
 - ✅ **Correção: Erro ao salvar produto (20/08/2025)**
 
 ## 🐛 Correções Recentes
@@ -146,29 +142,39 @@ Quase tudo funcionando! Principais funcionalidades operacionais, mas há pendên
 - **Causa:** Inconsistência entre fontes de dados (SQLite vs localStorage)
 - **Solução:** Sistema de sincronização automática entre ambos os sistemas
 - **Status:** ✅ Resolvido
-- **Documentação:** [CORRECAO-SINCRONIZACAO-DADOS.md](./CORRECAO-SINCRONIZACAO-DADOS.md)
 
-### 20/08/2025 (09:00) - Erro ao Salvar Produto
-- **Problema:** Interface administrativa apresentava erro ao tentar salvar novos produtos
-- **Causa:** Falhas na inicialização do SQLiteManager e validações inadequadas
-- **Solução:** Sistema robusto de fallback entre SQLite e localStorage
-- **Status:** ✅ Resolvido
-- **Documentação:** [CORRECAO-ERRO-SALVAMENTO.md](./CORRECAO-ERRO-SALVAMENTO.md)
+## 📁 Estrutura de Arquivos Atual
 
-### Melhorias Implementadas
-- 🔒 Validações extensivas de campos obrigatórios
-- 🔄 Sistema de fallback automático (SQLite → localStorage)
-- 📝 Logs detalhados para diagnóstico
-- 💬 Mensagens de erro específicas e acionáveis
-- 🛡️ Inicialização defensiva com verificações múltiplas
+```
+├── admin.html              # Página administrativa
+├── index.html              # Página principal
+├── js/                     # Scripts do site
+│   ├── scripts.js
+│   ├── data-manager.js
+│   └── fix-admin-produtos.js
+├── css/                    # Estilos customizados
+│   └── estilos.css
+├── imagens/
+│   ├── carrocel/           # Imagens do carrossel
+│   └── produtos/           # Imagens dos produtos (ex: 1.1.png, 2.1.png, ...)
+├── dados/
+│   ├── produtos.json       # Dados dos produtos
+│   ├── produtos3.json      # Dados alternativos
+│   └── produtos-exemplo-atualizado.csv
+├── docs/                   # Documentação
+├── critical.css            # Estilos críticos
+├── design-system.css       # Sistema de design
+├── package.json            # Configuração de dependências
+├── README.md               # Documentação principal
+... outros arquivos e pastas auxiliares
+```
 
-## 📚 Documentação
-
-### Arquivos de Documentação
-- [CHANGELOG-DETALHADO.md](./CHANGELOG-DETALHADO.md) - Histórico completo de mudanças
-- [SISTEMA-BANCO-PEDIDOS.md](./SISTEMA-BANCO-PEDIDOS.md) - Documentação do sistema de banco
-- [CORRECAO-ERRO-SALVAMENTO.md](./CORRECAO-ERRO-SALVAMENTO.md) - Detalhes da correção recente
-- [INTERFACE-ADMIN-SIMPLIFICADA.md](./INTERFACE-ADMIN-SIMPLIFICADA.md) - Simplificação da interface
+### ⚠️ IMPORTANTE
+- Todos os arquivos principais estão agora na RAIZ do projeto.
+- Pasta `src/` foi eliminada.
+- URLs: `admin.html` e `index.html` diretamente na raiz.
+- Imagens dos produtos seguem padrão `{id}.{sequencia}.{extensao}`.
+- GitHub Pages funciona automaticamente com arquivos da raiz.
 
 ### Links Úteis
 - **Administração:** `/admin.html`
