@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administração - Granja Recanto Feliz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3 { font-family: 'Lora', serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header Administrativo -->
+    <header class="bg-[#5D4037] text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-cog text-2xl"></i>
+                <h1 class="text-2xl font-bold font-lora">Administração - Granja Recanto Feliz</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-home mr-2"></i>Voltar ao Site
+                </a>
+                <button id="logout-btn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Sair
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Menu de Navegação -->
+    <nav class="bg-white shadow-md p-4">
+        <div class="container mx-auto">
+            <div class="flex space-x-6">
+                <button onclick="showSection('produtos')" class="nav-btn bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                    <i class="fas fa-box mr-2"></i>Produtos
+                </button>
+                <button onclick="window.open('gestao-pedidos.html', '_blank')" class="nav-btn bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition">
+                    <i class="fas fa-shopping-cart mr-2"></i>Pedidos
+                </button>
+                <button onclick="showSection('estoque')" class="nav-btn bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition">
+                    <i class="fas fa-warehouse mr-2"></i>Estoque
+                </button>
+                <button onclick="showSection('layouts')" class="nav-btn bg-pink-500 text-white px-4 py-2 rounded-lg hover:bg-pink-600 transition">
+                    <i class="fas fa-palette mr-2"></i>Layouts
+                </button>
+                <button onclick="showSection('carrossel')" class="nav-btn bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">
+                    <i class="fas fa-images mr-2"></i>Carrossel
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Container Principal -->
+    <div class="container mx-auto p-6">
+        
+        <!-- Seção: Gestão de Produtos -->
+        <div id="produtos-section" class="section">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Gestão de Produtos</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="window.open('gestao-pedidos.html', '_blank')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-shopping-cart mr-2"></i>Gestão de Pedidos
+                        </button>
+                        <button onclick="salvarProdutosDefinitivo()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition font-bold">
+                            <i class="fas fa-save mr-2"></i>SALVAR DEFINITIVO
+                        </button>
+                        <button onclick="exportData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-download mr-2"></i>Backup Sistema
+                        </button>
+                        <button onclick="document.getElementById('import-file').click()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-upload mr-2"></i>Restaurar Backup
+                        </button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+                        <button onclick="forcarCarregamentoJSON()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-sync mr-2"></i>Recarregar do JSON
+                        </button>
+                        <button onclick="openProductModal()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition">
+                            <i class="fas fa-plus mr-2"></i>Novo Produto
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de Produtos -->
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto">
+                        <thead class="bg-gray-100">
+                            <tr>
+                                <th class="px-4 py-3 text-left">ID</th>
+                                <th class="px-4 py-3 text-left">Imagem</th>
+                                <th class="px-4 py-3 text-left">Nome</th>
+                                <th class="px-4 py-3 text-left">Categoria</th>
+                                <th class="px-4 py-3 text-left">Preço</th>
+                                <th class="px-4 py-3 text-left">Estoque</th>
+                                <th class="px-4 py-3 text-left">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="products-table-body">
+                            <!-- Produtos serão carregados aqui via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Controle de Estoque -->
+        <div id="estoque-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-3xl font-bold font-lora text-[#5D4037] mb-6">Controle de Estoque</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="estoque-grid">
+                    <!-- Cards de estoque serão carregados aqui -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção: Layouts Temáticos -->
+        <div id="layouts-section" class="section hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold font-lora text-[#5D4037]">Layouts Temáticos</h2>
+                    <div class="flex space-x-3">
+                        <button onclick="restoreProducts()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-box mr-2"></i>Restaurar Produtos
+                        </button>
+                        <button onclick="updateLayoutsFromDefaults()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-sync mr-2"></i>Atualizar Layouts
+                        </button>
+                        <button onclick="checkAutoLayouts()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-magic mr-2"></i>Verificar Automático
+                        </button>
+                        <button onclick="activateDefaultLayout()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-undo mr-2"></i>Layout Padrão
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status do Layout Atual -->
+                <div id="current-layout-status" class="mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <h3 class="font-bold text-blue-700 mb-2">
+                        <i class="fas fa-info-circle mr-2"></i>Layout Atual
+                    </h3>
+                    <div id="current-layout-info" class="text-blue-600">
+                        Carregando informações do layout...
+                    </div>
+                </div>
+
+                <!-- Lista de Layouts Disponíveis -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="layouts-grid">
+                    <!-- Layouts serão carregados dinamicamente -->
+                </div>
+
+                <!-- Seção de Configuração Personalizada -->
+                <div class="mt-8 bg-gray-50 p-6 rounded-lg">
+                    <h3 class="text-xl font-bold mb-4">
+                        <i class="fas fa-cog mr-2"></i>Configurações Avançadas
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Configuração de Cores -->
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-gray-700">Paleta de Cores Personalizada</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Cor Primária</label>
+                                    <input type="color" id="custom-primary" class="w-full h-10 rounded" value="#2D5016">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Cor Secundária</label>
+                                    <input type="color" id="custom-secondary" class="w-full h-10 rounded" value="#8B4513">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Cor de Destaque</label>
+                                    <input type="color" id="custom-accent" class="w-full h-10 rounded" value="#228B22">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Cor de Fundo</label>
+                                    <input type="color" id="custom-background" class="w-full h-10 rounded" value="#F0F8E8">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Configuração de Banner -->
+                        <div class="space-y-4">
+                            <h4 class="font-bold text-gray-700">Banner Personalizado</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Texto do Banner</label>
+                                    <textarea id="custom-banner-text" class="w-full p-2 border rounded-lg" rows="3" placeholder="Digite o texto do banner...">Granja Recanto Feliz - Produtos Frescos da Fazenda</textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-600 mb-1">Imagem do Banner</label>
+                                    <select id="custom-banner-image" class="w-full p-2 border rounded-lg">
+                                        <option value="imagens/produtos/8/1.png">Imagem padrão</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex space-x-3">
+                        <button onclick="previewCustomLayout()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-eye mr-2"></i>Visualizar
+                        </button>
+                        <button onclick="applyCustomLayout()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-paint-brush mr-2"></i>Aplicar Layout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção do Carrossel -->
+        <div id="carrossel-section" class="section-content hidden">
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h2 class="text-3xl font-bold text-[#5D4037] mb-6 font-lora">
+                    <i class="fas fa-images mr-3"></i>Gerenciamento do Carrossel
+                </h2>
+
+                <!-- Botões de Ação -->
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <button onclick="addCarouselSlide()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-plus mr-2"></i>Adicionar Slide
+                    </button>
+                    <button onclick="previewCarousel()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-eye mr-2"></i>Visualizar Carrossel
+                    </button>
+                    <button onclick="loadDefaultCarouselSlides()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition">
+                        <i class="fas fa-redo mr-2"></i>Restaurar Padrão
+                    </button>
+                </div>
+
+                <!-- Grid de Slides do Carrossel -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="carousel-slides-grid">
+                    <!-- Slides serão carregados dinamicamente -->
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+    <!-- Modal para Adicionar/Editar Produto -->
+    <div id="product-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold font-lora text-[#5D4037]" id="modal-title">Novo Produto</h3>
+                <button onclick="closeProductModal()" class="text-gray-500 hover:text-gray-700 text-2xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="product-form" class="space-y-6">
+                <input type="hidden" id="product-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do Produto</label>
+                        <input type="text" id="product-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Produto</label>
+                        <select id="product-type" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                            <option value="">Selecione o tipo</option>
+                            <option value="granja">Produto da Granja</option>
+                            <option value="parceiro">Produto de Parceiro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                        <div class="flex gap-2">
+                            <select id="product-category" class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="fertilizantes">Fertilizantes</option>
+                                <option value="ovos">Ovos</option>
+                                <option value="aves">Aves</option>
+                                <option value="laticínios">Laticínios</option>
+                                <option value="doces">Doces</option>
+                                <option value="mel">Mel</option>
+                                <option value="custom">Nova Categoria</option>
+                            </select>
+                        </div>
+                        <input type="text" id="custom-category" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-2 hidden" placeholder="Digite a nova categoria">
+                    </div>
+                    
+                    <div id="partner-fields" class="hidden">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Nome do Parceiro</label>
+                        <input type="text" id="partner-name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Apiário Flor do Cerrado">
+                    </div>
+                </div>
+                
+                <div id="partner-details" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Produtor</label>
+                        <input type="text" id="partner-producer" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Sr. João Silva">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Localização</label>
+                        <input type="text" id="partner-location" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Planaltina - DF">
+                    </div>
+                </div>
+                
+                <div id="partner-description-field" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Sobre o Parceiro</label>
+                    <textarea id="partner-description" rows="2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ex: Família tradicional na apicultura há 3 gerações"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Slogan</label>
+                    <input type="text" id="product-slogan" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
+                    <textarea id="product-description" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Preço (R$)</label>
+                        <input type="number" id="product-price" step="0.01" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Estoque</label>
+                        <input type="number" id="product-stock" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Upload de Imagens</label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center" id="drop-zone">
+                        <input type="file" id="product-images" multiple accept=".png,.jpg,.jpeg" class="hidden">
+                        <button type="button" onclick="document.getElementById('product-images').click()" class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition">
+                            <i class="fas fa-cloud-upload-alt mr-2"></i>Selecionar Imagens
+                        </button>
+                        <p class="text-gray-500 mt-2">📸 <strong>Apenas PNG, JPG, JPEG</strong> (máx 5MB cada)</p>
+                        <p class="text-gray-400 text-sm">Ou arraste e solte as imagens aqui</p>
+                        <div id="image-preview" class="mt-4 grid grid-cols-4 gap-2"></div>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg transition">
+                        <i class="fas fa-save mr-2"></i>Salvar Produto
+                    </button>
+                    <button type="button" onclick="closeProductModal()" class="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Verificar autenticação
+        if (!sessionStorage.getItem('adminAuth')) {
+            window.location.href = 'admin/login.html';
+        }
+        
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            sessionStorage.removeItem('adminAuth');
+            window.location.href = 'admin/login.html';
+        });
+        
+
+    </script>
+    <!-- SQL.js desativado: não carregar no cliente para simplificar o fluxo -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script> -->
+    <!-- <script src="js/sqlite-manager.js"></script> -->
+    <!-- <script src="js/sqlite-robust-initializer.js"></script> -->
+    <!-- Admin simples funcional -->
+    <script src="js/data-manager.js"></script>
+    <script src="js/fix-admin-produtos.js"></script>
+    
+    <script>
+        // Funções de navegação
+        function showSection(sectionName) {
+            console.log(`📂 Abrindo seção: ${sectionName}`);
+            
+            // Ocultar todas as seções
+            document.querySelectorAll('.section, .section-content').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Mostrar seção selecionada
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+                
+                // Carregar conteúdo específico
+                if (sectionName === 'layouts') {
+                    setTimeout(loadLayoutsSection, 500);
+                } else if (sectionName === 'carrossel') {
+                    setTimeout(loadCarouselSection, 500);
+                }
+            }
+        }
+        
+        // Carregar seção de layouts
+        function loadLayoutsSection() {
+            console.log('🎨 Carregando layouts...');
+            
+            if (window.dataManager) {
+                const currentLayout = window.dataManager.getCurrentLayout();
+                const layoutInfo = document.getElementById('current-layout-info');
+                if (layoutInfo) {
+                    layoutInfo.innerHTML = `
+                        <strong>Layout Ativo:</strong> ${currentLayout.name}<br>
+                        <strong>Tema:</strong> ${currentLayout.theme || 'default'}<br>
+                        <strong>Última atualização:</strong> ${new Date().toLocaleString()}
+                    `;
+                }
+                loadLayoutsGrid();
+            } else {
+                console.error('❌ DataManager não disponível');
+            }
+        }
+        
+        // Carregar grid de layouts
+        function loadLayoutsGrid() {
+            const grid = document.getElementById('layouts-grid');
+            if (!grid || !window.dataManager) return;
+            
+            const layouts = window.dataManager.defaultLayouts;
+            
+            grid.innerHTML = Object.entries(layouts).map(([key, layout]) => `
+                <div class="bg-white p-6 rounded-lg shadow-lg border-2 ${layout.active ? 'border-green-500' : 'border-gray-200'}">
+                    <div class="flex justify-between items-start mb-4">
+                        <h4 class="text-xl font-bold text-gray-800">${layout.name}</h4>
+                        ${layout.active ? '<span class="bg-green-500 text-white px-2 py-1 rounded text-xs">ATIVO</span>' : ''}
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex space-x-2 mb-2">
+                            <div class="w-6 h-6 rounded" style="background-color: ${layout.colors.primary}"></div>
+                            <div class="w-6 h-6 rounded" style="background-color: ${layout.colors.secondary}"></div>
+                            <div class="w-6 h-6 rounded" style="background-color: ${layout.colors.accent}"></div>
+                        </div>
+                        <p class="text-sm text-gray-600">${layout.bannerText}</p>
+                        ${layout.dateStart ? `<p class="text-xs text-blue-600 mt-1">Ativo: ${layout.dateStart} a ${layout.dateEnd}</p>` : ''}
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="activateLayout('${key}')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition">
+                            ${layout.active ? 'Ativo' : 'Ativar'}
+                        </button>
+                        <button onclick="previewLayout('${key}')" class="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm transition">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Carregar seção do carrossel
+        function loadCarouselSection() {
+            console.log('🎠 Carregando carrossel...');
+            
+            if (window.dataManager) {
+                loadCarouselGrid();
+            } else {
+                console.error('❌ DataManager não disponível');
+            }
+        }
+        
+        // Carregar grid do carrossel
+        function loadCarouselGrid() {
+            const grid = document.getElementById('carousel-slides-grid');
+            if (!grid || !window.dataManager) return;
+            
+            const themes = window.dataManager.defaultCarouselThemes;
+            
+            grid.innerHTML = themes.map(theme => `
+                <div class="bg-white p-6 rounded-lg shadow-lg border-2 ${theme.active ? 'border-green-500' : 'border-gray-200'}">
+                    <div class="mb-4">
+                        <img src="${theme.image}" alt="${theme.title}" class="w-full h-32 object-cover rounded-lg mb-3" onerror="this.src='imagens/produtos/default/placeholder.png'">
+                        <h4 class="text-lg font-bold text-gray-800 mb-2">${theme.title}</h4>
+                        <p class="text-sm text-gray-600 mb-3">${theme.description}</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>Categoria: ${theme.category}</span>
+                            <span class="px-2 py-1 rounded" style="background-color: ${theme.buttonColor}; color: white;">${theme.buttonText}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <button onclick="toggleSlideActive(${theme.id})" class="flex-1 ${theme.active ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'} text-white px-3 py-2 rounded text-sm transition">
+                            ${theme.active ? 'Ativo' : 'Ativar'}
+                        </button>
+                        <button onclick="editSlide(${theme.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded text-sm transition">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Ativar layout
+        function activateLayout(layoutKey) {
+            if (window.dataManager) {
+                const success = window.dataManager.activateLayout(layoutKey);
+                if (success) {
+                    alert(`Layout ${layoutKey} ativado!`);
+                    loadLayoutsSection();
+                } else {
+                    alert('Erro ao ativar layout');
+                }
+            }
+        }
+        
+        // Visualizar layout
+        function previewLayout(layoutKey) {
+            window.open(`index.html?preview=${layoutKey}`, '_blank');
+        }
+        
+        // Verificar layouts automáticos
+        function checkAutoLayouts() {
+            if (window.dataManager && window.dataManager.layoutManager) {
+                const autoLayout = window.dataManager.layoutManager.checkAutoLayouts();
+                if (autoLayout) {
+                    alert(`Layout automático: ${autoLayout.name}`);
+                } else {
+                    alert('Nenhum layout automático ativo');
+                }
+            }
+        }
+        
+        // Ativar layout padrão
+        function activateDefaultLayout() {
+            activateLayout('default');
+        }
+        
+        // Alternar slide ativo
+        function toggleSlideActive(slideId) {
+            if (window.dataManager) {
+                const themes = window.dataManager.defaultCarouselThemes;
+                const theme = themes.find(t => t.id === slideId);
+                if (theme) {
+                    theme.active = !theme.active;
+                    window.dataManager.saveCarouselThemes(themes);
+                    loadCarouselGrid();
+                    alert(`Slide ${theme.active ? 'ativado' : 'desativado'}!`);
+                }
+            }
+        }
+        
+        // Editar slide
+        function editSlide(slideId) {
+            alert('Edição em desenvolvimento');
+        }
+        
+        // Adicionar slide
+        function addCarouselSlide() {
+            alert('Adicionar slide em desenvolvimento');
+        }
+        
+        // Visualizar carrossel
+        function previewCarousel() {
+            window.open('index.html', '_blank');
+        }
+        
+        // Restaurar slides padrão
+        function loadDefaultCarouselSlides() {
+            if (window.dataManager) {
+                const themes = window.dataManager.defaultCarouselThemes;
+                window.dataManager.saveCarouselThemes(themes);
+                loadCarouselGrid();
+                alert('Slides padrão restaurados!');
+            }
+        }
+        
+        // Função para recarregar do JSON
+        function forcarCarregamentoJSON() {
+            if (window.renderizarProdutosAdmin) {
+                window.renderizarProdutosAdmin();
+                alert('Produtos recarregados!');
+            } else {
+                alert('Função de carregamento não disponível');
+            }
+        }
+        
+        // Tornar funções globais
+        window.showSection = showSection;
+        window.forcarCarregamentoJSON = forcarCarregamentoJSON;
+        
+        // Inicializar admin simples
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔧 Inicializando Admin Simples...');
+            console.log('✅ Usando fix-admin-produtos.js');
+            
+            // Mostrar seção de produtos por padrão
+            showSection('produtos');
+        });
+    </script>
+</body>
+</html>
