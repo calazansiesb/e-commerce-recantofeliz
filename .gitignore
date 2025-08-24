@@ -1,5 +1,0 @@
-# Arquivos e pastas ignorados pelo Git
-node_modules/
-.env
-.DS_Store
-Thumbs.db
