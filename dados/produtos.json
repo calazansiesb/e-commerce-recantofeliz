@@ -86,7 +86,12 @@
       "description": "Mel puro. O toque da natureza nas suas mãos.\n\n",
       "price": 50,
       "stock": 10,
-      "active": true
+      "active": true,
+      "partner": {
+        "producer": "Apiário Flor do Cerrado",
+        "location": "Sobradinho - DF",
+        "description": "Produção artesanal de mel puro há mais de 10 anos"
+      }
     },
     {
       "id": 9,
@@ -97,18 +102,28 @@
       "description": "Produzido com leite fresco e técnicas centenárias, nosso Queijo Minas Artesanal tem textura macia e sabor inconfundível. Perfeito para o café da manhã ou para dar um toque especial em suas receitas.",
       "price": 37,
       "stock": 20,
-      "active": true
+      "active": true,
+      "partner": {
+        "producer": "Laticínios Serra Verde",
+        "location": "Planaltina - DF",
+        "description": "Família tradicional na produção de queijos artesanais há 3 gerações"
+      }
     },
     {
       "id": 10,
       "image": "imagens/produtos/10.1.jpg",
       "name": "Cafe",
-      "category": "custom",
+      "category": "cafe",
       "slogan": "O sabor da verdadeira excelência.",
       "description": "Café Gourmet Artesanal é uma experiência única. Cultivado com cuidado e colhido à mão, cada grão é torrado lentamente para realçar seu sabor complexo. Desfrute de um café com corpo aveludado, notas de chocolate e caramelo, e um aroma irresistível.",
       "price": 139,
       "stock": 5,
-      "active": true
+      "active": true,
+      "partner": {
+        "producer": "Fazenda Café do Cerrado",
+        "location": "Planaltina - DF",
+        "description": "Torrefadora artesanal especializada em cafés especiais do cerrado"
+      }
     }
   ],
   "lastUpdate": "2025-01-27T10:30:00.000Z",

@@ -104,9 +104,9 @@ window.filterProducts = function(category) {
     let filtered = produtos;
     
     if (category === 'granja') {
-        filtered = produtos.filter(p => ['fertilizantes', 'aves', 'ovos'].includes(p.category));
+        filtered = produtos.filter(p => !p.partner);
     } else if (category === 'parceiros') {
-        filtered = produtos.filter(p => ['mel', 'laticinios', 'parceiros'].includes(p.category));
+        filtered = produtos.filter(p => p.partner);
     } else if (category !== 'all') {
         filtered = produtos.filter(p => p.category === category);
     }
