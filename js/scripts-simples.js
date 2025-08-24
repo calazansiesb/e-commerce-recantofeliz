@@ -10,7 +10,7 @@ const produtosPadrao = [
         slogan: "Mais do que Adubo: um substrato vivo e completo.",
         description: "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
         price: 15,
-        image: "imagens/produtos/1.1.png",
+        image: "imagens/produtos/1.1.jpg",
         stock: 25,
         active: true
     },
@@ -21,7 +21,7 @@ const produtosPadrao = [
         slogan: "Adubo de galinha líquido e potente.",
         description: "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas.",
         price: 5,
-        image: "imagens/produtos/2.1.png",
+        image: "imagens/produtos/2.1.jpg",
         stock: 40,
         active: true
     },
@@ -736,7 +736,7 @@ function showThankYouModal() {
     modal.innerHTML = `
         <div class="bg-white rounded-lg shadow-2xl max-w-md w-full text-center p-6">
             <div class="text-center mb-4">
-                <img src="imagens/agradecimento pedido.png" alt="Agradecimento" class="w-full h-auto rounded-lg mb-4" onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='block'">
+                <img src="imagens/agradecimento pedido.jpg" alt="Agradecimento" class="w-full h-auto rounded-lg mb-4" onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='block'">
                 <div id="fallback-icon" class="text-6xl text-green-500 mb-4" style="display:none">
                     🎉🙏✨
                 </div>
@@ -759,3 +759,16 @@ function showThankYouModal() {
 }
 
 console.log('✅ Scripts simplificados carregados - VERSÃO ESTÁVEL');
+
+// Prevenir FOUC - Mostrar conteúdo após carregamento
+document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+        document.body.classList.remove('loading-hidden');
+        document.body.classList.add('loading-visible');
+    });
+});
+
+if (document.readyState !== 'loading') {
+    document.body.classList.remove('loading-hidden');
+    document.body.classList.add('loading-visible');
+}

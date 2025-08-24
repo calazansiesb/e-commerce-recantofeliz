@@ -24,6 +24,21 @@
     </script>
     <!-- CSS Crítico Inline (Above-the-fold) -->
     <style>
+        /* Prevenir FOUC - Esconder conteúdo até carregar */
+        .loading-hidden { opacity: 0; transition: opacity 0.3s ease; }
+        .loading-visible { opacity: 1; }
+        
+        /* Skeleton loading para produtos */
+        .product-skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
         :root {
             --primary-color: #2D5016;
             --secondary-color: #8B4513;
@@ -514,7 +529,7 @@
         });
     </script>
 </head>
-<body class="text-gray-800">
+<body class="text-gray-800 loading-hidden">
     <!-- Header melhorado com mais destaque para o carrinho -->
     <header id="header" class="bg-[#FDFBF5]/80 backdrop-blur-sm sticky top-0 z-50 shadow-md transition-all duration-300">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -582,7 +597,7 @@
                 </div>
                 
                 <!-- Slide 3: Adubo Orgânico -->
-                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('imagens/carrocel/adubo-organico.png')">
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('imagens/carrocel/adubo-organico.jpg')">
                     <div class="flex items-end justify-center h-full text-white px-6 pb-20">
                         <div class="max-w-2xl bg-black/40 backdrop-blur-sm p-6 rounded-lg text-center">
                             <h1 class="text-3xl md:text-5xl font-bold font-lora mb-4">🌱 Adubo Orgânico Natural</h1>
@@ -595,7 +610,7 @@
                 </div>
                 
                 <!-- Slide 4: Agricultura Familiar -->
-                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('imagens/carrocel/agricultura-familiar.png')">
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('imagens/carrocel/agricultura-familiar.jpg')">
                     <div class="flex items-end justify-start h-full text-white px-6 pb-20">
                         <div class="max-w-2xl bg-black/40 backdrop-blur-sm p-6 rounded-lg">
                             <h1 class="text-3xl md:text-5xl font-bold font-lora mb-4">🏡 Agricultura Familiar</h1>
@@ -709,9 +724,8 @@
             <div class="container mx-auto px-6">
                 <div class="flex flex-col md:flex-row items-center gap-12">
                     <div class="md:w-1/2">
-                        <div class="relative rounded-lg overflow-hidden shadow-xl">
-                            <img src="imagens/produtos/0.1.png" alt="Família da Granja" class="w-full h-auto" onerror="this.src='imagens/produtos/default/placeholder.png'">
-                            <div class="absolute inset-0 bg-[#8B4513]/20"></div>
+                        <div class="relative rounded-lg overflow-hidden shadow-xl bg-white p-4">
+                            <img src="imagens/produtos/0.1.jpg" alt="Família da Granja" class="w-full h-auto rounded-lg" style="background-color: white;" onerror="this.src='imagens/produtos/default/placeholder.png'">
                         </div>
                     </div>
                     <div class="md:w-1/2">
@@ -1965,7 +1979,7 @@
                 </div>
                 
                 <!-- Slide 3: Adubo Orgânico -->
-                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/adubo-organico.png')">
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/adubo-organico.jpg')">
                     <div class="flex items-center justify-center h-full text-white text-center px-6">
                         <div class="max-w-4xl">
                             <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🌱 Adubo Orgânico Natural</h1>
@@ -1978,7 +1992,7 @@
                 </div>
                 
                 <!-- Slide 4: Agricultura Familiar -->
-                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/agricultura-familiar.png')">
+                <div class="carousel-slide absolute inset-0 bg-cover bg-center transition-all duration-1000 opacity-0" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('imagens/carrocel/agricultura-familiar.jpg')">
                     <div class="flex items-center justify-center h-full text-white text-center px-6">
                         <div class="max-w-4xl">
                             <h1 class="text-5xl md:text-7xl font-bold font-lora mb-6">🏡 Agricultura Familiar</h1>

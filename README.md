@@ -216,3 +216,6 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 ---
 
 **Granja Recanto Feliz** - Produtos frescos e de qualidade direto da nossa granja para sua mesa. 🌱🥚🐔
+
+comando iniciarlizar o servidor
+python -m http.server 8080
