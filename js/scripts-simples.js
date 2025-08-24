@@ -59,22 +59,20 @@ let currentSlide = 0;
 let carouselInterval;
 
 // Carregar produtos
+// Carregar produtos via API (sem fallback)
 async function carregarProdutos() {
     try {
-        const response = await fetch('dados/produtos.json');
-        if (response.ok) {
-            const data = await response.json();
-            produtos = data.products || produtosPadrao;
-        } else {
-            produtos = produtosPadrao;
-        }
+        const data = await window.granjaAPI.getProdutos();
+        produtos = data.products || [];
+        console.log(`${produtos.length} produtos carregados via API`);
+        renderizarProdutos();
+        return produtos;
     } catch (error) {
-        console.log('⚠️ Usando produtos padrão');
-        produtos = produtosPadrao;
+        console.error('Erro ao carregar produtos:', error);
+        produtos = [];
+        renderizarProdutos();
+        return [];
     }
-    
-    console.log(`✅ ${produtos.length} produtos carregados`);
-    renderizarProdutos();
 }
 
 // Renderizar produtos

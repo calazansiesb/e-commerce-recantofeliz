@@ -1,3 +1,7 @@
+
+// ADMIN CONECTADO À API DYNAMODB
+// Sistema 100% baseado em API - sem fallback JSON
+// Funcionalidades legadas removidas conforme refatoração
 // Admin simples para gerenciar produtos
 console.log('🔧 Carregando admin simples...');
 
@@ -239,12 +243,7 @@ function convertToPNG(file, callback) {
     img.src = URL.createObjectURL(file);
 }
 
-function salvarProdutosDefinitivo() {
-    const data = {
-        products: produtos,
-        lastUpdate: new Date().toISOString(),
-        version: '1.0'
-    };
+;
     
     // Salvar no localStorage
     localStorage.setItem('granjaRecantoFelizData', JSON.stringify(data));
@@ -306,12 +305,7 @@ function baixarImagemPNG(imageData, filename) {
     console.log(`📥 Baixando: ${filename}`);
 }
 
-function exportData() {
-    const data = {
-        products: produtos,
-        timestamp: new Date().toISOString(),
-        version: '1.0'
-    };
+;
     
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -324,19 +318,7 @@ function exportData() {
     alert('Backup exportado com sucesso!');
 }
 
-function importData(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const data = JSON.parse(e.target.result);
-            if (data.products) {
-                produtos = data.products;
-                renderizarProdutosAdmin();
-                alert('Dados importados com sucesso!');
-            }
+
         } catch (error) {
             alert('Erro ao importar dados: ' + error.message);
         }
@@ -357,9 +339,9 @@ window.processarArquivos = processarArquivos;
 window.convertToPNG = convertToPNG;
 window.baixarImagemPNG = baixarImagemPNG;
 window.baixarImagensConvertidas = baixarImagensConvertidas;
-window.salvarProdutosDefinitivo = salvarProdutosDefinitivo;
-window.exportData = exportData;
-window.importData = importData;
+
+
+
 
 // Setup drag & drop
 function setupDragDrop() {

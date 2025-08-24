@@ -1,0 +1,16 @@
+{
+  "infrastructure": {
+    "database_type": "dynamodb",
+    "table_name": "GranjaRecantoFelizProdutos",
+    "s3_bucket_images": "granja-recanto-feliz-images",
+    "region": "sa-east-1",
+    "costs": {
+      "dynamodb": "Gratuito permanente (25GB + 200M requests/m\u00eas)",
+      "s3": "5GB gratuitos por 12 meses",
+      "lambda": "1M execu\u00e7\u00f5es gratuitas/m\u00eas",
+      "total_monthly": "$0.00"
+    }
+  },
+  "created_at": "2025-08-24T10:34:47.695471",
+  "status": "free_infrastructure_ready"
+}

@@ -1,0 +1,14 @@
+{
+  "api": {
+    "base_url": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod",
+    "endpoints": {
+      "list_produtos": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos",
+      "get_produto": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos/{id}",
+      "create_produto": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos",
+      "update_produto": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos/{id}",
+      "delete_produto": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos/{id}"
+    }
+  },
+  "created_at": "2025-08-24T10:54:47.357690",
+  "status": "api_ready"
+}

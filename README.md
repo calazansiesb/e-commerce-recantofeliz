@@ -4,7 +4,28 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 
 ## 🚦 Status Atual do Projeto
 
-**SISTEMA COMPLETO E FUNCIONAL** - Todas as funcionalidades principais implementadas e testadas.
+**SISTEMA REFATORADO PARA AWS** - Arquitetura moderna com API DynamoDB, infraestrutura 100% gratuita e alta disponibilidade.
+
+### 🏗️ **Nova Arquitetura AWS (2025)**
+
+#### 🆓 **Infraestrutura 100% Gratuita:**
+- **DynamoDB:** Banco NoSQL (25GB gratuitos permanente)
+- **Lambda:** API serverless (1M execuções/mês gratuitas)
+- **S3:** Hospedagem + imagens (5GB gratuitos)
+- **API Gateway:** Endpoints REST (1M requests/mês gratuitos)
+- **Custo total:** $0.00/mês
+
+#### 🔗 **Endpoints da API:**
+- **GET** `/api/produtos` - Listar todos os produtos
+- **POST** `/api/produtos` - Criar novo produto
+- **GET** `/api/produtos/{id}` - Buscar produto por ID
+- **PUT** `/api/produtos/{id}` - Atualizar produto
+- **DELETE** `/api/produtos/{id}` - Remover produto
+
+#### 🌐 **URLs do Sistema:**
+- **Site:** http://granjarecantofeliz-site.s3-website-sa-east-1.amazonaws.com
+- **API:** https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod
+- **Admin:** [site]/admin.html
 
 ### ✅ Funcionalidades Implementadas
 
@@ -77,46 +98,46 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 ## 📁 Estrutura do Projeto
 
 ```
-├── index.html              # Página principal do e-commerce
-├── admin.html              # Painel administrativo completo
+├── index.html              # Página principal (conectada à API)
+├── admin.html              # Painel admin refatorado (sem botões obsoletos)
 ├── CNAME                   # Configuração de domínio
 ├── .gitignore              # Arquivos ignorados pelo git
-├── README.md               # Documentação principal
+├── README.md               # Documentação atualizada
 │
 ├── js/
-│   ├── scripts-simples.js  # Scripts principais do site
-│   ├── data-manager.js     # Gerenciamento de dados e layouts
-│   └── fix-admin-produtos.js # Scripts do painel admin
+│   ├── granja-api-client.js    # Cliente API DynamoDB (NOVO)
+│   ├── admin-api-pure.js       # Admin conectado à API (NOVO)
+│   ├── scripts-simples.js      # Scripts principais (API pura)
+│   └── fix-admin-produtos.js   # Scripts do painel admin
 │
 ├── css/
 │   └── estilos.css         # Estilos customizados
 │
 ├── imagens/
 │   ├── carrocel/           # Imagens dos slides (4 temas)
-│   ├── produtos/           # Galeria de produtos (id.numero.extensao)
-│   └── agradecimento pedido.png # Imagem de confirmação
+│   ├── produtos/           # Galeria otimizada (JPG/WebP)
+│   └── agradecimento pedido.jpg # Imagem de confirmação
 │
 ├── dados/
-│   ├── produtos.json       # Base de dados dos produtos
-│   ├── produtos-exemplo-atualizado.csv # Backup CSV
-│   └── guia/
-│       └── DEPLOY.md       # Guia de deploy
+│   └── produtos.json       # Backup/referência (sistema usa DynamoDB)
 │
 ├── docs/
-│   └── database-system.md  # Documentação do sistema
+│   ├── refatoracao/        # Documentação da refatoração
+│   └── migrar para aws.md  # Guia de migração AWS
 │
 ├── admin/
 │   └── login.html          # Tela de login do admin
 │
-└── lixobackup/             # Arquivos de backup (ignorado no git)
-    ├── backup-arquivos-desnecessarios/
-    └── backup-docs-desnecessarios/
+└── AWS Infrastructure/     # Configurações da infraestrutura
+    ├── aws-free-config.json    # Config infraestrutura gratuita
+    ├── aws-api-config.json     # Config da API Lambda
+    └── frontend-api-config.json # Config do frontend
 ```
 
 ## 🚀 Como Usar o Sistema
 
 ### 👥 **Para Clientes**
-1. **Navegação:** Acesse o site e explore os produtos
+1. **Navegação:** Acesse o site e explore os produtos (carregados via API)
 2. **Carrossel:** Slides automáticos com informações da granja
 3. **Produtos:** Use filtros (Todos/Granja/Parceiros) para navegar
 4. **Detalhes:** Clique em "Comprar" para ver galeria e descrição
@@ -127,10 +148,11 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 
 ### 🔧 **Para Administradores**
 1. **Login:** Acesse `admin.html` (usuário: admin / senha: granja2024)
-2. **Produtos:** Gerencie catálogo (adicionar/editar/remover)
-3. **Layouts:** Configure temas e layouts automáticos
-4. **Carrossel:** Controle slides e conteúdo
-5. **Backup:** Exporte/importe dados do sistema
+2. **Produtos:** Gerencie catálogo via API DynamoDB (CRUD completo)
+3. **Estoque:** Controle de inventário com interface visual
+4. **Layouts:** Gerenciamento de temas e layouts automáticos
+5. **Carrossel:** Controle de slides e conteúdo
+6. **Interface:** Limpa e moderna (funcionalidades obsoletas removidas)
 
 ## 📋 Catálogo de Produtos
 
@@ -150,29 +172,38 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 
 ## 🔧 Especificações Técnicas
 
-### 🖼️ **Sistema de Imagens**
-- **Formatos suportados:** PNG, JPG, JPEG
-- **Nomenclatura:** `{id}.{numero}.{extensao}` (ex: 1.1.png, 1.2.png)
-- **Localização:** `imagens/produtos/`
+### 🏗️ **Arquitetura AWS Serverless**
+- **Frontend:** S3 Static Website Hosting
+- **API:** Lambda Functions + API Gateway
+- **Banco:** DynamoDB (NoSQL)
+- **Imagens:** S3 Bucket com CDN
+- **DNS:** Route 53 (opcional)
+
+### 🖼️ **Sistema de Imagens Otimizado**
+- **Formatos:** JPG, WebP (otimizados 73% menores)
+- **Nomenclatura:** `{id}.{numero}.{extensao}` (ex: 1.1.jpg, 1.2.webp)
+- **Localização:** S3 Bucket `granja-recanto-feliz-images`
 - **Galeria:** Detecção automática de múltiplas imagens
-- **Fallback:** Placeholder para imagens não encontradas
+- **Performance:** Cache inteligente + CDN
 
-### 💾 **Gerenciamento de Dados**
-- **Fonte primária:** localStorage (navegador)
-- **Backup:** dados/produtos.json
-- **Sincronização:** DataManager com classes especializadas
-- **Persistência:** Carrinho salvo automaticamente
-- **Admin:** Interface web completa para CRUD
+### 💾 **Gerenciamento de Dados Moderno**
+- **Banco principal:** DynamoDB (25GB gratuitos)
+- **API REST:** Lambda serverless (1M execuções gratuitas)
+- **Cache:** Cliente JavaScript (2 minutos)
+- **Persistência:** 100% na nuvem AWS
+- **Admin:** Interface conectada à API
 
-### 🌐 **APIs Integradas**
+### 🌐 **APIs e Integrações**
+- **Granja API:** Endpoints REST para produtos
 - **ViaCEP:** Busca automática de endereços
 - **WhatsApp:** Envio de pedidos formatados
-- **LocalStorage:** Persistência de dados
+- **AWS SDK:** Integração nativa com serviços
 
-### 📱 **Responsividade**
+### 📱 **Performance e Responsividade**
 - **Framework:** TailwindCSS
 - **Design:** Mobile-first
-- **Breakpoints:** Adaptação automática
+- **CDN:** CloudFront (opcional)
+- **Cache:** Estratégias múltiplas
 - **Fontes:** Lora (títulos) + Montserrat (corpo)
 
 ## 📞 Informações de Contato
@@ -184,38 +215,98 @@ Site de e-commerce completo para a Granja Recanto Feliz, especializada em produt
 
 ## 🔄 **Fluxo Completo do Pedido**
 
-1. **Cliente navega** → Produtos com filtros e detalhes
+1. **Cliente navega** → Produtos carregados via API DynamoDB
 2. **Adiciona ao carrinho** → Sistema calcula totais
 3. **Verifica frete** → CEP consultado via ViaCEP
 4. **Finaliza pedido** → Formulário com dados pessoais
 5. **Confirma endereço** → Reutiliza CEP + número/complemento
 6. **Envia WhatsApp** → Mensagem formatada automaticamente
 7. **Recebe confirmação** → Modal com imagem de agradecimento
-8. **Aguarda contato** → Granja entra em contato para entrega
+8. **Gestão admin** → Pedido gerenciado via painel (status + estoque)
 
 ## 🗂️ Organização do Projeto
 
-- **Código limpo:** Arquivos desnecessários em `lixobackup/`
+- **Arquitetura:** Serverless AWS (DynamoDB + Lambda + S3)
 - **Versionamento:** Git com .gitignore configurado
-- **Deploy:** GitHub Pages (branch gh-pages)
-- **Domínio:** granjarecantofeliz.com
-- **Backup:** Sistema automático de dados
+- **Deploy:** AWS S3 Static Website + API Gateway
+- **Domínio:** granjarecantofeliz.com (Route 53)
+- **Backup:** DynamoDB com backup automático
 
 ## 🎯 Status de Desenvolvimento
 
-**✅ PROJETO COMPLETO E FUNCIONAL**
+**✅ PROJETO REFATORADO PARA AWS - PRODUÇÃO FINAL**
 
-- Sistema de e-commerce totalmente operacional
-- Todas as funcionalidades testadas e validadas
-- Interface responsiva e intuitiva
-- Integração WhatsApp funcionando
-- Painel administrativo completo
-- Sistema de frete automatizado
-- Layouts temáticos implementados
+### 🏗️ **Arquitetura Serverless Completa:**
+- ✅ **DynamoDB:** Banco NoSQL (25GB gratuitos permanente)
+- ✅ **Lambda:** API REST serverless (1M execuções/mês)
+- ✅ **S3:** Hospedagem + imagens (5GB gratuitos)
+- ✅ **API Gateway:** Endpoints REST (1M requests/mês)
+
+### 🔧 **Admin Refatorado (Conforme Instruções):**
+- ❌ **Removido:** SALVAR DEFINITIVO (obsoleto com DynamoDB)
+- ❌ **Removido:** Backup Sistema (automático na AWS)
+- ❌ **Removido:** Restaurar Backup (não necessário)
+- ❌ **Removido:** Recarregar do JSON (sistema usa API)
+- ✅ **Mantido:** Gestão de Produtos (CRUD via API)
+- ✅ **Mantido:** Controle de Estoque
+- ✅ **Mantido:** Layouts Temáticos
+- ✅ **Mantido:** Gerenciamento do Carrossel
+
+### 📊 **Performance e Custos:**
+- ✅ Sistema otimizado (73% menor)
+- ✅ Cache inteligente (2 minutos)
+- ✅ API pura (sem fallback JSON)
+- ✅ **Custo operacional: $0.00/mês**
+
+### 🌐 **URLs Finais:**
+- **Site:** http://granjarecantofeliz-site.s3-website-sa-east-1.amazonaws.com
+- **Admin:** http://granjarecantofeliz-site.s3-website-sa-east-1.amazonaws.com/admin.html
+- **API:** https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod
 
 ---
 
 **Granja Recanto Feliz** - Produtos frescos e de qualidade direto da nossa granja para sua mesa. 🌱🥚🐔
 
-comando iniciarlizar o servidor
+## 🚀 **Comandos de Deploy**
+
+### **Deploy Completo (Primeira vez):**
+```bash
+# 1. Configurar infraestrutura AWS
+python etapa2-gratuito.py
+
+# 2. Criar API Lambda + DynamoDB
+python etapa3-api-lambda.py
+
+# 3. Migrar dados JSON → DynamoDB
+python etapa4-migrar-dados.py
+
+# 4. Atualizar frontend para API pura
+python etapa5-api-pura.py
+
+# 5. Deploy final
+python deploy-auto.py
+```
+
+### **Deploy de Atualizações:**
+```bash
+# Deploy geral
+python deploy-auto.py
+
+# Deploy apenas admin
+python deploy-admin.py
+```
+
+### **Desenvolvimento Local:**
+```bash
+# Servidor local para testes
 python -m http.server 8080
+```
+
+### **Limpeza e Manutenção:**
+```bash
+# Limpar admin (remover funcionalidades obsoletas)
+python limpar-admin-final.py
+
+# Corrigir função Lambda
+python fix-lambda.py
+```

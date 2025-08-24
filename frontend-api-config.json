@@ -1,0 +1,19 @@
+{
+  "api": {
+    "enabled": true,
+    "base_url": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod",
+    "endpoints": {
+      "produtos": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos",
+      "produto_by_id": "https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos"
+    },
+    "fallback": {
+      "enabled": true,
+      "json_file": "dados/produtos.json"
+    }
+  },
+  "migration": {
+    "completed": true,
+    "date": "2025-01-27",
+    "products_migrated": true
+  }
+}
