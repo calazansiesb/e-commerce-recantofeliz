@@ -45,7 +45,12 @@ const produtosPadrao = [
         price: 37,
         image: "imagens/produtos/9.1.png",
         stock: 20,
-        active: true
+        active: true,
+        partner: {
+            producer: "Laticínios Serra Verde",
+            location: "Planaltina - DF",
+            description: "Família tradicional na produção de queijos artesanais há 3 gerações"
+        }
     }
 ];
 
@@ -78,7 +83,8 @@ function renderizarProdutos() {
     if (!grid) return;
     
     grid.innerHTML = produtos.map(produto => `
-        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl relative">
+            ${produto.partner ? '<div class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center"><i class="fas fa-handshake mr-1"></i>Parceiro</div>' : ''}
             <img src="${produto.image}" alt="${produto.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
             <h3 class="text-xl font-bold mb-2 font-lora">${produto.name}</h3>
             <p class="text-gray-600 mb-4 flex-grow">${produto.slogan}</p>
@@ -106,7 +112,8 @@ window.filterProducts = function(category) {
     }
     
     grid.innerHTML = filtered.map(produto => `
-        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl">
+        <div class="product-card bg-white rounded-lg shadow-lg p-6 flex flex-col items-center text-center transition-all duration-300 hover:shadow-xl relative">
+            ${produto.partner ? '<div class="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full flex items-center"><i class="fas fa-handshake mr-1"></i>Parceiro</div>' : ''}
             <img src="${produto.image}" alt="${produto.name}" class="w-40 h-40 object-cover rounded-lg mb-4" onerror="this.src='imagens/produtos/default/placeholder.png'">
             <h3 class="text-xl font-bold mb-2 font-lora">${produto.name}</h3>
             <p class="text-gray-600 mb-4 flex-grow">${produto.slogan}</p>
@@ -507,30 +514,13 @@ window.finalizarViaWhatsApp = function() {
         return;
     }
     
-    const total = carrinho.reduce((sum, item) => sum + item.price, 0);
-    const numeroPedido = `RF${Date.now().toString().slice(-8)}`;
-    
-    let mensagem = `🥚 RECANTO FELIZ 🐔\\n\\n`;
-    mensagem += `Pedido: ${numeroPedido}\\n\\n`;
-    mensagem += `ITENS:\\n`;
-    carrinho.forEach(item => {
-        mensagem += `• ${item.name} - R$ ${item.price.toFixed(2)}\\n`;
-    });
-    mensagem += `\\nTotal: R$ ${total.toFixed(2)}\\n\\n`;
-    mensagem += `Obrigado por escolher nossos produtos!`;
-    
-    const numeroWhatsApp = '5538999247376';
-    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
-    window.open(urlWhatsApp, '_blank');
-    
-    // Limpar carrinho
-    carrinho = [];
-    localStorage.setItem('carrinho', JSON.stringify(carrinho));
-    updateCartCounter();
-    updateCartModal();
-    
-    // Fechar modal
-    document.getElementById('cart-modal').classList.add('hidden');
+    // Mostrar formulário de dados do cliente
+    showCustomerDataForm();
+};
+
+// Função antiga removida - agora usa o formulário
+function finalizarViaWhatsAppOld() {
+    // Esta função foi substituída pelo formulário de dados do cliente
 };
 
 // Funções para modais
@@ -586,5 +576,186 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Formulário de dados do cliente
+function showCustomerDataForm() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full p-6">
+            <h3 class="text-2xl font-bold text-[#5D4037] mb-4 text-center">Finalizar Pedido</h3>
+            <p class="text-gray-600 mb-6 text-center">Precisamos de alguns dados para enviar seu pedido:</p>
+            
+            <form id="customer-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+                    <input type="text" id="customer-name" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Seu nome">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Sobrenome *</label>
+                    <input type="text" id="customer-surname" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Seu sobrenome">
+                </div>
+                
+                <div id="address-info" class="bg-blue-50 p-3 rounded-lg mb-4">
+                    <p class="text-sm text-blue-700">Endereço de entrega baseado no CEP informado:</p>
+                    <p id="address-display" class="font-medium text-blue-800">Carregando endereço...</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Número *</label>
+                        <input type="text" id="customer-number" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="123">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Complemento</label>
+                        <input type="text" id="customer-complement" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Apt 45, Bloco B">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Observações (opcional)</label>
+                    <textarea id="customer-notes" rows="2" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent" placeholder="Ex: deixar na portaria, entregar após as 14h..."></textarea>
+                </div>
+                
+                <div class="flex space-x-3 mt-6">
+                    <button type="button" onclick="this.closest('.fixed').remove()" class="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-300">
+                        Enviar Pedido
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Buscar endereço usando CEP do carrinho
+    const cepCarrinho = document.getElementById('cep-frete')?.value?.replace(/\D/g, '') || '';
+    let addressData = {};
+    
+    if (cepCarrinho && cepCarrinho.length === 8) {
+        buscarCEPCarrinho(cepCarrinho);
+    } else {
+        document.getElementById('address-display').textContent = 'CEP não informado. Verifique o frete primeiro.';
+    }
+    
+    async function buscarCEPCarrinho(cep) {
+        try {
+            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await response.json();
+            
+            if (!data.erro) {
+                addressData = data;
+                const cepFormatted = cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+                document.getElementById('address-display').textContent = 
+                    `${data.logradouro}, ${data.bairro} - CEP: ${cepFormatted}`;
+            } else {
+                document.getElementById('address-display').textContent = 'CEP não encontrado';
+            }
+        } catch (error) {
+            document.getElementById('address-display').textContent = 'Erro ao buscar endereço';
+        }
+    }
+    
+    // Event listener para o formulário
+    document.getElementById('customer-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('customer-name').value.trim();
+        const surname = document.getElementById('customer-surname').value.trim();
+        const number = document.getElementById('customer-number').value.trim();
+        const complement = document.getElementById('customer-complement').value.trim();
+        const notes = document.getElementById('customer-notes').value.trim();
+        
+        if (!name || !surname || !number) {
+            alert('Por favor, preencha nome, sobrenome e número.');
+            return;
+        }
+        
+        if (!addressData.logradouro) {
+            alert('Endereço não encontrado. Verifique o CEP no carrinho.');
+            return;
+        }
+        
+        const cepFormatted = cepCarrinho.replace(/(\d{5})(\d{3})/, '$1-$2');
+        const fullAddress = `${addressData.logradouro}, ${number}${complement ? ', ' + complement : ''}\n${addressData.bairro} - CEP: ${cepFormatted}`;
+        
+        // Fechar modal do formulário
+        modal.remove();
+        
+        // Enviar pedido com dados do cliente
+        sendWhatsAppOrder(name, surname, fullAddress, notes);
+    });
+}
+
+// Enviar pedido via WhatsApp com dados do cliente
+function sendWhatsAppOrder(name, surname, address, notes) {
+    const total = carrinho.reduce((sum, item) => sum + item.price, 0);
+    const numeroPedido = `RF${Date.now().toString().slice(-8)}`;
+    const nomeCompleto = `${name} ${surname}`;
+    
+    // Criar mensagem simples sem emojis
+    let mensagem = `Pedido confirmado!\n\n`;
+    mensagem += `Cliente: ${nomeCompleto}\n`;
+    mensagem += `Pedido: ${numeroPedido}\n\n`;
+    mensagem += `Endereco de entrega:\n${address}\n\n`;
+    mensagem += `Itens:\n`;
+    carrinho.forEach(item => {
+        mensagem += `- ${item.name} - R$ ${item.price.toFixed(2)}\n`;
+    });
+    mensagem += `\nTotal: R$ ${total.toFixed(2)}\n\n`;
+    if (notes) {
+        mensagem += `Observacoes: ${notes}\n\n`;
+    }
+    mensagem += `Obrigado por escolher a Granja Recanto Feliz!`;
+    
+    const numeroWhatsApp = '5538999247376';
+    const urlWhatsApp = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensagem)}`;
+    window.open(urlWhatsApp, '_blank');
+    
+    // Limpar carrinho
+    carrinho = [];
+    localStorage.setItem('carrinho', JSON.stringify(carrinho));
+    updateCartCounter();
+    updateCartModal();
+    
+    // Fechar modal do carrinho
+    document.getElementById('cart-modal').classList.add('hidden');
+    
+    // Mostrar modal de agradecimento
+    showThankYouModal();
+}
+
+// Modal de agradecimento
+function showThankYouModal() {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4';
+    modal.innerHTML = `
+        <div class="bg-white rounded-lg shadow-2xl max-w-md w-full text-center p-6">
+            <div class="text-center mb-4">
+                <img src="imagens/agradecimento pedido.png" alt="Agradecimento" class="w-full h-auto rounded-lg mb-4" onerror="this.style.display='none'; document.getElementById('fallback-icon').style.display='block'">
+                <div id="fallback-icon" class="text-6xl text-green-500 mb-4" style="display:none">
+                    🎉🙏✨
+                </div>
+            </div>
+            <h3 class="text-2xl font-bold text-green-600 mb-2">Pedido Enviado!</h3>
+            <p class="text-gray-600 mb-4">Seu pedido foi enviado via WhatsApp. Em breve entraremos em contato!</p>
+            <button onclick="this.closest('.fixed').remove()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300">
+                Fechar
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Auto-fechar após 30 segundos
+    setTimeout(() => {
+        if (modal.parentNode) {
+            modal.remove();
+        }
+    }, 30000);
+}
 
 console.log('✅ Scripts simplificados carregados - VERSÃO ESTÁVEL');
