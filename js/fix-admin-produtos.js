@@ -31,6 +31,7 @@ async function renderizarProdutosAdmin() {
             <td class="px-4 py-3">${produto.id}</td>
             <td class="px-4 py-3">
                 <img src="${produto.image}" alt="${produto.name}" class="w-16 h-16 object-cover rounded" onerror="this.src='imagens/produtos/default/placeholder.png'">
+                ${produto.imageData ? '<div class="text-xs text-green-600 mt-1">✓ Nova</div>' : ''}
             </td>
             <td class="px-4 py-3 font-medium">${produto.name}</td>
             <td class="px-4 py-3">
@@ -121,17 +122,33 @@ function salvarProduto(event) {
         active: true
     };
     
-    // Verificar se há imagem selecionada
-    const imagePreview = document.querySelector('#image-preview img');
-    if (imagePreview && imagePreview.src && !imagePreview.src.includes('placeholder')) {
-        produtoData.image = imagePreview.src;
+    // Verificar se há imagens selecionadas (sempre PNG)
+    if (window.currentProductImages && window.currentProductImages.length > 0) {
+        // Primeira imagem como principal
+        produtoData.imageData = window.currentProductImages[0];
+        
+        // Imagens adicionais
+        if (window.currentProductImages.length > 1) {
+            produtoData.additionalImages = window.currentProductImages.slice(1);
+        }
+        
+        // Gerar nome padronizado para referência
+        const productId = id || (Math.max(...produtos.map(p => p.id), 0) + 1);
+        produtoData.imagePath = `imagens/produtos/${productId}.1.png`;
+        
+        console.log(`📸 ${window.currentProductImages.length} imagens serão salvas para produto ${productId}`);
     }
     
     if (id) {
         // Editar produto existente
         const index = produtos.findIndex(p => p.id == id);
         if (index !== -1) {
-            produtos[index] = { ...produtos[index], ...produtoData };
+            // Se há nova imagem, usar ela; senão manter a atual
+            if (produtoData.imageData) {
+                produtos[index] = { ...produtos[index], ...produtoData, image: produtoData.imageData };
+            } else {
+                produtos[index] = { ...produtos[index], ...produtoData };
+            }
             alert('Produto atualizado!');
         }
     } else {
@@ -139,7 +156,7 @@ function salvarProduto(event) {
         const novoId = Math.max(...produtos.map(p => p.id), 0) + 1;
         produtos.push({
             id: novoId,
-            image: produtoData.image || `imagens/produtos/${novoId}.1.png`,
+            image: produtoData.imageData || produtoData.image || `imagens/produtos/${novoId}.1.png`,
             ...produtoData
         });
         alert('Produto adicionado!');
@@ -147,30 +164,79 @@ function salvarProduto(event) {
     
     renderizarProdutosAdmin();
     closeProductModal();
+    
+    // Baixar imagens automaticamente se houver
+    if (produtoData.imageData || produtoData.additionalImages) {
+        setTimeout(() => {
+            const productId = id || (Math.max(...produtos.map(p => p.id), 0) + 1);
+            
+            // Baixar imagem principal
+            if (produtoData.imageData) {
+                baixarImagemPNG(produtoData.imageData, `${productId}.1.png`);
+            }
+            
+            // Baixar imagens adicionais
+            if (produtoData.additionalImages) {
+                produtoData.additionalImages.forEach((imageData, index) => {
+                    baixarImagemPNG(imageData, `${productId}.${index + 2}.png`);
+                });
+            }
+            
+            alert(`📸 ${1 + (produtoData.additionalImages?.length || 0)} imagens PNG baixadas! Coloque-as na pasta imagens/produtos/`);
+        }, 500);
+    }
 }
 
-// Função para preview de imagem
+// Função para preview de múltiplas imagens com conversão para PNG
 function setupImagePreview() {
     const imageInput = document.getElementById('product-images');
     const imagePreview = document.getElementById('image-preview');
     
     if (imageInput) {
         imageInput.addEventListener('change', function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    imagePreview.innerHTML = `
-                        <div class="relative">
-                            <img src="${e.target.result}" alt="Preview" class="w-32 h-32 object-cover rounded border-2 border-green-500">
-                            <div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-2 py-1 rounded-bl">Principal</div>
-                        </div>
-                    `;
-                };
-                reader.readAsDataURL(file);
-            }
+            const files = Array.from(event.target.files);
+            if (files.length === 0) return;
+            processarArquivos(files);
         });
     }
+}
+
+// Converter qualquer imagem para PNG padronizado
+function convertToPNG(file, callback) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    
+    img.onload = function() {
+        // Definir tamanho padrão (máximo 800x600 para otimizar)
+        const maxWidth = 800;
+        const maxHeight = 600;
+        let { width, height } = img;
+        
+        if (width > maxWidth || height > maxHeight) {
+            const ratio = Math.min(maxWidth / width, maxHeight / height);
+            width *= ratio;
+            height *= ratio;
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Fundo branco para transparências
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Desenhar imagem
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Converter para PNG
+        const pngDataUrl = canvas.toDataURL('image/png', 0.9);
+        const filename = file.name.replace(/\.[^/.]+$/, '') + '.png';
+        
+        callback(pngDataUrl, filename);
+    };
+    
+    img.src = URL.createObjectURL(file);
 }
 
 function salvarProdutosDefinitivo() {
@@ -192,7 +258,52 @@ function salvarProdutosDefinitivo() {
     a.click();
     URL.revokeObjectURL(url);
     
-    alert('Produtos salvos! Arquivo JSON baixado. Substitua o arquivo dados/produtos.json pelo arquivo baixado.');
+    // Baixar imagens convertidas se houver
+    baixarImagensConvertidas();
+    
+    alert('Produtos salvos! JSON e imagens PNG baixados. Substitua os arquivos na pasta do projeto.');
+}
+
+// Baixar todas as imagens convertidas como PNG
+function baixarImagensConvertidas() {
+    produtos.forEach(produto => {
+        // Baixar imagem principal
+        if (produto.imageData && produto.imageData.startsWith('data:image')) {
+            baixarImagemPNG(produto.imageData, `${produto.id}.1.png`);
+        }
+        
+        // Baixar imagens adicionais
+        if (produto.additionalImages && Array.isArray(produto.additionalImages)) {
+            produto.additionalImages.forEach((imageData, index) => {
+                if (imageData && imageData.startsWith('data:image')) {
+                    baixarImagemPNG(imageData, `${produto.id}.${index + 2}.png`);
+                }
+            });
+        }
+    });
+}
+
+// Função auxiliar para baixar imagem PNG
+function baixarImagemPNG(imageData, filename) {
+    const base64Data = imageData.split(',')[1];
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length);
+    
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+    
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    console.log(`📥 Baixando: ${filename}`);
 }
 
 function exportData() {
@@ -241,25 +352,87 @@ window.openProductModal = openProductModal;
 window.closeProductModal = closeProductModal;
 window.salvarProduto = salvarProduto;
 window.setupImagePreview = setupImagePreview;
+window.setupDragDrop = setupDragDrop;
+window.processarArquivos = processarArquivos;
+window.convertToPNG = convertToPNG;
+window.baixarImagemPNG = baixarImagemPNG;
+window.baixarImagensConvertidas = baixarImagensConvertidas;
 window.salvarProdutosDefinitivo = salvarProdutosDefinitivo;
 window.exportData = exportData;
 window.importData = importData;
+
+// Setup drag & drop
+function setupDragDrop() {
+    const dropZone = document.getElementById('drop-zone');
+    if (!dropZone) return;
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-blue-500', 'bg-blue-50');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-blue-500', 'bg-blue-50');
+        
+        const files = Array.from(e.dataTransfer.files);
+        processarArquivos(files);
+    });
+}
+
+// Processar arquivos (drag & drop ou seleção)
+function processarArquivos(files) {
+    const imagePreview = document.getElementById('image-preview');
+    imagePreview.innerHTML = '';
+    window.currentProductImages = [];
+    
+    files.forEach((file, index) => {
+        // Validação rigorosa
+        const formatosPermitidos = ['image/png', 'image/jpeg', 'image/jpg'];
+        if (!formatosPermitidos.includes(file.type)) {
+            alert(`❌ Formato rejeitado: ${file.name}\n\nApenas PNG, JPG e JPEG!`);
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) {
+            alert(`❌ Arquivo muito grande: ${file.name}\n\nMáximo: 5MB`);
+            return;
+        }
+        
+        // Converter para PNG
+        convertToPNG(file, function(pngDataUrl, filename) {
+            window.currentProductImages.push(pngDataUrl);
+            
+            const imageDiv = document.createElement('div');
+            imageDiv.className = 'relative inline-block mr-2 mb-2';
+            imageDiv.innerHTML = `
+                <img src="${pngDataUrl}" alt="Preview ${index + 1}" class="w-24 h-24 object-cover rounded border-2 border-green-500">
+                <div class="absolute top-0 right-0 bg-green-500 text-white text-xs px-1 py-0.5 rounded-bl">${index + 1}</div>
+                <div class="absolute bottom-0 left-0 bg-black bg-opacity-75 text-white text-xs px-1">PNG</div>
+                ${index === 0 ? '<div class="absolute top-0 left-0 bg-blue-500 text-white text-xs px-1 py-0.5 rounded-br">Principal</div>' : ''}
+            `;
+            imagePreview.appendChild(imageDiv);
+        });
+    });
+}
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         renderizarProdutosAdmin();
-        // Adicionar evento ao formulário
         document.getElementById('product-form').addEventListener('submit', salvarProduto);
-        // Setup preview de imagem
         setupImagePreview();
+        setupDragDrop();
     });
 } else {
     renderizarProdutosAdmin();
-    // Adicionar evento ao formulário
     document.getElementById('product-form').addEventListener('submit', salvarProduto);
-    // Setup preview de imagem
     setupImagePreview();
+    setupDragDrop();
 }
 
 console.log('✅ Admin simples carregado');

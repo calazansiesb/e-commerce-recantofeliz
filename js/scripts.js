@@ -107,6 +107,18 @@ function adicionarEventosCarrinho() {
 }
 
 // Função para solicitar dados complementares
+// Função para verificar se o bairro tem direito a frete grátis
+function bairroFreteGratis(bairro) {
+    const permitidos = [
+        'Lago Sul',
+        'Asa Sul',
+        'Asa Norte',
+        'Jardim Botânico'
+    ];
+    return permitidos.some(b => bairro && bairro.toLowerCase().includes(b.toLowerCase()));
+}
+
+// ...código existente...
 function solicitarDadosComplementares() {
     return new Promise((resolve) => {
         // Criar formulário modal
@@ -273,6 +285,21 @@ function solicitarDadosComplementares() {
                 // Focar no campo número
                 document.getElementById('numero-cliente').focus();
                 
+                                    // Regra de frete grátis por bairro e valor
+                                    let valorPedido = 0;
+                                    try {
+                                        // Tente obter o valor do pedido do carrinho
+                                        const carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+                                        valorPedido = carrinho.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
+                                    } catch {}
+                                    let frete = 10; // taxa padrão
+                                    if (valorPedido > 50 && bairroFreteGratis(data.bairro)) {
+                                        frete = 0;
+                                        alert('Frete grátis para seu bairro!');
+                                    } else {
+                                        alert('Será cobrada taxa de entrega para seu endereço.');
+                                    }
+                                    window.freteCalculado = frete;
             } catch (error) {
                 alert('Erro ao buscar CEP. Tente novamente.');
                 console.error('Erro na busca do CEP:', error);
@@ -816,6 +843,13 @@ async function openProductModal(productId) {
 
 // Função para descobrir imagens do produto
 async function discoverProductImages(productId) {
+    console.log(`🔍 Buscando imagens para produto ${productId}`);
+    
+    if (!productId) {
+        console.error('❌ ProductId é undefined ou null');
+        return ['imagens/produtos/default/placeholder.png'];
+    }
+    
     const gallery = [];
     const extensions = ['png', 'jpeg', 'jpg', 'webp'];
     
@@ -846,12 +880,58 @@ async function discoverProductImages(productId) {
         if (!foundImage) break;
     }
     
-    // Se não encontrar nenhuma imagem, usar placeholder
+    console.log(`📂 Total de imagens encontradas para produto ${productId}: ${gallery.length}`);
+    console.log('📂 Imagens: ', gallery);
+    
+    // Se não encontrar nenhuma imagem, tentar detectar formato da imagem principal
     if (gallery.length === 0) {
-        gallery.push('imagens/produtos/default/placeholder.png');
+        const products = window.dataManager ? await window.dataManager.getActiveProducts() : [];
+        const product = products.find(p => p.id === productId);
+        
+        if (product && product.image && !product.image.includes('placeholder')) {
+            // Detectar formato automaticamente
+            console.log(`🔍 Tentando detectar formato para: ${product.image}`);
+            const detectedImage = await detectImageFormat(product.image);
+            if (detectedImage) {
+                console.log(`✅ Imagem detectada: ${detectedImage}`);
+                gallery.push(detectedImage);
+            } else {
+                console.log(`❌ Nenhum formato encontrado, usando placeholder`);
+                gallery.push('imagens/produtos/default/placeholder.png');
+            }
+        } else {
+            console.log(`⚠️ Produto sem imagem válida, usando placeholder`);
+            gallery.push('imagens/produtos/default/placeholder.png');
+        }
     }
     
     return gallery;
+}
+
+// Função para detectar formato de imagem automaticamente
+async function detectImageFormat(basePath) {
+    const extensions = ['png', 'jpg', 'jpeg', 'webp', 'avif'];
+    
+    for (const ext of extensions) {
+        const imagePath = `${basePath}.${ext}`;
+        
+        try {
+            await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve();
+                img.onerror = () => reject();
+                img.src = imagePath;
+            });
+            
+            console.log(`✅ Formato detectado: ${imagePath}`);
+            return imagePath;
+        } catch (error) {
+            continue;
+        }
+    }
+    
+    console.log(`❌ Nenhum formato encontrado para: ${basePath}`);
+    return null;
 }
 
 // Modal de produto
