@@ -226,6 +226,31 @@ function updateCartCounter() {
     }
 }
 
+// Função para descobrir imagens do produto
+async function discoverProductImages(productId) {
+    const gallery = [];
+    const extensions = ['png', 'jpeg', 'jpg'];
+    
+    for (let i = 1; i <= 5; i++) {
+        let found = false;
+        for (const ext of extensions) {
+            const imagePath = `imagens/produtos/${productId}.${i}.${ext}`;
+            try {
+                await new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => { gallery.push(imagePath); found = true; resolve(); };
+                    img.onerror = reject;
+                    img.src = imagePath;
+                });
+                break;
+            } catch (e) { continue; }
+        }
+        if (!found) break;
+    }
+    
+    return gallery.length > 0 ? gallery : [produtos.find(p => p.id == productId)?.image || 'imagens/produtos/default/placeholder.png'];
+}
+
 // Modal de produto com múltiplas imagens
 async function openProductModal(productId) {
     const produto = produtos.find(p => p.id == productId);
@@ -326,31 +351,6 @@ async function openProductModal(productId) {
     modal.style.display = 'flex';
 }
 
-// Função para descobrir imagens do produto
-async function discoverProductImages(productId) {
-    const gallery = [];
-    const extensions = ['png', 'jpeg', 'jpg'];
-    
-    for (let i = 1; i <= 5; i++) {
-        let found = false;
-        for (const ext of extensions) {
-            const imagePath = `imagens/produtos/${productId}.${i}.${ext}`;
-            try {
-                await new Promise((resolve, reject) => {
-                    const img = new Image();
-                    img.onload = () => { gallery.push(imagePath); found = true; resolve(); };
-                    img.onerror = reject;
-                    img.src = imagePath;
-                });
-                break;
-            } catch (e) { continue; }
-        }
-        if (!found) break;
-    }
-    
-    return gallery.length > 0 ? gallery : [produtos.find(p => p.id == productId)?.image || 'imagens/produtos/default/placeholder.png'];
-}
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
     console.log('🚀 Inicializando site...');
@@ -381,7 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('✅ Site inicializado');
 });
 
-// Sistema de frete
+// Tornar função global
+window.openProductModal = openProductModal;
+
+// Sistema de frete - VERSÃO SIMPLIFICADA
 window.verificarFrete = function() {
     const cep = document.getElementById('cep-frete').value.replace(/\D/g, '');
     const resultadoDiv = document.getElementById('frete-resultado');
@@ -395,120 +398,45 @@ window.verificarFrete = function() {
         return;
     }
     
-    // Calcular total do carrinho
     const subtotal = carrinho.reduce((sum, item) => sum + item.price, 0);
     
-    // CEPs específicos de Brasília/DF (áreas atendidas)
+    // CEPs de Brasília/DF com frete grátis
     const cepsBrasilia = {
-        // Asa Sul
         '70000': true, '70001': true, '70002': true, '70003': true, '70004': true, '70005': true,
-        '70006': true, '70007': true, '70008': true, '70009': true, '70010': true, '70011': true,
-        '70012': true, '70013': true, '70014': true, '70015': true, '70016': true, '70017': true,
-        '70018': true, '70019': true, '70020': true, '70021': true, '70022': true, '70023': true,
-        '70024': true, '70025': true, '70026': true, '70027': true, '70028': true, '70029': true,
-        '70030': true, '70031': true, '70032': true, '70033': true, '70034': true, '70035': true,
-        '70036': true, '70037': true, '70038': true, '70039': true, '70040': true, '70041': true,
-        '70042': true, '70043': true, '70044': true, '70045': true, '70046': true, '70047': true,
-        '70048': true, '70049': true, '70050': true, '70051': true, '70052': true, '70053': true,
-        '70054': true, '70055': true, '70056': true, '70057': true, '70058': true, '70059': true,
-        '70060': true, '70061': true, '70062': true, '70063': true, '70064': true, '70065': true,
-        '70066': true, '70067': true, '70068': true, '70069': true, '70070': true, '70071': true,
-        '70072': true, '70073': true, '70074': true, '70075': true, '70076': true, '70077': true,
-        '70078': true, '70079': true, '70080': true, '70081': true, '70082': true, '70083': true,
-        '70084': true, '70085': true, '70086': true, '70087': true, '70088': true, '70089': true,
-        '70090': true, '70091': true, '70092': true, '70093': true, '70094': true, '70095': true,
-        '70096': true, '70097': true, '70098': true, '70099': true,
-        // Asa Norte
         '70710': true, '70711': true, '70712': true, '70713': true, '70714': true, '70715': true,
-        '70716': true, '70717': true, '70718': true, '70719': true, '70720': true, '70721': true,
-        '70722': true, '70723': true, '70724': true, '70725': true, '70726': true, '70727': true,
-        '70728': true, '70729': true, '70730': true, '70731': true, '70732': true, '70733': true,
-        '70734': true, '70735': true, '70736': true, '70737': true, '70738': true, '70739': true,
-        '70740': true, '70741': true, '70742': true, '70743': true, '70744': true, '70745': true,
-        '70746': true, '70747': true, '70748': true, '70749': true, '70750': true, '70751': true,
-        '70752': true, '70753': true, '70754': true, '70755': true, '70756': true, '70757': true,
-        '70758': true, '70759': true, '70760': true, '70761': true, '70762': true, '70763': true,
-        '70764': true, '70765': true, '70766': true, '70767': true, '70768': true, '70769': true,
-        '70770': true, '70771': true, '70772': true, '70773': true, '70774': true, '70775': true,
-        '70776': true, '70777': true, '70778': true, '70779': true, '70780': true, '70781': true,
-        '70782': true, '70783': true, '70784': true, '70785': true, '70786': true, '70787': true,
-        '70788': true, '70789': true, '70790': true, '70791': true, '70792': true, '70793': true,
-        '70794': true, '70795': true, '70796': true, '70797': true, '70798': true, '70799': true,
-        // Lago Sul
         '71600': true, '71601': true, '71602': true, '71603': true, '71604': true, '71605': true,
-        '71606': true, '71607': true, '71608': true, '71609': true, '71610': true, '71611': true,
-        '71612': true, '71613': true, '71614': true, '71615': true, '71616': true, '71617': true,
-        '71618': true, '71619': true, '71620': true, '71621': true, '71622': true, '71623': true,
-        '71624': true, '71625': true, '71626': true, '71627': true, '71628': true, '71629': true,
-        '71630': true, '71631': true, '71632': true, '71633': true, '71634': true, '71635': true,
-        '71636': true, '71637': true, '71638': true, '71639': true, '71640': true, '71641': true,
-        '71642': true, '71643': true, '71644': true, '71645': true, '71646': true, '71647': true,
-        '71648': true, '71649': true, '71650': true, '71651': true, '71652': true, '71653': true,
-        '71654': true, '71655': true, '71656': true, '71657': true, '71658': true, '71659': true,
-        '71660': true, '71661': true, '71662': true, '71663': true, '71664': true, '71665': true,
-        '71666': true, '71667': true, '71668': true, '71669': true, '71670': true, '71671': true,
-        '71672': true, '71673': true, '71674': true, '71675': true, '71676': true, '71677': true,
-        '71678': true, '71679': true,
-        // Jardim Botânico
-        '71680': true, '71681': true, '71682': true, '71683': true, '71684': true, '71685': true,
-        '71686': true, '71687': true, '71688': true, '71689': true, '71690': true, '71691': true,
-        '71692': true, '71693': true, '71694': true, '71695': true, '71696': true, '71697': true,
-        '71698': true, '71699': true
+        '71680': true, '71681': true, '71682': true, '71683': true, '71684': true, '71685': true
     };
     
     const cepArea = cep.substring(0, 5);
-    const isAreaPromocional = cepsBrasilia[cepArea] === true;
+    const cepNum = parseInt(cepArea);
+    const isBrasilia = (cepNum >= 70000 && cepNum <= 72999) || (cepNum >= 73000 && cepNum <= 73699);
+    const isFreteGratis = cepsBrasilia[cepArea] === true;
     
     let mensagem = '';
     let valorFrete = 0;
     
-    if (isAreaPromocional && subtotal >= 50) {
-        mensagem = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded"><strong>🎉 Ótima notícia! Você tem Frete Grátis!</strong><br><small>Brasília/DF + compra acima de R$ 50,00</small></div>';
+    if (!isBrasilia) {
+        mensagem = '<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"><strong>⚠️ Não entregamos nesta região</strong><br><small>Entregamos apenas em Brasília/DF</small></div>';
         valorFrete = 0;
-    } else if (isAreaPromocional) {
+    } else if (isFreteGratis && subtotal >= 100) {
+        mensagem = '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded"><strong>🎉 Frete Grátis!</strong><br><small>Asa Sul, Asa Norte, Lago Sul ou Jardim Botânico + compra acima de R$ 100,00</small></div>';
+        valorFrete = 0;
+    } else if (isFreteGratis && subtotal < 100) {
+        mensagem = `<div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded"><strong>📦 Taxa de Entrega: R$ 8,00</strong><br><small>Frete grátis em Asa Sul, Asa Norte, Lago Sul e Jardim Botânico apenas para compras acima de R$ 100,00</small></div>`;
         valorFrete = 8.00;
-        mensagem = `<div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded"><strong>📦 Entrega: R$ ${valorFrete.toFixed(2)}</strong><br><small>Frete grátis em Brasília/DF acima de R$ 50,00</small></div>`;
     } else {
-        // Verificar se é Brasília/DF (CEPs 70000-72999 e 73000-73699)
-        const cepNum = parseInt(cep.substring(0, 5));
-        const isBrasilia = (cepNum >= 70000 && cepNum <= 72999) || (cepNum >= 73000 && cepNum <= 73699);
-        
-        if (isBrasilia) {
-            valorFrete = 0; // Será combinado via WhatsApp
-            mensagem = `<div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
-                <strong>🚚 Entrega Especial em Brasília/DF!</strong><br>
-                <small>Seu bairro não está em nossa área de entrega padrão, mas atendemos sim!</small><br>
-                <div class="mt-2 text-sm">
-                    <strong>✨ Boa notícia:</strong> Entregamos em todo Brasília/DF através de motoboy especializado.<br>
-                    <strong>💰 Taxa de entrega:</strong> Será calculada e combinada via WhatsApp conforme seu bairro.<br>
-                    <strong>📱 Como funciona:</strong> Finalize seu pedido normalmente e nossa equipe entrará em contato para acertar os detalhes da entrega.
-                </div>
-            </div>`;
-        } else {
-            valorFrete = 0;
-            mensagem = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                <strong>⚠️ Não entregamos nesta região</strong><br>
-                <small>Entregamos apenas em Brasília/DF. Seu CEP parece ser de outra cidade/estado.</small><br>
-                <div class="mt-2 text-sm">
-                    <strong>📍 Áreas atendidas:</strong> Todos os bairros de Brasília/DF<br>
-                    <strong>🎆 Frete grátis:</strong> Asa Sul, Asa Norte, Lago Sul e Jardim Botânico (pedidos acima de R$ 50)<br>
-                    <strong>🚚 Entrega especial:</strong> Demais bairros de Brasília/DF com taxa a combinar
-                </div>
-            </div>`;
-        }
+        mensagem = '<div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded"><strong>🚚 Entrega com Taxa</strong><br><small>Taxa será combinada via WhatsApp</small></div>';
+        valorFrete = 0;
     }
     
-    // Atualizar valores na tela
-    const cepNum = parseInt(cep.substring(0, 5));
-    const isBrasilia = (cepNum >= 70000 && cepNum <= 72999) || (cepNum >= 73000 && cepNum <= 73699);
-    
     if (deliveryFeeSpan) {
-        if (valorFrete === 0 && isAreaPromocional) {
+        if (valorFrete === 0 && isFreteGratis && subtotal >= 100) {
             deliveryFeeSpan.textContent = 'Grátis';
-        } else if (valorFrete === 0 && isBrasilia && !isAreaPromocional) {
-            deliveryFeeSpan.textContent = 'A combinar';
         } else if (valorFrete > 0) {
             deliveryFeeSpan.textContent = `R$ ${valorFrete.toFixed(2)}`;
+        } else if (isBrasilia && !isFreteGratis) {
+            deliveryFeeSpan.textContent = 'A combinar';
         } else {
             deliveryFeeSpan.textContent = 'Não disponível';
         }
@@ -516,10 +444,8 @@ window.verificarFrete = function() {
     
     const totalFinal = subtotal + valorFrete;
     if (cartTotalSpan) {
-        if (isBrasilia && !isAreaPromocional && valorFrete === 0) {
+        if (isBrasilia && !isFreteGratis && valorFrete === 0) {
             cartTotalSpan.textContent = `R$ ${subtotal.toFixed(2)} + frete`;
-        } else if (!isBrasilia) {
-            cartTotalSpan.textContent = `R$ ${subtotal.toFixed(2)}`;
         } else {
             cartTotalSpan.textContent = `R$ ${totalFinal.toFixed(2)}`;
         }
@@ -528,13 +454,10 @@ window.verificarFrete = function() {
     resultadoDiv.innerHTML = mensagem;
     resultadoDiv.style.display = 'block';
     
-    // Habilitar botão finalizar
-    if (btnFinalizar) {
+    if (btnFinalizar && isBrasilia) {
         btnFinalizar.disabled = false;
         btnFinalizar.className = 'w-full bg-[#25D366] hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center cursor-pointer';
     }
-    
-    console.log(`✅ Frete calculado: R$ ${valorFrete.toFixed(2)}`);
 };
 
 // Modal do carrinho
@@ -587,13 +510,13 @@ window.finalizarViaWhatsApp = function() {
     const total = carrinho.reduce((sum, item) => sum + item.price, 0);
     const numeroPedido = `RF${Date.now().toString().slice(-8)}`;
     
-    let mensagem = `🥚 RECANTO FELIZ 🐔\n\n`;
-    mensagem += `Pedido: ${numeroPedido}\n\n`;
-    mensagem += `ITENS:\n`;
+    let mensagem = `🥚 RECANTO FELIZ 🐔\\n\\n`;
+    mensagem += `Pedido: ${numeroPedido}\\n\\n`;
+    mensagem += `ITENS:\\n`;
     carrinho.forEach(item => {
-        mensagem += `• ${item.name} - R$ ${item.price.toFixed(2)}\n`;
+        mensagem += `• ${item.name} - R$ ${item.price.toFixed(2)}\\n`;
     });
-    mensagem += `\nTotal: R$ ${total.toFixed(2)}\n\n`;
+    mensagem += `\\nTotal: R$ ${total.toFixed(2)}\\n\\n`;
     mensagem += `Obrigado por escolher nossos produtos!`;
     
     const numeroWhatsApp = '5538999247376';
@@ -641,4 +564,27 @@ window.closeDeliveryModal = function() {
     document.getElementById('delivery-modal').style.display = 'none';
 };
 
-console.log('✅ Scripts simplificados carregados com sistema de frete');
+// Funções para banner de frete
+window.openFreteBanner = function() {
+    document.getElementById('frete-banner-modal').classList.remove('hidden');
+    document.getElementById('frete-banner-modal').style.display = 'flex';
+};
+
+window.closeFreteBanner = function() {
+    document.getElementById('frete-banner-modal').classList.add('hidden');
+    document.getElementById('frete-banner-modal').style.display = 'none';
+};
+
+// Fechar modal clicando fora
+document.addEventListener('DOMContentLoaded', () => {
+    const freteBannerModal = document.getElementById('frete-banner-modal');
+    if (freteBannerModal) {
+        freteBannerModal.addEventListener('click', (e) => {
+            if (e.target === freteBannerModal) {
+                closeFreteBanner();
+            }
+        });
+    }
+});
+
+console.log('✅ Scripts simplificados carregados - VERSÃO ESTÁVEL');
