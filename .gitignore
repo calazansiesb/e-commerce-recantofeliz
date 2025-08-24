@@ -1,5 +1,57 @@
-# Arquivos e pastas ignorados pelo Git
+# Arquivos de backup e lixo
+lixobackup/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependências
 node_modules/
+.npm
+.yarn-integrity
+
+# Arquivos de ambiente
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Arquivos do sistema
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Arquivos temporários
+*.tmp
+*.temp
+*~
+
+# Arquivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos de build
+dist/
+build/
+out/
+
+# Cache
+.cache/
+.parcel-cache/
+
+# Arquivos de backup automático
+*.bak
+*.backup
+*backup*
+*copy*
+
+# Arquivos de documentação antiga
+RESUMO-*.md
+DOCUMENTACAO-*.md
+README_*.md
+CHANGELOG-*.md

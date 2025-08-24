@@ -1324,33 +1324,14 @@
     <script src="js/scripts-simples.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Aguardar DataManager estar completamente carregado
-        let products = [];
+        console.log('🚀 Página carregada, aguardando scripts...');
         
-        // Inicialização simples
-        async function inicializar() {
-            console.log('🔧 Inicializando sistema...');
-            
-            if (!window.dataManager) {
-                console.log('📊 Criando DataManager...');
-                window.dataManager = new DataManager();
+        // Aguardar scripts carregarem
+        setTimeout(() => {
+            if (window.filterProducts) {
+                window.filterProducts('all');
             }
-            
-            // Inicializar CarouselManager se não foi inicializado automaticamente
-            if (!window.carouselManager && window.CarouselManager) {
-                console.log('🎠 Criando CarouselManager...');
-                window.carouselManager = new CarouselManager();
-                window.carouselManager.initializeCarousel();
-            }
-            
-            // Aguardar DataManager estar pronto
-            setTimeout(() => {
-                console.log('🔄 Tentando carregar produtos via inicializar...');
-                if (window.filterProducts) {
-                    window.filterProducts('all');
-                }
-            }, 2000);
-        }
+        }, 500);
         
         // Script mínimo já carrega os produtos
 
