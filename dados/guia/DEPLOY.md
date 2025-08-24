@@ -135,7 +135,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: src
+          folder: e-commerce-recantofeliz
           clean: true
 ```
 
