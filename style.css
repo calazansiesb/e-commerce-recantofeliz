@@ -1,0 +1,77 @@
+
+/* Ícone mãozinha nos benefícios */
+img.icon-hand-benefit {
+	display: inline-block;
+	width: 22px;
+	height: 22px;
+	object-fit: contain;
+	opacity: 0.7;
+	transition: all 0.3s;
+	animation: pulse 1.2s infinite;
+}
+img.icon-hand-benefit:hover {
+	opacity: 1;
+	transform: scale(1.1);
+	animation: pulse 0.6s infinite;
+}
+
+/* Botão Learn More customizado */
+.learn-more-btn {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background: #ff8800;
+	color: #fff;
+	font-weight: bold;
+	font-size: 1.4rem;
+	border: none;
+	border-radius: 40px;
+	padding: 16px 36px;
+	cursor: pointer;
+	opacity: 0.7;
+	transition: all 0.3s;
+	box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.learn-more-btn .icon-hand {
+	display: inline-block;
+	width: 32px;
+	height: 32px;
+	background: url('saiba mais.png') no-repeat center/contain;
+	animation: pulse 1.2s infinite;
+}
+
+.learn-more-btn:hover {
+	opacity: 1;
+	transform: scale(1.1);
+}
+
+.learn-more-btn:hover .icon-hand {
+	animation: pulse 0.6s infinite;
+}
+
+@keyframes pulse {
+	0% { transform: scale(1);}
+	50% { transform: scale(1.15);}
+	100% { transform: scale(1);}
+}
+<html>
+<head><title>404 Not Found</title></head>
+<body>
+<h1>404 Not Found</h1>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: css/style.css</li>
+<li>RequestId: CFBKV3MRA00G3B6E</li>
+<li>HostId: SnEGpZWCaSGCgu/aDC6uXSaG7dE5iId6JEJ6QjmIzW48NvhXN3pA2dtPxnlZEq5fdwvgqRZFxMIND5Je8juzEH0L9fB+bKG0zazKsIt1+Wo=</li>
+</ul>
+<h3>An Error Occurred While Attempting to Retrieve a Custom Error Document</h3>
+<ul>
+<li>Code: NoSuchKey</li>
+<li>Message: The specified key does not exist.</li>
+<li>Key: error.html</li>
+</ul>
+<hr/>
+</body>
+</html>

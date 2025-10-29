@@ -1,0 +1,106 @@
+Análise do Fluxo e Orientações para o Desenvolvedor
+O fluxo que você propôs é perfeito para a arquitetura do seu projeto, onde a gestão de dados é feita no localStorage. A funcionalidade de "Restaurar Backup" irá substituir os dados atuais no navegador por um arquivo de backup (produtos.json) que o administrador irá carregar.
+
+A sua lógica de sincronização já deve ter as funções de importação de dados, então o foco é apenas garantir que o botão no admin.html chame a função correta no sync-manager.js.
+
+1. Verificação e Modificação do admin.html
+O seu HTML já está configurado para o upload. O código a seguir está correto e não precisa de alterações:
+
+HTML
+
+<button onclick="document.getElementById('import-file').click()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition">
+    <i class="fas fa-upload mr-2"></i>Restaurar Backup
+</button>
+<input type="file" id="import-file" accept=".json" style="display: none;" onchange="importData(event)">
+O atributo onchange="importData(event)" é a chave. Ele já chama a função que precisamos. O que faremos é garantir que essa função, que você chamou de importData, existe e faz o que é esperado no sync-manager.js.
+
+2. Implementação no sync-manager.js
+A função importData(event) precisa ser criada (ou revisada) para ler o arquivo e salvar o conteúdo no localStorage.
+
+Aqui está a implementação completa que você deve adicionar ou verificar no seu arquivo js/modules/sync-manager.js.
+
+Lembrete: Se você tiver um arquivo chamado data-manager.js que lida com o localStorage, a lógica de importação pode estar lá. Certifique-se de que o caminho dos arquivos está correto.
+
+JavaScript
+
+// js/modules/sync-manager.js
+
+// Certifique-se de que o DataManager já foi carregado e está disponível
+// ex: const dataManager = new DataManager();
+
+/**
+ * Lida com o upload de um arquivo de backup para restaurar os produtos.
+ * @param {Event} event O evento de mudança do input de arquivo.
+ */
+function importData(event) {
+    console.log('🔄 Restaurar Backup: Processo iniciado.');
+
+    const file = event.target.files[0];
+    if (!file) {
+        alert('Nenhum arquivo selecionado.');
+        return;
+    }
+
+    // Verifica o tipo de arquivo para garantir que é um JSON
+    if (file.type !== 'application/json') {
+        alert('Por favor, selecione um arquivo JSON válido.');
+        return;
+    }
+
+    const reader = new FileReader();
+
+    // Quando o arquivo for lido
+    reader.onload = function(e) {
+        try {
+            // Analisa o conteúdo do arquivo como JSON
+            const data = JSON.parse(e.target.result);
+            console.log('✅ Arquivo JSON lido com sucesso.');
+
+            // Verifica se os dados do backup são válidos
+            if (data.products && Array.isArray(data.products)) {
+                // Chama a função para salvar os dados no localStorage
+                window.dataManager.saveAllData(data);
+                
+                // Dispara um evento para notificar outras partes do sistema
+                const event = new CustomEvent('productsUpdated', { detail: { count: data.products.length } });
+                window.dispatchEvent(event);
+
+                console.log(`✅ Backup restaurado com sucesso. ${data.products.length} produtos carregados.`);
+                alert('Backup restaurado com sucesso! Os dados foram atualizados no sistema local.');
+                
+                // Recarrega a tabela de produtos no painel
+                if (window.renderProductsTable) {
+                    window.renderProductsTable(data.products);
+                }
+
+            } else {
+                alert('O arquivo JSON não parece ser um backup de produtos válido. Formato inesperado.');
+            }
+        } catch (error) {
+            console.error('❌ Erro ao processar o arquivo JSON:', error);
+            alert('Erro ao processar o arquivo. Verifique se é um arquivo JSON válido.');
+        }
+    };
+
+    // Lê o conteúdo do arquivo como texto
+    reader.readAsText(file);
+}
+
+// Torna a função global para que o `onchange` do HTML possa encontrá-la
+window.importData = importData;
+3. Orientações para a Execução
+Edite o Arquivo: Abra o arquivo js/modules/sync-manager.js (ou data-manager.js, dependendo de onde você lida com os dados) e adicione a função importData no local correto, garantindo que ela tenha acesso ao window.dataManager.
+
+Verificação: Certifique-se de que a função saveAllData() existe no seu data-manager.js. Ela deve ser responsável por pegar o objeto de dados (que inclui os produtos, layouts, etc.) e salvá-lo inteiro no localStorage.
+
+Teste o Fluxo:
+
+Abra o admin.html.
+
+Clique em "Restaurar Backup".
+
+Selecione um arquivo .json válido que contenha a estrutura de produtos.
+
+Verifique o console do navegador para os logs de depuração.
+
+A tabela de produtos deve ser atualizada com os dados do arquivo de backup.

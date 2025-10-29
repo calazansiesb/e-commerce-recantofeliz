@@ -1,0 +1,125 @@
+Orientações para a Solução
+A solução mais eficaz é unificar a lógica de exibição. Vamos remover o controle estático de CSS (:hover) e usar apenas o JavaScript com um pequeno atraso (delay) para dar tempo ao usuário de navegar.
+
+1. Alterar o Código CSS (index.html)
+Primeiro, remova a regra CSS que mostra o dropdown ao passar o mouse. Essa é a principal causa do problema.
+
+Código a ser removido:
+
+CSS
+
+/* Linha 63 a 67 */
+/* Mostrar dropdown no hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    transform: translateX(-50%) translateY(0);
+}
+2. Ajustar a Lógica JavaScript (index.html)
+O seu código JavaScript já tem a base para a solução com hoverTimeout. Vamos garantir que ele seja o único responsável por controlar o estado do menu.
+
+Localize o Bloco de Código:
+
+Encontre o bloco de código que começa com initModernDropdowns() dentro da sua tag <script>.
+
+Modificação da Lógica:
+
+A lógica atual já está quase correta, mas você precisa garantir que o hoverTimeout seja o único mecanismo de controle. A sua implementação com setTimeout já está no caminho certo. Apenas verifique se não há nenhum outro ponto do código que esteja fechando o menu de forma imediata.
+
+O código a seguir é um exemplo robusto, que você pode comparar com o seu para garantir que não haja outros setTimeout ou clearTimeout redundantes ou em locais errados.
+
+JavaScript
+
+/* Substitua sua função initModernDropdowns() por esta: */
+function initModernDropdowns() {
+    const dropdowns = document.querySelectorAll('.dropdown');
+    
+    dropdowns.forEach(dropdown => {
+        const content = dropdown.querySelector('.dropdown-content');
+        
+        // Eventos de mouse para hover suave
+        dropdown.addEventListener('mouseenter', () => {
+            clearTimeout(hoverTimeout);
+            openDropdown(dropdown);
+        });
+        
+        dropdown.addEventListener('mouseleave', () => {
+            hoverTimeout = setTimeout(() => {
+                closeDropdown(dropdown);
+            }, 150); // Delay para navegação
+        });
+        
+        // Evento de clique no botão
+        const button = dropdown.querySelector('.dropdown-toggle');
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(dropdown);
+        });
+        
+        // Eventos nos links das subcategorias para fechar o menu
+        const links = content.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();                    
+                const category = link.dataset.category;
+                if (category) {
+                    closeAllDropdowns(); // Fecha todos os menus ao clicar
+                    selectCategoryModern(category); // Chama a função de filtro
+                }
+            });
+        });
+    });
+    
+    // Fechar dropdowns ao clicar fora
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.dropdown')) {
+            closeAllDropdowns();
+        }
+    });
+}
+
+function openDropdown(dropdown) {
+    // Fecha outros dropdowns abertos antes de abrir o atual
+    document.querySelectorAll('.dropdown.open').forEach(d => {
+        if (d !== dropdown) {
+            closeDropdown(d);
+        }
+    });
+
+    dropdown.classList.add('open');
+    const content = dropdown.querySelector('.dropdown-content');
+    content.classList.add('show');
+}
+
+function closeDropdown(dropdown) {
+    dropdown.classList.remove('open');
+    const content = dropdown.querySelector('.dropdown-content');
+    content.classList.remove('show');
+}
+
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown').forEach(dropdown => {
+        closeDropdown(dropdown);
+    });
+}
+3. Garantir a Funcionalidade de Filtragem
+O seu código JavaScript já está configurado para chamar a função selectCategoryModern(category) ao clicar em um link de subcategoria. Esta função já contém a lógica de filtragem.
+
+Verifique se a função applyFilterModern(category) está mapeando corretamente o data-category de cada link para a categoria de produto correspondente. Por exemplo, o link para "Fertilizantes" tem data-category="fertilizantes".
+
+A função applyFilterModern já usa window.produtos || [] para acessar a lista de produtos, que é a forma correta de garantir que os produtos estejam disponíveis.
+
+Resumo das Alterações:
+
+A principal correção é remover o CSS display: block do :hover. Isso fará com que o menu dropdown dependa exclusivamente da classe show que é manipulada pelo JavaScript, e o setTimeout garantirá o tempo necessário para que o mouse se mova para o menu de subcategorias sem que ele desapareça.
+
+O que fazer agora?
+
+Confirme as Alterações: Me forneça o arquivo index.html com as alterações aplicadas.
+
+Testar: Após a alteração, teste o comportamento do menu. Ele deve permanecer aberto por cerca de 150 milissegundos após você sair do botão, tempo suficiente para que você entre no menu de subcategorias.
+
+Filtragem: Confirme que, ao clicar nas subcategorias, a grade de produtos é atualizada corretamente com os itens filtrados.

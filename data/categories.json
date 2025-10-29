@@ -1,0 +1,19 @@
+{
+  "groups": [
+    {
+      "name": "Todos",
+      "slug": "todos",
+      "categories": []
+    },
+    {
+      "name": "Parceiros",
+      "slug": "parceiros",
+      "categories": ["Mel", "Laticinios", "Outros"]
+    },
+    {
+      "name": "Produtos da Granja",
+      "slug": "produtos-da-granja",
+      "categories": ["Fertilizantes", "Aves", "Ovos"]
+    }
+  ]
+}

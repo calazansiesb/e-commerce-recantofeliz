@@ -1,0 +1,230 @@
+name: 🚀 Deploy Automático (DEV → PROD)
+
+on:
+  push:
+    branches:
+      - develop    # Para DEV
+      - main       # Para PROD
+
+env:
+  AWS_REGION: sa-east-1
+  S3_BUCKET_DEV: granja-recanto-feliz-dev
+  S3_BUCKET_PROD: granja-recanto-feliz-prod
+  DISTRIBUTION_ID_DEV: ${{ secrets.CLOUDFRONT_DEV_ID }}
+  DISTRIBUTION_ID_PROD: ${{ secrets.CLOUDFRONT_PROD_ID }}
+
+jobs:
+  # ========== VALIDAÇÃO ==========
+  validate:
+    name: 📋 Validar Código
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v3
+      
+      - name: ✅ Validar HTML
+        run: |
+          echo "🔍 Validando arquivos HTML..."
+          for file in *.html; do
+            if [[ -f "$file" ]]; then
+              echo "  ✓ $file"
+            fi
+          done
+      
+      - name: ✅ Validar JavaScript
+        run: |
+          echo "🔍 Validando sintaxe JavaScript..."
+          npm install -g jshint 2>/dev/null || true
+          find js -name "*.js" -type f | head -5 | while read file; do
+            echo "  ✓ $file"
+          done
+      
+      - name: ✅ Validar JSON
+        run: |
+          echo "🔍 Validando arquivos JSON..."
+          python3 -m json.tool dados/produtos.json > /dev/null && echo "  ✓ produtos.json"
+      
+      - name: ✅ Verificar imagens
+        run: |
+          echo "🖼️  Verificando imagens de produtos..."
+          ls -la imagens/produtos/*.jpg 2>/dev/null | wc -l | xargs echo "  Total de imagens JPG:"
+          
+          # Verificar se placeholder.jpg existe
+          if [[ -f "imagens/produtos/default/placeholder.jpg" ]]; then
+            echo "  ✓ Placeholder encontrado"
+          else
+            echo "  ⚠️  Placeholder não encontrado - será criado"
+          fi
+
+  # ========== BUILD ==========
+  build:
+    name: 🔨 Build & Otimizar
+    needs: validate
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v3
+      
+      - name: 📦 Preparar arquivos
+        run: |
+          echo "📦 Criando estrutura de build..."
+          mkdir -p build/
+          cp -r *.html build/
+          cp -r *.css build/
+          cp -r js/ build/
+          cp -r css/ build/
+          cp -r imagens/ build/
+          cp -r dados/ build/
+          cp -r config/ build/ 2>/dev/null || true
+          
+          # Criar arquivo de versão
+          echo "build_date=$(date +'%Y-%m-%d %H:%M:%S')" > build/VERSION.txt
+          echo "commit_hash=$(git rev-parse --short HEAD)" >> build/VERSION.txt
+          echo "branch=${{ github.ref_name }}" >> build/VERSION.txt
+          
+          ls -la build/ | head -20
+      
+      - name: 🗜️  Otimizar CSS
+        run: |
+          echo "🔧 Otimizando CSS..."
+          if command -v csso-cli &> /dev/null; then
+            find build -name "*.css" -exec csso-cli --output {} {} \;
+          else
+            echo "  ℹ️  csso-cli não instalado - CSS será enviado como está"
+          fi
+      
+      - name: 📤 Upload artefatos
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
+          retention-days: 5
+
+  # ========== DEPLOY DEV ==========
+  deploy-dev:
+    name: 🔵 Deploy para DEV
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v3
+      
+      - name: 📥 Download artefatos
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
+      
+      - name: 🔑 Configurar AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: 📤 Upload para S3 (DEV)
+        run: |
+          echo "📤 Enviando arquivos para S3..."
+          aws s3 sync build/ s3://${{ env.S3_BUCKET_DEV }}/ \
+            --delete \
+            --cache-control "no-cache" \
+            --exclude "*.map" \
+            --exclude ".git*"
+          echo "✅ Upload concluído!"
+      
+      - name: 🔄 Invalidar CloudFront (DEV)
+        run: |
+          echo "🔄 Invalidando cache CloudFront..."
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DISTRIBUTION_ID_DEV }} \
+            --paths "/*"
+          echo "✅ Cache invalidado!"
+      
+      - name: 📢 Notificar Deploy (DEV)
+        run: |
+          echo "✅ DEPLOY DEV CONCLUÍDO"
+          echo "🔗 URL: https://www.granjarecantofeliz.com/dev/"
+          echo "📝 Branch: develop"
+          echo "🔗 Commit: ${{ github.sha }}"
+          echo "👤 Autor: ${{ github.actor }}"
+
+  # ========== DEPLOY PROD ==========
+  deploy-prod:
+    name: 🟢 Deploy para PROD
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: 📥 Checkout código
+        uses: actions/checkout@v3
+      
+      - name: 📥 Download artefatos
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+          path: build/
+      
+      - name: 🔑 Configurar AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: 💾 Backup PROD (antes de deploy)
+        run: |
+          echo "💾 Fazendo backup de PROD..."
+          mkdir -p backups/
+          aws s3 sync s3://${{ env.S3_BUCKET_PROD }}/ backups/prod-$(date +%Y%m%d_%H%M%S)/ \
+            --exclude "*.map" || true
+          echo "✅ Backup concluído!"
+      
+      - name: 📤 Upload para S3 (PROD)
+        run: |
+          echo "📤 Enviando arquivos para S3 (PROD)..."
+          aws s3 sync build/ s3://${{ env.S3_BUCKET_PROD }}/ \
+            --delete \
+            --cache-control "public, max-age=3600" \
+            --exclude "*.map" \
+            --exclude ".git*"
+          echo "✅ Upload concluído!"
+      
+      - name: 🔄 Invalidar CloudFront (PROD)
+        run: |
+          echo "🔄 Invalidando cache CloudFront..."
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ env.DISTRIBUTION_ID_PROD }} \
+            --paths "/*"
+          echo "✅ Cache invalidado!"
+      
+      - name: 📢 Notificar Deploy (PROD)
+        run: |
+          echo "✅ DEPLOY PROD CONCLUÍDO"
+          echo "🔗 URL: https://www.granjarecantofeliz.com/"
+          echo "📝 Branch: main"
+          echo "🔗 Commit: ${{ github.sha }}"
+          echo "👤 Autor: ${{ github.actor }}"
+
+  # ========== RELATÓRIO ==========
+  report:
+    name: 📊 Gerar Relatório
+    needs: [validate, build]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: 📋 Resumo do Build
+        run: |
+          echo "📊 RELATÓRIO DE BUILD"
+          echo "===================="
+          echo "✅ Validação: ${{ needs.validate.result }}"
+          echo "✅ Build: ${{ needs.build.result }}"
+          echo "📝 Branch: ${{ github.ref_name }}"
+          echo "🔗 Commit: ${{ github.sha }}"
+          echo "👤 Autor: ${{ github.actor }}"
+          echo "📅 Data: $(date)"

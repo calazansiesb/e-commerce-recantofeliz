@@ -1,0 +1,131 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Substrato BioFértil 3 Anos",
+      "category": "fertilizantes",
+      "slogan": "Mais do que Adubo: um substrato vivo e completo.",
+      "description": "Com um processo de maturação de 3 anos, nosso substrato é uma terra viva e completa, rica em matéria orgânica e microrganismos benéficos.",
+      "price": 15,
+      "image": "imagens/produtos/1.1.jpg",
+      "stock": 25,
+      "active": true
+    },
+    {
+      "id": 2,
+      "name": "FertiGota",
+      "category": "fertilizantes",
+      "slogan": "Adubo de galinha líquido e potente.",
+      "description": "Nosso fertilizante líquido é produzido através de um processo de biodigestor anaeróbico, transformando dejetos de galinha em um adubo rico em nutrientes e de fácil absorção pelas plantas. Ideal para hortas, jardins e vasos.",
+      "price": 5,
+      "image": "imagens/produtos/2.1.jpg",
+      "stock": 40,
+      "active": true
+    },
+    {
+      "id": 3,
+      "name": "Ovos Caipira 10",
+      "category": "ovos",
+      "slogan": "10 ovos frescos da granja.",
+      "description": "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 10 unidades.",
+      "price": 15,
+      "image": "imagens/produtos/3.1.jpeg",
+      "stock": 120,
+      "active": true
+    },
+    {
+      "id": 4,
+      "name": "Ovos Caipira 20",
+      "category": "ovos",
+      "slogan": "20 ovos frescos da granja.",
+      "description": "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 20 unidades.",
+      "price": 25,
+      "image": "imagens/produtos/4.1.jpeg",
+      "stock": 80,
+      "active": true
+    },
+    {
+      "id": 5,
+      "name": "Ovos Caipira 30",
+      "category": "ovos",
+      "slogan": "30 ovos frescos da granja.",
+      "description": "Ovos caipira selecionados, direto da granja para sua mesa. Embalagem com 30 unidades.",
+      "price": 34,
+      "image": "imagens/produtos/5.1.jpg",
+      "stock": 50,
+      "active": true
+    },
+    {
+      "id": 6,
+      "name": "Galinha Caipira Picada",
+      "category": "aves",
+      "slogan": "Galinha caipira cortada, pronta para cozinhar.",
+      "description": "Galinha caipira picada, sabor autêntico da roça. Ideal para receitas tradicionais.",
+      "price": 45,
+      "image": "imagens/produtos/6.1.png",
+      "stock": 15,
+      "active": true
+    },
+    {
+      "id": 7,
+      "name": "Galinha Caipira Inteira",
+      "category": "aves",
+      "slogan": "Galinha caipira inteira, fresca e saborosa.",
+      "description": "Galinha caipira inteira, criada solta e alimentada naturalmente. Perfeita para assados e cozidos.",
+      "price": 40,
+      "image": "imagens/produtos/7.1.jpg",
+      "stock": 8,
+      "active": true
+    },
+    {
+      "id": 8,
+      "image": "imagens/produtos/8.1.webp",
+      "name": "Mel",
+      "category": "mel",
+      "slogan": "Doçura artesanal. O sabor do campo em cada gota.",
+      "description": "Mel puro. O toque da natureza nas suas mãos.\n\n",
+      "price": 50,
+      "stock": 10,
+      "active": true,
+      "partner": {
+        "producer": "Apiário Flor do Cerrado",
+        "location": "Sobradinho - DF",
+        "description": "Produção artesanal de mel puro há mais de 10 anos"
+      }
+    },
+    {
+      "id": 9,
+      "image": "imagens/produtos/9.1.png",
+      "name": "Queijo Minas Artesanal",
+      "category": "laticinios",
+      "slogan": "Sabor autêntico da tradição mineira.",
+      "description": "Produzido com leite fresco e técnicas centenárias, nosso Queijo Minas Artesanal tem textura macia e sabor inconfundível. Perfeito para o café da manhã ou para dar um toque especial em suas receitas.",
+      "price": 37,
+      "stock": 20,
+      "active": true,
+      "partner": {
+        "producer": "Laticínios Serra Verde",
+        "location": "Planaltina - DF",
+        "description": "Família tradicional na produção de queijos artesanais há 3 gerações"
+      }
+    },
+    {
+      "id": 10,
+      "image": "imagens/produtos/10.1.jpg",
+      "name": "Cafe",
+      "category": "cafe",
+      "slogan": "O sabor da verdadeira excelência.",
+      "description": "Café Gourmet Artesanal é uma experiência única. Cultivado com cuidado e colhido à mão, cada grão é torrado lentamente para realçar seu sabor complexo. Desfrute de um café com corpo aveludado, notas de chocolate e caramelo, e um aroma irresistível.",
+      "price": 139,
+      "stock": 5,
+      "active": true,
+      "partner": {
+        "producer": "Fazenda Café do Cerrado",
+        "location": "Planaltina - DF",
+        "description": "Torrefadora artesanal especializada em cafés especiais do cerrado"
+      }
+    }
+  ],
+  "lastUpdate": "2025-01-27T10:30:00.000Z",
+  "version": "1.0"
+}
