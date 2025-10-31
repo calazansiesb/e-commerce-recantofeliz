@@ -1343,10 +1343,6 @@
     <script src="js/category-manager.js"></script>
     <script src="js/scripts-simples.js"></script>
     <script>
-    // Declarar variáveis globais ANTES de qualquer uso
-    let carouselInterval;
-    let currentSlide = 0;
-    
     document.addEventListener('DOMContentLoaded', () => {
         console.log('🚀 Página carregada, aguardando scripts...');
         
@@ -2271,6 +2267,7 @@
     });
     
     // Sistema de Carrossel Moderno
+    let carouselInterval;
     
     function initCarousel() {
         // Usar o CarouselManager se disponível
