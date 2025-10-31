@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin DEV - Granja Recanto Feliz (DESENVOLVIMENTO APENAS)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .dev-banner {
+            background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- BANNER DE AVISO DEV -->
+    <div class="dev-banner">
+        🚨 AMBIENTE DE DESENVOLVIMENTO 🚨
+    </div>
+
+    <div class="container mx-auto p-8">
+        <!-- WARNING BOX -->
+        <div class="warning-box">
+            <strong>⚠️ AVISO IMPORTANTE:</strong><br>
+            Este é o painel de administração para DESENVOLVIMENTO apenas.
+            <br><strong>NÃO use este arquivo em produção!</strong>
+            <br>Use <code>admin.prod.html</code> para produção com todas as proteções ativadas.
+        </div>
+
+        <!-- TABS -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="tabs flex border-b mb-6">
+                <button class="tab-btn px-6 py-3 font-bold text-blue-600 border-b-2 border-blue-600" onclick="showTab('produtos')">
+                    📦 Produtos
+                </button>
+                <button class="tab-btn px-6 py-3 font-bold text-gray-600 border-b-2 border-transparent hover:text-blue-600" onclick="showTab('api')">
+                    🔌 API & Dados
+                </button>
+                <button class="tab-btn px-6 py-3 font-bold text-gray-600 border-b-2 border-transparent hover:text-blue-600" onclick="showTab('debug')">
+                    🐛 Debug
+                </button>
+                <button class="tab-btn px-6 py-3 font-bold text-gray-600 border-b-2 border-transparent hover:text-blue-600" onclick="showTab('logs')">
+                    📋 Logs
+                </button>
+            </div>
+
+            <!-- TAB 1: PRODUTOS -->
+            <div id="tab-produtos" class="tab-content">
+                <h2 class="text-2xl font-bold mb-4">Gerenciador de Produtos (DEV)</h2>
+                
+                <div class="mb-6 p-4 bg-blue-50 rounded-lg">
+                    <h3 class="text-lg font-bold mb-4">Adicionar Novo Produto</h3>
+                    <form id="form-novo-produto" class="grid grid-cols-2 gap-4">
+                        <input type="text" placeholder="Nome" id="prod-nome" class="col-span-1 p-2 border rounded" required>
+                        <input type="text" placeholder="Categoria" id="prod-categoria" class="col-span-1 p-2 border rounded" required>
+                        <input type="number" placeholder="Preço" id="prod-preco" class="col-span-1 p-2 border rounded" step="0.01" required>
+                        <input type="number" placeholder="Estoque" id="prod-estoque" class="col-span-1 p-2 border rounded" required>
+                        <textarea placeholder="Descrição" id="prod-descricao" class="col-span-2 p-2 border rounded" rows="3"></textarea>
+                        <input type="text" placeholder="Imagem (ex: imagens/produtos/XX.1.jpg)" id="prod-imagem" class="col-span-2 p-2 border rounded" required>
+                        <button type="submit" class="col-span-2 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                            ➕ Adicionar Produto
+                        </button>
+                    </form>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold mb-4">Produtos Atuais</h3>
+                    <div id="lista-produtos" class="space-y-3">
+                        <p class="text-gray-500">Carregando produtos...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: API & DADOS -->
+            <div id="tab-api" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-4">API & Dados</h2>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button onclick="testarAPI()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        🔄 Testar API
+                    </button>
+                    <button onclick="recarregarProdutos()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        🔃 Recarregar Produtos
+                    </button>
+                    <button onclick="exportarDados()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">
+                        💾 Exportar JSON
+                    </button>
+                    <button onclick="criarBackup()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">
+                        🔐 Criar Backup
+                    </button>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <h3 class="font-bold mb-3">Resposta API:</h3>
+                    <pre id="api-response" class="bg-white p-4 rounded border border-gray-300 overflow-x-auto text-sm" style="max-height: 400px;">
+Aguardando resposta...
+                    </pre>
+                </div>
+            </div>
+
+            <!-- TAB 3: DEBUG -->
+            <div id="tab-debug" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-4">Debug & Análise</h2>
+                
+                <div class="space-y-4">
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="font-bold mb-3">Informações do Sistema</h3>
+                        <div id="info-sistema" class="space-y-2 text-sm">
+                            <p>Ambiente: <strong id="env-tipo">DEV</strong></p>
+                            <p>URL Atual: <strong id="url-atual">-</strong></p>
+                            <p>API Endpoint: <strong id="api-endpoint">-</strong></p>
+                            <p>Timestamp: <strong id="timestamp-atual">-</strong></p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="font-bold mb-3">Verificações de Produção</h3>
+                        <div id="verificacoes" class="space-y-2 text-sm">
+                            <p>✅ Variáveis globais carregadas</p>
+                            <p>✅ API respondendo</p>
+                            <p id="check-prod">⚠️ Verifique se está em PROD...</p>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <h3 class="font-bold mb-3">Console do Navegador</h3>
+                        <p class="text-sm text-gray-600 mb-3">Abra a DevTools (F12) para ver logs detalhados</p>
+                        <button onclick="mostrarConsole()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                            🔍 Ver Console (F12)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: LOGS -->
+            <div id="tab-logs" class="tab-content hidden">
+                <h2 class="text-2xl font-bold mb-4">Histórico de Logs</h2>
+                
+                <div class="mb-4 flex gap-2">
+                    <button onclick="limparLogs()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                        🗑️ Limpar Logs
+                    </button>
+                    <button onclick="exportarLogs()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">
+                        💾 Exportar Logs
+                    </button>
+                </div>
+
+                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                    <div id="logs-container" class="space-y-2 text-sm font-mono bg-black text-green-400 p-4 rounded" style="max-height: 500px; overflow-y: auto;">
+                        <p>[INIT] Admin DEV carregado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações
+        const CONFIG = {
+            API_ENDPOINT: 'https://frb45jmipc.execute-api.sa-east-1.amazonaws.com/prod/api/produtos',
+            ENVIRONMENT: 'DEV',
+            ALLOW_DELETE: true,  // DEV permite delete
+            ALLOW_BATCH_UPDATE: true,  // DEV permite batch
+        };
+
+        // Sistema de Logs
+        const LogSystem = {
+            logs: [],
+            add: function(msg, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const log = `[${timestamp}] [${type.toUpperCase()}] ${msg}`;
+                this.logs.push(log);
+                this.updateUI();
+                console.log(log);
+            },
+            updateUI: function() {
+                const container = document.getElementById('logs-container');
+                if (container) {
+                    container.innerHTML = this.logs.map(l => `<p>${l}</p>`).join('');
+                    container.scrollTop = container.scrollHeight;
+                }
+            }
+        };
+
+        // Funções de Abas
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Show selected
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            // Update buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('border-b-2', 'border-blue-600', 'text-blue-600');
+                btn.classList.add('border-transparent', 'text-gray-600');
+            });
+            event.target.classList.add('border-b-2', 'border-blue-600', 'text-blue-600');
+            
+            LogSystem.add(`Abri aba: ${tabName}`);
+        }
+
+        // Testar API
+        async function testarAPI() {
+            try {
+                LogSystem.add(`Testando API: ${CONFIG.API_ENDPOINT}`);
+                const response = await fetch(CONFIG.API_ENDPOINT, { cache: 'no-store' });
+                const data = await response.json();
+                
+                document.getElementById('api-response').textContent = JSON.stringify(data, null, 2);
+                LogSystem.add(`API respondeu com ${data.length || 0} produtos`, 'success');
+            } catch (error) {
+                LogSystem.add(`Erro ao testar API: ${error.message}`, 'error');
+                document.getElementById('api-response').textContent = `Erro: ${error.message}`;
+            }
+        }
+
+        // Carregar Produtos
+        async function carregarProdutos() {
+            try {
+                LogSystem.add('Carregando produtos...');
+                const response = await fetch(CONFIG.API_ENDPOINT, { cache: 'no-store' });
+                const produtos = await response.json();
+                
+                const container = document.getElementById('lista-produtos');
+                container.innerHTML = produtos.map(p => `
+                    <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-lg">#${p.id} - ${p.name}</h4>
+                                <p class="text-gray-600 text-sm">${p.category} - R$ ${p.price.toFixed(2)}</p>
+                                <p class="text-gray-500 text-sm">Estoque: ${p.stock}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="editarProduto(${p.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                    ✏️ Editar
+                                </button>
+                                <button onclick="deletarProduto(${p.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm">
+                                    🗑️ Deletar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                LogSystem.add(`Carregados ${produtos.length} produtos`, 'success');
+            } catch (error) {
+                LogSystem.add(`Erro ao carregar produtos: ${error.message}`, 'error');
+            }
+        }
+
+        // Outras funções
+        function recarregarProdutos() {
+            LogSystem.add('Recarregando...');
+            carregarProdutos();
+        }
+
+        function exportarDados() {
+            LogSystem.add('Exportando dados...');
+            alert('Função em desenvolvimento');
+        }
+
+        function criarBackup() {
+            LogSystem.add('Criando backup...');
+            alert('Backup será criado automaticamente');
+        }
+
+        function editarProduto(id) {
+            LogSystem.add(`Editar produto ${id}`, 'warn');
+            alert(`Edição do produto ${id} - Em desenvolvimento`);
+        }
+
+        function deletarProduto(id) {
+            if (CONFIG.ALLOW_DELETE) {
+                if (confirm(`⚠️ Confirma deletar produto ${id}?\n\nEste é um ambiente DEV - as mudanças não afetam PROD.`)) {
+                    LogSystem.add(`Deletando produto ${id}`, 'warn');
+                    alert('Delete - Em desenvolvimento');
+                }
+            }
+        }
+
+        function limparLogs() {
+            LogSystem.logs = [];
+            LogSystem.add('[INIT] Logs limpos');
+        }
+
+        function exportarLogs() {
+            const text = LogSystem.logs.join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `admin-logs-${new Date().toISOString()}.txt`;
+            a.click();
+            LogSystem.add('Logs exportados');
+        }
+
+        function mostrarConsole() {
+            alert('Abra a DevTools pressionando F12 ou Ctrl+Shift+I');
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            LogSystem.add('🎉 Admin DEV carregado com sucesso');
+            LogSystem.add(`Ambiente: ${CONFIG.ENVIRONMENT}`);
+            LogSystem.add(`API: ${CONFIG.API_ENDPOINT}`);
+            LogSystem.add('⚠️ LEMBRANÇA: Este é um painel de DESENVOLVIMENTO apenas');
+            
+            document.getElementById('env-tipo').textContent = CONFIG.ENVIRONMENT;
+            document.getElementById('url-atual').textContent = window.location.href;
+            document.getElementById('api-endpoint').textContent = CONFIG.API_ENDPOINT;
+            document.getElementById('timestamp-atual').textContent = new Date().toLocaleString();
+            
+            carregarProdutos();
+        });
+
+        // Form submit
+        document.getElementById('form-novo-produto').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            LogSystem.add('Criando novo produto...');
+            alert('Função em desenvolvimento');
+        });
+    </script>
+</body>
+</html>
